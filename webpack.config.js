@@ -6,9 +6,9 @@ module.exports = {
   devtool: process.env.NODE_ENV === 'development' ? 'source-map' : false,
   context: path.resolve(__dirname, 'src'),
   mode: process.env.NODE_ENV,
-  entry: './index.js',
+  entry: './index.ts',
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.ts'],
   },
   output: {
     filename: 'bundle.js',
@@ -21,6 +21,11 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
