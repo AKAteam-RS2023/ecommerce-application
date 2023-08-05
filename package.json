@@ -7,7 +7,10 @@
     "build": "webpack --node-env=production",
     "start": "webpack serve --node-env=development --open",
     "prepare": "husky install",
-    "test": "jest"
+    "test": "jest",
+    "eslint": "lint",
+    "format": "format",
+    "eslint:fix": "lint --fix --color"
   },
   "repository": {
     "type": "git",

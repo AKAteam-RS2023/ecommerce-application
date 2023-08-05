@@ -1,1 +1,1 @@
-npx eslint "src"
+npx eslint %* "src"
