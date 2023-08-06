@@ -19,7 +19,7 @@ Explore an extensive collection of products, each accompanied by detailed descri
 
 ## Technology stack
 
-Our application is a SPA and written in pure TypeScript without any frameworks. We use Eslint linter, Prettier code formatter, Webpack bundler and Husky package to imrove development experience. We use Jest as a testing framework.
+Our application is a SPA and written in pure TypeScript without any frameworks. We use Eslint linter with the Airbnb base rules, Prettier code formatter, Webpack bundler and Husky package to imrove development experience. We use Jest as a testing framework.
 
 We chose CommerceTools to power our online store. Commercetools is a cloud-based headless commerce platform that provides APIs to power e-commerce sales and similar functions for various online businesses.
 
@@ -99,3 +99,43 @@ npm run format
 ```
 npm run eslint:fix
 ```
+# Ecommerce Application - Local Setup and Run Guide
+
+This guide provides detailed instructions for setting up and running the Ecommerce Application project locally on your machine. Make sure you have Node.js and npm installed before proceeding.
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/en/) (LTS version) and npm (Node Package Manager) installed on your machine.
+
+## Clone the Repository
+
+To get started, clone the project repository from GitHub using the following command:
+
+```bash
+git clone https://github.com/AKAteam-RS2023/ecommerce-application.git
+```
+## Install Dependencies
+
+Navigate to the project directory and install the required dependencies by running:
+```
+cd ecommerce-application
+npm install
+```
+
+## Husky Pre-Commit Hook
+
+This project uses Husky to ensure code quality by running checks before committing changes. The pre-commit hook is configured to enforce linting before each commit. The hook will run automatically when you attempt to commit changes.
+
+---
+Now you have successfully setup the Ecommerce Application locally.
+
+---
+Thank you for choosing our ecommerce application. We look forward to seeing your success as you create extraordinary digital commerce experiences for your customers.
+
+Happy selling and happy coding! 🛍🚀
+
+## The AKAteam 
+- [Alina Tsydzik](https://github.com/AlinaTsydzik)
+- [Alena Shkadzinskaya](https://github.com/alenzija)
+- [Katya Shakuryna](https://github.com/ShEP-JS)
+
