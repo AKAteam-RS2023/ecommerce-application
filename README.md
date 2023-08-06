@@ -139,3 +139,5 @@ Happy selling and happy coding! 🛍🚀
 - [Alena Shkadzinskaya](https://github.com/alenzija)
 - [Katya Shakuryna](https://github.com/ShEP-JS)
 
+Mentored by [Boris Krasko](https://github.com/boriskrasko) 💪
+
