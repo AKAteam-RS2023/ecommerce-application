@@ -8,9 +8,9 @@
     "start": "webpack serve --node-env=development --open",
     "prepare": "husky install",
     "test": "jest",
-    "eslint": "lint",
-    "format": "format",
-    "eslint:fix": "lint --fix --color"
+    "eslint": "npx eslint src",
+    "format": "npx prettier src/**/*.ts --write",
+    "eslint:fix": "npx prettier src/**/*.ts --write --fix --color"
   },
   "repository": {
     "type": "git",
