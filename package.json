@@ -10,7 +10,7 @@
     "test": "jest",
     "eslint": "npx eslint src",
     "format": "npx prettier src/**/*.ts --write",
-    "eslint:fix": "npx prettier src/**/*.ts --write --fix --color"
+    "eslint:fix": "npx eslint src --fix --color"
   },
   "repository": {
     "type": "git",
