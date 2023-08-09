@@ -30,11 +30,38 @@ export default class Login {
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
+    this.initPassword();
     this.initEnter();
   }
 
   private initEnter(): void {
     this.enter.textContent = 'Enter';
+  }
+
+  private initEmail(): void {
+    this.password.addEventListener('blur', () => {
+      try {
+        checkEmail(this.password.value);
+      } catch (e) {
+        if (!(e instanceof Error)) {
+          return;
+        }
+        console.log(e.message);
+      }
+    });
+  }
+
+  private initPassword(): void {
+    this.password.addEventListener('blur', () => {
+      try {
+        checkPassword(this.password.value);
+      } catch (e) {
+        if (!(e instanceof Error)) {
+          return;
+        }
+        console.log(e.message);
+      }
+    });
   }
 
   private toggleVisiblePassword = (): void => {
