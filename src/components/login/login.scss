@@ -1,0 +1,40 @@
+.login {
+  width: 300px;
+
+  &__password,
+  &__email {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+
+    &--input {
+      display: block;
+    }
+
+    &--label {
+      display: block;
+      cursor: pointer;
+    }
+
+    &--button {
+      position: absolute;
+      right: 5px;
+      cursor: pointer;
+
+      img {
+        display: flex;
+        width: 20px;
+        align-items: center;
+      }
+
+    }
+
+  }
+
+  &__submit {
+    transform: translateX(125px);
+    cursor: pointer;
+  }
+
+}

@@ -1,7 +1,11 @@
+import Login from '../login';
+
 import './app.scss';
 
 export default class App {
-  public static start(): void {
-    console.log('start app');
+  private login = new Login();
+
+  public start(): void {
+    document.body.append(this.login.render());
   }
 }

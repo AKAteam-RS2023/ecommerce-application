@@ -1,3 +1,5 @@
 import App from './components/app';
 
-App.start();
+const app = new App();
+
+app.start();
