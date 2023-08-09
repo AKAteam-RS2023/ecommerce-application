@@ -1,11 +1,11 @@
-import Login from '../login';
+import Login from '../components/login';
 
 import './app.scss';
 
 export default class App {
   private login = new Login();
 
-  public start(): void {
+  public init(): void {
     document.body.append(this.login.render());
   }
 }

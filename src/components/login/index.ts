@@ -1,5 +1,7 @@
 import createElement from '../../dom-helper/create-element';
 
+import { checkEmail, checkPassword } from '../../form-validation';
+
 import hidePassword from '../../assets/image/hide-password.png';
 import visiblePassword from '../../assets/image/visible-password.png';
 
