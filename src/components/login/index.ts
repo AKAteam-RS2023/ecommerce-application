@@ -10,6 +10,7 @@ export default class Login {
     class: 'login__email--input',
     type: 'text',
     id: 'email',
+    placeholder: 'user@example.com',
   });
 
   private password = createElement<HTMLInputElement>('input', {
