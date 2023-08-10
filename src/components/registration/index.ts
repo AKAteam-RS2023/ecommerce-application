@@ -11,6 +11,10 @@ import validateEmail from './validation/validate-email';
 import validatePassword from './validation/validate-password';
 import validateName from './validation/validate-name';
 import validateBirthdate from './validation/validate-birthdate';
+import validateStreet from './validation/validate-street';
+import { CountriesList } from './country.data';
+import validateCountry from './validation/validate-country';
+import { validatePostcode } from './validation/validate-postcode';
 
 class Registration {
   private email = createElement<HTMLInputElement>('input', {
@@ -150,12 +154,47 @@ class Registration {
     validateBirthdate,
   );
 
+  private streetValidator: ElementValidator = new ElementValidator(
+    this.street,
+    this.streetError,
+    validateStreet,
+  );
+
+  private cityValidator: ElementValidator = new ElementValidator(
+    this.city,
+    this.cityError,
+    validateName,
+  );
+
+  private countryValidator: ElementValidator = new ElementValidator(
+    this.country,
+    this.countryError,
+    validateCountry,
+  );
+
+  private postcodeValidator: ElementValidator = new ElementValidator(
+    this.postcode,
+    this.postcodeError,
+    validatePostcode,
+  );
+
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
     this.initEnter();
+    this.initPostCode();
     this.initAddress();
   }
+
+  private initPostCode(): void {
+    this.postcode.addEventListener('input', this.onPostCode);
+  }
+
+  private onPostCode = (): void => {
+    if (this.postcode.value.length === 2) {
+      this.postcode.value += '-';
+    }
+  };
 
   private initEnter(): void {
     this.enter.textContent = 'Register';
@@ -168,6 +207,10 @@ class Registration {
     this.firstnameValidator.validate();
     this.lastnameValidator.validate();
     this.birthdateValidator.validate();
+    this.streetValidator.validate();
+    this.cityValidator.validate();
+    this.countryValidator.validate();
+    this.postcodeValidator.validate();
   };
 
   private toggleVisiblePassword = (): void => {
@@ -203,7 +246,13 @@ class Registration {
 
   public render(): HTMLElement {
     const container = createElement('div', { class: 'registration' });
+
+    const countriesId = 'countries-list';
+    const countries = new CountriesList(countriesId);
+    this.country.setAttribute('list', countriesId);
+
     container.append(
+      countries.render(),
       this.renderInput('Email address', this.email),
       this.emailError,
       this.renderInput('Password', this.password),
