@@ -229,11 +229,11 @@ class Registration {
     this.passwordBtn.append(buttonImage);
   };
 
-  private renderInput(type: string, input: HTMLInputElement): HTMLElement {
-    const className = type.toLocaleLowerCase().replace(' ', '_');
-    const wrapper = createElement('div', { class: `registration__${className}` });
+  private renderInput(type: string, input: HTMLInputElement, inputError: HTMLElement): HTMLElement {
+    const className = input.className.replace('--input', '');
+    const wrapper = createElement('div', { class: `${className}` });
     const label = createElement('label', {
-      class: `registration__${className}--label`,
+      class: `${className}--label`,
       for: input.id,
     });
     label.textContent = type;
@@ -241,6 +241,7 @@ class Registration {
     if (className === 'password') {
       wrapper.append(this.passwordBtn);
     }
+    wrapper.append(inputError);
     return wrapper;
   }
 
@@ -253,25 +254,15 @@ class Registration {
 
     container.append(
       countries.render(),
-      this.renderInput('Email address', this.email),
-      this.emailError,
-      this.renderInput('Password', this.password),
-      this.passwordError,
-      this.renderInput('First name', this.firstname),
-      this.firstnameError,
-      this.renderInput('Last name', this.lastname),
-      this.lastnameError,
-      this.renderInput('Birth date', this.birthdate),
-      this.birthdateError,
-      this.address,
-      this.renderInput('Country', this.country),
-      this.countryError,
-      this.renderInput('Post code', this.postcode),
-      this.postcodeError,
-      this.renderInput('City', this.city),
-      this.cityError,
-      this.renderInput('Street', this.street),
-      this.streetError,
+      this.renderInput('Email address', this.email, this.emailError),
+      this.renderInput('Password', this.password, this.passwordError),
+      this.renderInput('First name', this.firstname, this.firstnameError),
+      this.renderInput('Last name', this.lastname, this.lastnameError),
+      this.renderInput('Birth date', this.birthdate, this.birthdateError),
+      this.renderInput('Country', this.country, this.countryError),
+      this.renderInput('Post code', this.postcode, this.postcodeError),
+      this.renderInput('City', this.city, this.cityError),
+      this.renderInput('Street', this.street, this.streetError),
       this.enter,
     );
     return container;

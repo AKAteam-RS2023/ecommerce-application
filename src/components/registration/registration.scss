@@ -1,3 +1,81 @@
+@import '../../styles/constants/';
+
+.registration {
+  width: 300px;
+  margin: 0 auto;
+
+  &__password,
+  &__email,
+  &__firstname,
+  &__lastname,
+  &__birthdate,
+  &__country,
+  &__city,
+  &__street,
+  &__postcode {
+    display: flex;
+    position: relative;
+    margin-bottom: 25px;
+    justify-content: space-between;
+    align-items: center;
+
+    &--input {
+      display: block;
+      padding: 5px;
+      border: 2px solid $grey-xl;
+      border-radius: 5px;
+    }
+
+    &--label {
+      display: block;
+      cursor: pointer;
+    }
+
+    &--button {
+      position: absolute;
+      right: 5px;
+      cursor: pointer;
+
+      img {
+        display: flex;
+        width: 20px;
+        align-items: center;
+      }
+
+    }
+
+  }
+
+  &__submit {
+    width: 100px;
+    transform: translateX(80px);
+    padding: 7px;
+    border: 2px solid $primary ;
+    background-color: transparent;
+    color: $primary;
+    cursor: pointer;
+  }
+
+  &__error {
+    position: absolute;
+    z-index: 3;
+    top: 32px;
+    padding: 3px;
+    background-color: $primary;
+    color: $light-xl;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50px;
+      top: -12px;
+      z-index: 2;
+      border: 5px solid transparent;
+      border-bottom: 8px solid $primary;
+    }
+  }
+
+}
 .registration__error {
   display: none;
   &--active {
