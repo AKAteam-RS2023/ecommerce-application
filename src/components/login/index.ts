@@ -1,4 +1,5 @@
 import createElement from '../../dom-helper/create-element';
+import ShowError from '../../dom-helper/show-error';
 
 import { checkEmail, checkPassword } from '../../form-validation';
 
@@ -27,9 +28,12 @@ export default class Login {
 
   private enter = createElement('button', { class: 'login__submit' });
 
+  private errorMessage = new ShowError('login__error');
+
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
+    this.initEmail();
     this.initPassword();
     this.initEnter();
   }
@@ -39,28 +43,36 @@ export default class Login {
   }
 
   private initEmail(): void {
-    this.password.addEventListener('blur', () => {
+    this.email.addEventListener('blur', () => {
+      const { left, top } = this.email.getBoundingClientRect();
       try {
-        checkEmail(this.password.value);
+        checkEmail(this.email.value);
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
-        console.log(e.message);
+        this.errorMessage.show(e.message, { left, top });
       }
+    });
+    this.email.addEventListener('focus', () => {
+      this.errorMessage.hide();
     });
   }
 
   private initPassword(): void {
     this.password.addEventListener('blur', () => {
+      const { left, top } = this.password.getBoundingClientRect();
       try {
         checkPassword(this.password.value);
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
-        console.log(e.message);
+        this.errorMessage.show(e.message, { left, top });
       }
+    });
+    this.password.addEventListener('focus', () => {
+      this.errorMessage.hide();
     });
   }
 

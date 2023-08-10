@@ -5,6 +5,7 @@
   &__email {
     display: flex;
     position: relative;
+    margin-bottom: 20px;
     justify-content: space-between;
     align-items: center;
 
@@ -35,6 +36,11 @@
   &__submit {
     transform: translateX(125px);
     cursor: pointer;
+  }
+
+  &__error {
+    position: absolute;
+    width: inherit;
   }
 
 }
