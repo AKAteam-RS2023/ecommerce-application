@@ -1,0 +1,6 @@
+.registration__error {
+  display: none;
+  &--active {
+    display: block;
+  }
+}
