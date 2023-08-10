@@ -1,6 +1,6 @@
 export default function checkPassword(password: string): void {
   if (password.trim() !== password) {
-    throw Error('Password must not contain leading or trailing whitespace.');
+    throw Error("Password mustn't contain leading or trailing whitespace.");
   }
   if (!/[a-z]+/.test(password)) {
     throw Error('Password must contain at least one lowercase letter');

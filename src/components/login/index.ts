@@ -28,7 +28,9 @@ export default class Login {
 
   private enter = createElement('button', { class: 'login__submit' });
 
-  private errorMessage = new ShowError('login__error');
+  private emailErrorMessage = new ShowError('login__error');
+
+  private passwordErrorMessage = new ShowError('login__error');
 
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
@@ -47,12 +49,12 @@ export default class Login {
       const { left, top } = this.email.getBoundingClientRect();
       try {
         checkEmail(this.email.value);
-        this.errorMessage.hide();
+        this.emailErrorMessage.hide();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
-        this.errorMessage.show(e.message, { left, top });
+        this.emailErrorMessage.show(e.message, { left, top });
       }
     });
   }
@@ -62,12 +64,12 @@ export default class Login {
       const { left, top } = this.password.getBoundingClientRect();
       try {
         checkPassword(this.password.value);
-        this.errorMessage.hide();
+        this.passwordErrorMessage.hide();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
-        this.errorMessage.show(e.message, { left, top });
+        this.passwordErrorMessage.show(e.message, { left, top });
       }
     });
   }

@@ -1,16 +1,21 @@
+@import '../../styles/constants/';
+
 .login {
-  width: 300px;
+  width: 250px;
 
   &__password,
   &__email {
     display: flex;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     justify-content: space-between;
     align-items: center;
 
     &--input {
       display: block;
+      padding: 5px;
+      border: 2px solid $grey-xl;
+      border-radius: 5px;
     }
 
     &--label {
@@ -34,13 +39,31 @@
   }
 
   &__submit {
-    transform: translateX(125px);
+    width: 100px;
+    transform: translateX(80px);
+    padding: 7px;
+    border: 2px solid $primary ;
+    background-color: transparent;
+    color: $primary;
     cursor: pointer;
   }
 
   &__error {
     position: absolute;
-    width: inherit;
+    z-index: 3;
+    padding: 3px;
+    background-color: $primary;
+    color: $light-xl;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50px;
+      top: -12px;
+      z-index: 2;
+      border: 5px solid transparent;
+      border-bottom: 8px solid $primary;
+    }
   }
 
 }

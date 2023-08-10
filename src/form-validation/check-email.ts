@@ -6,12 +6,12 @@ export default function checkEmail(email: string): void {
       && !/^\./.test(email)
     )
   ) {
-    throw Error('Email address must be properly formatted (e.g., user@example.com)');
+    throw Error('Email address must be properly formatted');
   }
   if (email.trim() !== email) {
-    throw Error('Email address must not contain leading or trailing whitespace');
+    throw Error("Email address mustn't contain leading or trailing whitespace");
   }
   if (!/\.[a-z]{2,}$/.test(email)) {
-    throw Error('Email address must contain a domain name (e.g., example.com)');
+    throw Error('Email address must contain a domain');
   }
 }
