@@ -43,36 +43,32 @@ export default class Login {
   }
 
   private initEmail(): void {
-    this.email.addEventListener('blur', () => {
+    this.email.addEventListener('input', () => {
       const { left, top } = this.email.getBoundingClientRect();
       try {
         checkEmail(this.email.value);
+        this.errorMessage.hide();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
         this.errorMessage.show(e.message, { left, top });
       }
-    });
-    this.email.addEventListener('focus', () => {
-      this.errorMessage.hide();
     });
   }
 
   private initPassword(): void {
-    this.password.addEventListener('blur', () => {
+    this.password.addEventListener('input', () => {
       const { left, top } = this.password.getBoundingClientRect();
       try {
         checkPassword(this.password.value);
+        this.errorMessage.hide();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
         this.errorMessage.show(e.message, { left, top });
       }
-    });
-    this.password.addEventListener('focus', () => {
-      this.errorMessage.hide();
     });
   }
 
