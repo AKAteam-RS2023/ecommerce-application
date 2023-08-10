@@ -9,6 +9,8 @@ import './registration.scss';
 import { ElementValidator } from './validation/validate';
 import validateEmail from './validation/validate-email';
 import validatePassword from './validation/validate-password';
+import validateName from './validation/validate-name';
+import validateBirthdate from './validation/validate-birthdate';
 
 class Registration {
   private email = createElement<HTMLInputElement>('input', {
@@ -58,7 +60,7 @@ class Registration {
 
   private birthdate = createElement<HTMLInputElement>('input', {
     class: 'registration__birthdate--input',
-    type: 'text',
+    type: 'date',
     id: 'birthdate',
     placeholder: 'DD-MM-YYYY',
   });
@@ -130,6 +132,24 @@ class Registration {
     validatePassword,
   );
 
+  private firstnameValidator: ElementValidator = new ElementValidator(
+    this.firstname,
+    this.firstnameError,
+    validateName,
+  );
+
+  private lastnameValidator: ElementValidator = new ElementValidator(
+    this.lastname,
+    this.lastnameError,
+    validateName,
+  );
+
+  private birthdateValidator: ElementValidator = new ElementValidator(
+    this.birthdate,
+    this.birthdateError,
+    validateBirthdate,
+  );
+
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
@@ -145,6 +165,9 @@ class Registration {
   private validateInputs = (): void => {
     this.emailValidator.validate();
     this.passwordValidator.validate();
+    this.firstnameValidator.validate();
+    this.lastnameValidator.validate();
+    this.birthdateValidator.validate();
   };
 
   private toggleVisiblePassword = (): void => {
