@@ -1,3 +1,5 @@
+const MIN_LENGTH = 8;
+
 export default function checkPassword(password: string): void {
   if (password.trim() !== password) {
     throw Error("Password mustn't contain leading or trailing whitespace.");
@@ -12,9 +14,9 @@ export default function checkPassword(password: string): void {
     throw Error('Password must contain at least one digit');
   }
   if (!/[!@#$%^&*]+/.test(password)) {
-    throw Error('Password must contain at least one special character');
+    throw Error('Password must contain at least one of this !@#$%^&* characters');
   }
-  if (password.length !== 8) {
-    throw Error('Password must be at least 8 characters long');
+  if (password.length < MIN_LENGTH) {
+    throw Error(`Password must be at least ${MIN_LENGTH} characters long`);
   }
 }
