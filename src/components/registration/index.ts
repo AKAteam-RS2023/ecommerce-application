@@ -20,6 +20,7 @@ import {
   validatePostcodeVilnus,
 } from './validation/validate-postcode';
 import { Country } from './country';
+import { createCustomer } from '../../services/registration';
 
 class Registration {
   private email = createElement<HTMLInputElement>('input', {
@@ -243,6 +244,17 @@ class Registration {
       this.enterError.textContent = 'Please fix errors and try again';
     } else {
       this.enterError.textContent = '';
+
+      console.log('calling API');
+
+      createCustomer({
+        email: this.email.value,
+        firstName: this.firstname.value,
+        lastName: this.lastname.value,
+        password: this.password.value,
+      })
+        .then(console.log)
+        .catch(console.error);
     }
   };
 
