@@ -14,7 +14,12 @@ import validateBirthdate from './validation/validate-birthdate';
 import validateStreet from './validation/validate-street';
 import { CountriesList } from './country.data';
 import validateCountry from './validation/validate-country';
-import { validatePostcode } from './validation/validate-postcode';
+import {
+  validatePostcodeLithuania,
+  validatePostcodePoland,
+  validatePostcodeVilnus,
+} from './validation/validate-postcode';
+import { Country } from './country';
 
 class Registration {
   private email = createElement<HTMLInputElement>('input', {
@@ -95,7 +100,7 @@ class Registration {
     class: 'registration__postcode--input',
     type: 'text',
     id: 'postcode',
-    placeholder: 'XX-XXX',
+    maxlength: '6',
   });
 
   private postcodeError = createElement<HTMLElement>('div', {
@@ -123,6 +128,10 @@ class Registration {
   });
 
   private enter = createElement('button', { class: 'registration__submit' });
+
+  private enterError = createElement<HTMLElement>('div', {
+    class: 'registration__enter--error',
+  });
 
   private emailValidator: ElementValidator = new ElementValidator(
     this.email,
@@ -172,10 +181,28 @@ class Registration {
     validateCountry,
   );
 
+  private getPostCodeValidation = (postcode: string): void => {
+    if (this.country.value === '') {
+      throw new Error('Please select country');
+    }
+
+    if (this.country.value.toLowerCase() === Country.Poland.toLowerCase()) {
+      validatePostcodePoland(postcode);
+    } else if (this.country.value.toLowerCase() === Country.Lithuania.toLowerCase()) {
+      if (this.city.value.toLowerCase() === 'vilnus') {
+        validatePostcodeVilnus(postcode);
+      } else {
+        validatePostcodeLithuania(postcode);
+      }
+    } else {
+      throw new Error('Please select valid country');
+    }
+  };
+
   private postcodeValidator: ElementValidator = new ElementValidator(
     this.postcode,
     this.postcodeError,
-    validatePostcode,
+    this.getPostCodeValidation,
   );
 
   constructor() {
@@ -191,7 +218,7 @@ class Registration {
   }
 
   private onPostCode = (): void => {
-    if (this.postcode.value.length === 2) {
+    if (this.country.value === Country.Poland && this.postcode.value.length === 2) {
       this.postcode.value += '-';
     }
   };
@@ -202,15 +229,21 @@ class Registration {
   }
 
   private validateInputs = (): void => {
-    this.emailValidator.validate();
-    this.passwordValidator.validate();
-    this.firstnameValidator.validate();
-    this.lastnameValidator.validate();
-    this.birthdateValidator.validate();
-    this.streetValidator.validate();
-    this.cityValidator.validate();
-    this.countryValidator.validate();
-    this.postcodeValidator.validate();
+    const validResults: boolean[] = [];
+    validResults.push(this.emailValidator.validate());
+    validResults.push(this.passwordValidator.validate());
+    validResults.push(this.firstnameValidator.validate());
+    validResults.push(this.lastnameValidator.validate());
+    validResults.push(this.birthdateValidator.validate());
+    validResults.push(this.streetValidator.validate());
+    validResults.push(this.cityValidator.validate());
+    validResults.push(this.countryValidator.validate());
+    validResults.push(this.postcodeValidator.validate());
+    if (validResults.indexOf(false) !== -1) {
+      this.enterError.textContent = 'Please fix errors and try again';
+    } else {
+      this.enterError.textContent = '';
+    }
   };
 
   private toggleVisiblePassword = (): void => {
@@ -238,7 +271,7 @@ class Registration {
     });
     label.textContent = type;
     wrapper.append(label, input);
-    if (className === 'password') {
+    if (type.toLowerCase() === 'password') {
       wrapper.append(this.passwordBtn);
     }
     wrapper.append(inputError);
@@ -260,10 +293,11 @@ class Registration {
       this.renderInput('Last name', this.lastname, this.lastnameError),
       this.renderInput('Birth date', this.birthdate, this.birthdateError),
       this.renderInput('Country', this.country, this.countryError),
-      this.renderInput('Post code', this.postcode, this.postcodeError),
       this.renderInput('City', this.city, this.cityError),
+      this.renderInput('Post code', this.postcode, this.postcodeError),
       this.renderInput('Street', this.street, this.streetError),
       this.enter,
+      this.enterError,
     );
     return container;
   }

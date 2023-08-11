@@ -17,16 +17,18 @@ export class ElementValidator {
     this.element.addEventListener('focusout', () => this.validate());
   }
 
-  public validate(): void {
+  public validate(): boolean {
     try {
       this.validateFunc(this.element.value);
       this.errorElement.classList.remove('registration__error--active');
+      return true;
     } catch (err) {
       if (!(err instanceof Error)) {
-        return;
+        return false;
       }
       this.errorElement.classList.add('registration__error--active');
       this.errorElement.textContent = err.message;
+      return false;
     }
   }
 }

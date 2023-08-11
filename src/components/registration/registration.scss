@@ -3,7 +3,11 @@
 .registration {
   width: 300px;
   margin: 0 auto;
-
+  &__enter--error {
+    text-align: center;
+    color: red;
+    margin-top: 6px;
+  }
   &__password,
   &__email,
   &__firstname,
