@@ -35,8 +35,8 @@ export default class Login {
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
-    this.initEmail();
-    this.initPassword();
+    Login.initInputElement(this.email, this.emailErrorMessage, checkEmail);
+    Login.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
   }
 
@@ -44,32 +44,21 @@ export default class Login {
     this.enter.textContent = 'Enter';
   }
 
-  private initEmail(): void {
-    this.email.addEventListener('input', () => {
-      const { left, top } = this.email.getBoundingClientRect();
+  private static initInputElement(
+    input: HTMLInputElement,
+    erorrMessage: ShowError,
+    cb: (value: string) => void,
+  ): void {
+    input.addEventListener('input', () => {
+      const { right, bottom } = input.getBoundingClientRect();
       try {
-        checkEmail(this.email.value);
-        this.emailErrorMessage.hide();
+        cb(input.value);
+        erorrMessage.hide();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
-        this.emailErrorMessage.show(e.message, { left, top });
-      }
-    });
-  }
-
-  private initPassword(): void {
-    this.password.addEventListener('input', () => {
-      const { left, top } = this.password.getBoundingClientRect();
-      try {
-        checkPassword(this.password.value);
-        this.passwordErrorMessage.hide();
-      } catch (e) {
-        if (!(e instanceof Error)) {
-          return;
-        }
-        this.passwordErrorMessage.show(e.message, { left, top });
+        erorrMessage.show(e.message, { right, bottom });
       }
     });
   }
