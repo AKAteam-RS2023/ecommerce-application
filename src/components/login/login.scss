@@ -46,6 +46,11 @@
     background-color: transparent;
     color: $primary;
     cursor: pointer;
+
+    &:disabled {
+      background-color: $grey-l;
+      cursor: auto;
+    }
   }
 
   &__error {
@@ -65,6 +70,17 @@
       border: 5px solid transparent;
       border-bottom: 8px solid $primary;
     }
+
   }
 
 }
+
+.authorization__error {
+  position: absolute;
+  z-index: 3;
+  padding: 3px;
+  background-color: $primary;
+  color: $light-xl;
+  font-size: 12px;
+}
+

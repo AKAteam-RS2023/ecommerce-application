@@ -3,6 +3,8 @@ import ShowError from '../../dom-helper/show-error';
 
 import { checkEmail, checkPassword } from '../../form-validation';
 
+import { loginIfExist } from '../../controller/customers';
+
 import hidePassword from '../../assets/image/hide-password.png';
 import visiblePassword from '../../assets/image/visible-password.png';
 
@@ -26,30 +28,51 @@ export default class Login {
 
   private isVisiblePassword = true;
 
-  private enter = createElement('button', { class: 'login__submit' });
+  private enter = createElement<HTMLButtonElement>('button', {
+    class: 'login__submit',
+    disabled: '',
+  });
 
-  private emailErrorMessage = new ShowError('login__error');
+  private emailErrorMessage = new ShowError('login__error', true);
 
-  private passwordErrorMessage = new ShowError('login__error');
+  private passwordErrorMessage = new ShowError('login__error', true);
+
+  private loginErrorMessage = new ShowError('authorization__error', false);
 
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
-    Login.initInputElement(this.email, this.emailErrorMessage, checkEmail);
-    Login.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
+    this.initInputElement(this.email, this.emailErrorMessage, checkEmail);
+    this.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
+  }
+
+  private toggleDisabledEnter(): void {
+    this.enter.disabled = this.emailErrorMessage.isError || this.passwordErrorMessage.isError;
   }
 
   private initEnter(): void {
     this.enter.textContent = 'Enter';
+    this.enter.addEventListener('click', async () => {
+      try {
+        await loginIfExist(this.email.value, this.password.value);
+      } catch (e) {
+        if (!(e instanceof Error)) {
+          return;
+        }
+        const { right, bottom } = this.enter.getBoundingClientRect();
+        this.loginErrorMessage.show(e.message, { right, bottom });
+      }
+    });
   }
 
-  private static initInputElement(
+  private initInputElement(
     input: HTMLInputElement,
     erorrMessage: ShowError,
     cb: (value: string) => void,
   ): void {
     input.addEventListener('input', () => {
+      this.loginErrorMessage.hide();
       const { right, bottom } = input.getBoundingClientRect();
       try {
         cb(input.value);
@@ -59,6 +82,8 @@ export default class Login {
           return;
         }
         erorrMessage.show(e.message, { right, bottom });
+      } finally {
+        this.toggleDisabledEnter();
       }
     });
   }
