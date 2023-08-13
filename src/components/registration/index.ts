@@ -1,4 +1,9 @@
-import { BaseAddress, ClientResponse, CustomerSignInResult } from '@commercetools/platform-sdk';
+import {
+  BaseAddress,
+  ClientResponse,
+  CustomerSignInResult,
+  ErrorResponse,
+} from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
 
@@ -265,16 +270,27 @@ class Registration {
         addresses: [address],
       })
         .then((resp) => this.handleResponse(resp))
-        .catch(() => {
-          this.enterMessage.textContent = 'Error sending request';
+        .catch((err: ErrorResponse) => {
+          this.handleError(err);
         });
     }
   };
 
-  private handleResponse(resp: ClientResponse<CustomerSignInResult>): void {
+  private handleResponse(resp: ClientResponse<CustomerSignInResult> | ErrorResponse): void {
     if (resp.statusCode === 201) {
       this.enterMessage.textContent = 'Registration has been completed successfully!';
       this.enterMessage.style.color = 'green';
+    } else if ((resp as ErrorResponse) != null) {
+      this.handleError(resp as ErrorResponse);
+    }
+  }
+
+  private handleError(err?: ErrorResponse): void {
+    const duplicateEmailError = 'There is already an existing customer with the provided email.';
+    if (err != null) {
+      if (err.message === duplicateEmailError) {
+        this.enterMessage.textContent = `${duplicateEmailError} Try to login or use another email`;
+      }
     } else {
       this.enterMessage.textContent = 'Something went wrong. Try again';
     }
