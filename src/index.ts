@@ -1,11 +1,31 @@
-import './style.scss';
+import {
+  ApiRoot,
+  ClientResponse,
+  Project,
+  createApiBuilderFromCtpClient,
+} from '@commercetools/platform-sdk';
 
-import svg from './assets/image/rs_school_js.svg';
+import { ctpClient } from './sdk/build-client';
 
-const img = document.createElement('img');
+// Create apiRoot from the imported ClientBuilder and include your Project key
+const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
+  projectKey: 'ecom-app-akateam',
+});
 
-img.src = svg;
+// const getProject = (): Promise<ClientResponse<Project>> => apiRoot
+//   .get()
+//   .execute();
 
-document.body.append(img);
-
-export const sum = (a: number, b: number): number => a + b;
+// Retrieve Project information and output the result to the log
+apiRoot
+  .me()
+  .login()
+  .post({
+    body: {
+      email: 'test@gmail.com',
+      password: 'Gz@c!phdPAbnF5j',
+    },
+  })
+  .execute()
+  .then(console.log)
+  .catch(console.log);
