@@ -1,3 +1,5 @@
-import { loginIfExist } from './controller/customers';
+import App from './app';
 
-loginIfExist('test@gmail.com', '1Gz@c!phdPAbnF5j');
+const app = new App();
+
+app.init();
