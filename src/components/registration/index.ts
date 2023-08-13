@@ -1,4 +1,4 @@
-import { BaseAddress } from '@commercetools/platform-sdk';
+import { BaseAddress, ClientResponse, CustomerSignInResult } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
 
@@ -132,7 +132,7 @@ class Registration {
 
   private enter = createElement('button', { class: 'registration__submit' });
 
-  private enterError = createElement<HTMLElement>('div', {
+  private enterMessage = createElement<HTMLElement>('div', {
     class: 'registration__enter--error',
   });
 
@@ -243,9 +243,9 @@ class Registration {
     validResults.push(this.countryValidator.validate());
     validResults.push(this.postcodeValidator.validate());
     if (validResults.indexOf(false) !== -1) {
-      this.enterError.textContent = 'Please fix errors and try again';
+      this.enterMessage.textContent = 'Please fix errors and try again';
     } else {
-      this.enterError.textContent = '';
+      this.enterMessage.textContent = '';
 
       const dateOfBirth = new Date(this.birthdate.value).toJSON().substring(0, 10);
 
@@ -264,10 +264,21 @@ class Registration {
         dateOfBirth,
         addresses: [address],
       })
-        .then(console.log)
-        .catch(console.error);
+        .then((resp) => this.handleResponse(resp))
+        .catch(() => {
+          this.enterMessage.textContent = 'Error sending request';
+        });
     }
   };
+
+  private handleResponse(resp: ClientResponse<CustomerSignInResult>): void {
+    if (resp.statusCode === 201) {
+      this.enterMessage.textContent = 'Registration has been completed successfully!';
+      this.enterMessage.style.color = 'green';
+    } else {
+      this.enterMessage.textContent = 'Something went wrong. Try again';
+    }
+  }
 
   private toggleVisiblePassword = (): void => {
     this.isVisiblePassword = !this.isVisiblePassword;
@@ -320,7 +331,7 @@ class Registration {
       this.renderInput('Post code', this.postcode, this.postcodeError),
       this.renderInput('Street', this.street, this.streetError),
       this.enter,
-      this.enterError,
+      this.enterMessage,
     );
     return container;
   }
