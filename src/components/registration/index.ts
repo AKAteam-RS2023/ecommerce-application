@@ -1,3 +1,5 @@
+import { BaseAddress } from '@commercetools/platform-sdk';
+
 import createElement from '../../dom-helper/create-element';
 
 import hidePassword from '../../assets/image/hide-password.png';
@@ -245,13 +247,22 @@ class Registration {
     } else {
       this.enterError.textContent = '';
 
-      console.log('calling API');
+      const dateOfBirth = new Date(this.birthdate.value).toJSON().substring(0, 10);
 
+      const countryCode = Country.getCountryCode(this.country.value);
+      const address: BaseAddress = {
+        country: countryCode,
+        streetName: this.street.value,
+        postalCode: this.postcode.value,
+        city: this.city.value,
+      };
       createCustomer({
         email: this.email.value,
         firstName: this.firstname.value,
         lastName: this.lastname.value,
         password: this.password.value,
+        dateOfBirth,
+        addresses: [address],
       })
         .then(console.log)
         .catch(console.error);

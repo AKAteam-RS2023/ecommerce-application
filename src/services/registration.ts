@@ -1,6 +1,4 @@
 import {
-  ApiRoot,
-  Project,
   ClientResponse,
   createApiBuilderFromCtpClient,
   CustomerSignInResult,
@@ -14,7 +12,6 @@ export const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
 });
 
-// Example call to return Project information
 export function createCustomer(
   customer: CustomerDraft,
 ): Promise<ClientResponse<CustomerSignInResult>> {
