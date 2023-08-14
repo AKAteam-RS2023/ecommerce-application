@@ -8,14 +8,17 @@ const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
-  .get()
+  .get({
+    queryArgs: {
+      where: `email="${email}"`,
+    },
+  })
   .execute()
-  .then((customers) => {
-    const customer = customers.body.results.find((element) => element.email === email);
-    if (!customer) {
+  .then((response) => {
+    if (response.body.results.length === 0) {
       throw Error("User doesn't exist with this email");
     }
-    return customer;
+    return response.body.results[0];
   });
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => apiRoot
