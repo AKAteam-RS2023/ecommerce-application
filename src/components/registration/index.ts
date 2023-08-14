@@ -111,7 +111,9 @@ class Registration {
     validateBirthdate,
   );
 
-  private shippingAddress = new Address();
+  private shippingAddress = new Address('Shipping address:');
+
+  private billingAddress = new Address('Billing address:');
 
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
@@ -132,6 +134,7 @@ class Registration {
     validResults.push(this.lastnameValidator.validate());
     validResults.push(this.birthdateValidator.validate());
     validResults.push(this.shippingAddress.validate());
+    validResults.push(this.billingAddress.validate());
 
     if (validResults.indexOf(false) !== -1) {
       this.enterMessage.textContent = 'Please fix errors and try again';
@@ -210,6 +213,7 @@ class Registration {
       renderInput('Last name', this.lastname, this.lastnameError),
       renderInput('Birth date', this.birthdate, this.birthdateError),
       this.shippingAddress.render(),
+      this.billingAddress.render(),
       this.enter,
       this.enterMessage,
     );

@@ -8,6 +8,11 @@
     color: red;
     margin-top: 6px;
   }
+  &__address {
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: $primary;
+  }
   &__password,
   &__email,
   &__firstname,

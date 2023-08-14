@@ -130,8 +130,9 @@ export class Address {
     }
   };
 
-  constructor() {
+  constructor(header: string) {
     this.initPostCode();
+    this.address.textContent = header;
   }
 
   private postcodeValidator: ElementValidator = new ElementValidator(
@@ -143,11 +144,11 @@ export class Address {
   public render(): HTMLElement {
     const container = createElement<HTMLElement>('div');
 
-    this.address.textContent = 'Address';
     const countriesId = 'countries-list';
     this.country.setAttribute('list', countriesId);
 
     container.append(
+      this.address,
       renderInput('Country', this.country, this.countryError),
       renderInput('City', this.city, this.cityError),
       renderInput('Post code', this.postcode, this.postcodeError),
