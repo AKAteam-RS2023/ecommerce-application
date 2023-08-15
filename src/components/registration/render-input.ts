@@ -3,7 +3,7 @@ import createElement from '../../dom-helper/create-element';
 export function renderInput(
   type: string,
   input: HTMLInputElement,
-  inputError: HTMLElement,
+  inputError?: HTMLElement,
   passwordBtn?: HTMLElement,
 ): HTMLElement {
   const className = input.className.replace('--input', '');
@@ -13,10 +13,18 @@ export function renderInput(
     for: input.id,
   });
   label.textContent = type;
-  wrapper.append(label, input);
+  if (input.type === 'checkbox') {
+    wrapper.append(input, label);
+  } else {
+    wrapper.append(label, input);
+  }
+
   if (type.toLowerCase() === 'password' && passwordBtn != null) {
     wrapper.append(passwordBtn);
   }
-  wrapper.append(inputError);
+  if (inputError != null) {
+    wrapper.append(inputError);
+  }
+
   return wrapper;
 }

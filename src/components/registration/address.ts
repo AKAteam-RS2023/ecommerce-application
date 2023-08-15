@@ -13,6 +13,8 @@ import validateStreet from './validation/validate-street';
 import { renderInput } from './render-input';
 
 export class Address {
+  private addr: Address | null = null;
+
   private address = createElement<HTMLElement>('div', {
     class: 'registration__address',
   });
@@ -120,6 +122,29 @@ export class Address {
     return address;
   }
 
+  public disable(): void {
+    this.country.setAttribute('disabled', 'disabled');
+    this.city.setAttribute('disabled', 'disabled');
+    this.postcode.setAttribute('disabled', 'disabled');
+    this.street.setAttribute('disabled', 'disabled');
+  }
+
+  public enable(): void {
+    this.country.removeAttribute('disabled');
+    this.city.removeAttribute('disabled');
+    this.postcode.removeAttribute('disabled');
+    this.street.removeAttribute('disabled');
+  }
+
+  public subscribe(addr: Address): void {
+    this.addr = addr;
+    this.addressChanged();
+  }
+
+  public unsubscribe(): void {
+    this.addr = null;
+  }
+
   private initPostCode(): void {
     this.postcode.addEventListener('input', this.onPostCode);
   }
@@ -133,7 +158,20 @@ export class Address {
   constructor(header: string) {
     this.initPostCode();
     this.address.textContent = header;
+    this.country.addEventListener('focusout', this.addressChanged);
+    this.city.addEventListener('focusout', this.addressChanged);
+    this.postcode.addEventListener('focusout', this.addressChanged);
+    this.street.addEventListener('focusout', this.addressChanged);
   }
+
+  private addressChanged = (): void => {
+    if (this.addr != null) {
+      this.addr.country.value = this.country.value;
+      this.addr.city.value = this.city.value;
+      this.addr.postcode.value = this.postcode.value;
+      this.addr.street.value = this.street.value;
+    }
+  };
 
   private postcodeValidator: ElementValidator = new ElementValidator(
     this.postcode,

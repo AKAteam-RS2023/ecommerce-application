@@ -3,6 +3,9 @@
 .registration {
   width: 300px;
   margin: 0 auto;
+  &__sameaddress {
+    margin-bottom: 15px;
+  }
   &__enter--error {
     text-align: center;
     color: red;

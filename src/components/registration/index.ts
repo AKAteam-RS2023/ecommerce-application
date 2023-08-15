@@ -75,6 +75,12 @@ class Registration {
     class: 'registration__birthdate--error',
   });
 
+  private addressCheckbox = createElement<HTMLInputElement>('input', {
+    class: 'registration__sameaddress',
+    type: 'checkbox',
+    id: 'sameaddress',
+  });
+
   private enter = createElement('button', { class: 'registration__submit' });
 
   private enterMessage = createElement<HTMLElement>('div', {
@@ -119,12 +125,27 @@ class Registration {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
     this.initEnter();
+    this.initAddressCheckbox();
+  }
+
+  private initAddressCheckbox(): void {
+    this.addressCheckbox.addEventListener('change', this.copyAddress);
   }
 
   private initEnter(): void {
     this.enter.textContent = 'Register';
     this.enter.addEventListener('click', this.validateInputs);
   }
+
+  private copyAddress = (): void => {
+    if (this.addressCheckbox.checked) {
+      this.billingAddress.disable();
+      this.shippingAddress.subscribe(this.billingAddress);
+    } else {
+      this.billingAddress.enable();
+      this.shippingAddress.unsubscribe();
+    }
+  };
 
   private validateInputs = (): void => {
     const validResults: boolean[] = [];
@@ -213,6 +234,7 @@ class Registration {
       renderInput('Last name', this.lastname, this.lastnameError),
       renderInput('Birth date', this.birthdate, this.birthdateError),
       this.shippingAddress.render(),
+      renderInput('Set as address for billing and shipping', this.addressCheckbox),
       this.billingAddress.render(),
       this.enter,
       this.enterMessage,
