@@ -164,7 +164,8 @@ class Registration {
 
       const dateOfBirth = new Date(this.birthdate.value).toJSON().substring(0, 10);
 
-      const address = this.shippingAddress.createBaseAddress();
+      const shippingAddress = this.shippingAddress.createBaseAddress();
+      const billingAddress = this.billingAddress.createBaseAddress();
 
       createCustomer({
         email: this.email.value,
@@ -172,7 +173,11 @@ class Registration {
         lastName: this.lastname.value,
         password: this.password.value,
         dateOfBirth,
-        addresses: [address],
+        addresses: [shippingAddress, billingAddress],
+        shippingAddresses: [0],
+        billingAddresses: [1],
+        defaultShippingAddress: 0,
+        defaultBillingAddress: 1,
       })
         .then((resp) => this.handleResponse(resp))
         .catch((err: ErrorResponse) => {

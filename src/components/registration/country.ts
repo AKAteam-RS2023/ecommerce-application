@@ -8,7 +8,6 @@ export class Country {
   private static lithuaniaCode = 'LT';
 
   public static getCountryCode(countryName: string): string {
-    return '12';
     if (countryName.toLowerCase() === Country.Poland.toLowerCase()) {
       return Country.polandCode;
     }
