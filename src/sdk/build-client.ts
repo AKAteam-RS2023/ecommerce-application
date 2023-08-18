@@ -6,29 +6,17 @@ import {
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 
-const projectKey = 'ecom-app-akateam';
-const scopes = [
-  'create_anonymous_token:ecom-app-akateam',
-  'manage_my_business_units:ecom-app-akateam',
-  'view_categories:ecom-app-akateam',
-  'manage_my_profile:ecom-app-akateam',
-  'manage_my_quotes:ecom-app-akateam',
-  'view_published_products:ecom-app-akateam',
-  'manage_my_orders:ecom-app-akateam',
-  'manage_my_quote_requests:ecom-app-akateam',
-  'manage_my_shopping_lists:ecom-app-akateam',
-  'manage_my_payments:ecom-app-akateam',
-  'view_project_settings:ecom-app-akateam',
-  'manage_customers:ecom-app-akateam',
-];
+const scopes = (JSON.parse(process.env.CTP_SCOPES as string) as string[]).map(
+  (item) => `${item}:${process.env.CTP_PROJECT_KEY}`,
+);
 
 // Configure authMiddlewareOptions
 const authMiddlewareOptions: AuthMiddlewareOptions = {
-  host: 'https://auth.europe-west1.gcp.commercetools.com',
-  projectKey,
+  host: process.env.CTP_AUTH_URL as string,
+  projectKey: process.env.CTP_PROJECT_KEY as string,
   credentials: {
-    clientId: 'NWVWlEqXuzVLM9PAI4wLnxf6',
-    clientSecret: 'znMd0VImwSYVMrwGXu4D-PLe9LyM4aI8',
+    clientId: process.env.CTP_CLIENT_ID as string,
+    clientSecret: process.env.CTP_CLIENT_SECRET as string,
   },
   scopes,
   fetch,
@@ -36,7 +24,7 @@ const authMiddlewareOptions: AuthMiddlewareOptions = {
 
 // Configure httpMiddlewareOptions
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
-  host: 'https://api.europe-west1.gcp.commercetools.com',
+  host: process.env.CTP_API_URL as string,
   fetch,
 };
 
