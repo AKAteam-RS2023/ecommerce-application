@@ -138,7 +138,6 @@ export class Address {
     this.postcode.removeAttribute('disabled');
     this.street.removeAttribute('disabled');
     this.enabled = true;
-    this.validate();
   }
 
   public subscribe(addr: Address): void {
