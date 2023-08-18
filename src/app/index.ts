@@ -1,11 +1,9 @@
 import Router from '../components/router/router';
-import { routes } from '../components/router/routes';
 
-export const appRouter = new Router(routes);
 export default class App {
-  private router = appRouter;
+  public static appRouter?: Router;
 
-  public init(): void {
-    console.log(this.router);
+  public static init(): void {
+    App.appRouter = new Router();
   }
 }

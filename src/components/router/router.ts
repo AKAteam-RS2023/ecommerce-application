@@ -1,7 +1,10 @@
-import { IRoute } from '../../types/interfaces/route';
+import { NotFound } from '../view/not-found';
+import { routes } from './routes';
 
 export default class Router {
-  constructor(private routes: IRoute[]) {
+  private notFoundPage?: NotFound;
+
+  constructor() {
     document.addEventListener('DOMContentLoaded', () => {
       this.navigate(null);
     });
@@ -31,24 +34,22 @@ export default class Router {
 
   private urlChangedHandler(requestParams: { resource?: string, path?: string }): void {
     const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/{id}`;
-    const route = this.routes.find((item) => item.path === pathForFind);
+    const route = routes.find((item) => item.path === pathForFind);
 
     if (!route) {
-      this.redirectToNotFoundPage();
+      this.renderToNotFoundPage();
       return;
     }
 
-    console.log(requestParams);
     const component = new route.component();
     document.body.innerHTML = '';
-    document.body.appendChild(component.init());
+    document.body.appendChild(component.render());
     // route.callback(requestParams.resource);
   }
 
-  private redirectToNotFoundPage(): void {
-    const notFoundPage = this.routes.find((item) => item.path === 'not-found');
-    if (notFoundPage) {
-      this.navigate(notFoundPage.path);
-    }
+  private renderToNotFoundPage(): void {
+    this.notFoundPage = new NotFound();
+    document.body.innerHTML = '';
+    document.body.appendChild(this.notFoundPage.render());
   }
 }

@@ -17,8 +17,12 @@ module.exports = {
     clean: true,
   },
   devServer: {
+    open: true,
+    host: 'localhost',
     port: 4200,
-    hot: false,
+    hot: true,
+    static: path.resolve(__dirname, './dist'),
+    historyApiFallback: true,
   },
   module: {
     rules: [
