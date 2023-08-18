@@ -286,14 +286,14 @@ class Registration {
   }
 
   private handleError(err?: ErrorResponse): void {
-    if (err == null || err.statusCode > 500) {
+    if (err == null || err.statusCode >= 500) {
       this.enterMessage.textContent = 'Something went wrong. Try again';
     } else {
       const duplicateEmailError = 'There is already an existing customer with the provided email.';
       if (err.message === duplicateEmailError) {
         this.enterMessage.textContent = `${duplicateEmailError} Try to login or use another email`;
       } else {
-        const validationErrorMessage = 'Something is wrong with your data. Please check it and try again';
+        const validationErrorMessage = 'Validation on the server has failed. Please check your data';
         this.enterMessage.textContent = validationErrorMessage;
       }
     }
