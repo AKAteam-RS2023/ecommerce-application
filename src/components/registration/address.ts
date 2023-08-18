@@ -24,7 +24,6 @@ export class Address {
   private country = createElement<HTMLInputElement>('input', {
     class: 'registration__country--input',
     type: 'text',
-    id: 'country',
   });
 
   private countryError = createElement<HTMLElement>('div', {
@@ -34,7 +33,6 @@ export class Address {
   private postcode = createElement<HTMLInputElement>('input', {
     class: 'registration__postcode--input',
     type: 'text',
-    id: 'postcode',
     maxlength: '6',
   });
 
@@ -45,7 +43,6 @@ export class Address {
   private city = createElement<HTMLInputElement>('input', {
     class: 'registration__city--input',
     type: 'text',
-    id: 'city',
   });
 
   private cityError = createElement<HTMLElement>('div', {
@@ -55,7 +52,6 @@ export class Address {
   private street = createElement<HTMLInputElement>('input', {
     class: 'registration__street--input',
     type: 'text',
-    id: 'street',
   });
 
   private streetError = createElement<HTMLElement>('div', {
@@ -141,7 +137,7 @@ export class Address {
     this.city.removeAttribute('disabled');
     this.postcode.removeAttribute('disabled');
     this.street.removeAttribute('disabled');
-    this.enabled = false;
+    this.enabled = true;
     this.validate();
   }
 
