@@ -15,6 +15,7 @@ export class ElementValidator {
     this.validateFunc = validateFunc;
     this.errorElement.classList.add('registration__error');
     this.element.addEventListener('focusout', () => this.validate());
+    this.element.addEventListener('input', () => this.validate());
   }
 
   public validate(): boolean {
