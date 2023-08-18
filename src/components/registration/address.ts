@@ -15,6 +15,8 @@ import { renderInput } from './render-input';
 export class Address {
   private addr: Address | null = null;
 
+  private enabled: boolean;
+
   private address = createElement<HTMLElement>('div', {
     class: 'registration__address',
   });
@@ -64,18 +66,21 @@ export class Address {
     this.street,
     this.streetError,
     validateStreet,
+    () => this.enabled,
   );
 
   private cityValidator: ElementValidator = new ElementValidator(
     this.city,
     this.cityError,
     validateName,
+    () => this.enabled,
   );
 
   private countryValidator: ElementValidator = new ElementValidator(
     this.country,
     this.countryError,
     validateCountry,
+    () => this.enabled,
   );
 
   private getPostCodeValidation = (postcode: string): void => {
@@ -127,6 +132,8 @@ export class Address {
     this.city.setAttribute('disabled', 'disabled');
     this.postcode.setAttribute('disabled', 'disabled');
     this.street.setAttribute('disabled', 'disabled');
+    this.enabled = false;
+    this.validate();
   }
 
   public enable(): void {
@@ -134,6 +141,8 @@ export class Address {
     this.city.removeAttribute('disabled');
     this.postcode.removeAttribute('disabled');
     this.street.removeAttribute('disabled');
+    this.enabled = false;
+    this.validate();
   }
 
   public subscribe(addr: Address): void {
@@ -156,6 +165,7 @@ export class Address {
   };
 
   constructor(header: string) {
+    this.enabled = true;
     this.initPostCode();
     this.address.textContent = header;
     this.country.addEventListener('focusout', this.addressChanged);
@@ -177,6 +187,7 @@ export class Address {
     this.postcode,
     this.postcodeError,
     this.getPostCodeValidation,
+    () => this.enabled,
   );
 
   public render(): HTMLElement {

@@ -158,35 +158,54 @@ class Registration {
     validResults.push(this.billingAddress.validate());
 
     if (validResults.indexOf(false) !== -1) {
-      this.enterMessage.textContent = 'Please fix errors and try again';
+      this.showError();
     } else {
-      this.enterMessage.textContent = '';
+      this.hideError();
 
-      const dateOfBirth = new Date(this.birthdate.value).toJSON().substring(0, 10);
-
-      const shippingAddress = this.shippingAddress.createBaseAddress();
-      const billingAddress = this.billingAddress.createBaseAddress();
-
-      createCustomer({
-        email: this.email.value,
-        firstName: this.firstname.value,
-        lastName: this.lastname.value,
-        password: this.password.value,
-        dateOfBirth,
-        addresses: [shippingAddress, billingAddress],
-        shippingAddresses: [0],
-        billingAddresses: [1],
-        defaultShippingAddress: 0,
-        defaultBillingAddress: 1,
-      })
-        .then((resp) => this.handleResponse(resp))
-        .catch((err: ErrorResponse) => {
-          this.handleError(err);
-        });
+      this.createCustomer();
     }
   };
 
+  private createCustomer(): void {
+    const dateOfBirth = new Date(this.birthdate.value).toJSON().substring(0, 10);
+
+    const shippingAddress = this.shippingAddress.createBaseAddress();
+    const billingAddress = this.billingAddress.createBaseAddress();
+
+    this.enter.setAttribute('disabled', 'disabled');
+
+    createCustomer({
+      email: this.email.value,
+      firstName: this.firstname.value,
+      lastName: this.lastname.value,
+      password: this.password.value,
+      dateOfBirth,
+      addresses: [shippingAddress, billingAddress],
+      shippingAddresses: [0],
+      billingAddresses: [1],
+      defaultShippingAddress: 0,
+      defaultBillingAddress: 1,
+    })
+      .then((resp) => this.handleResponse(resp))
+      .catch((err: ErrorResponse) => {
+        this.handleError(err);
+      });
+  }
+
+  private enableEnter(): void {
+    this.enter.removeAttribute('disabled');
+  }
+
+  private showError(): void {
+    this.enterMessage.textContent = 'Please fix errors and try again';
+  }
+
+  private hideError(): void {
+    this.enterMessage.textContent = '';
+  }
+
   private handleResponse(resp: ClientResponse<CustomerSignInResult> | ErrorResponse): void {
+    this.enableEnter();
     if (resp.statusCode === 201) {
       this.enterMessage.textContent = 'Registration has been completed successfully!';
       this.enterMessage.style.color = 'green';
@@ -196,6 +215,7 @@ class Registration {
   }
 
   private handleError(err?: ErrorResponse): void {
+    this.enableEnter();
     if (err == null || err.statusCode > 500) {
       this.enterMessage.textContent = 'Something went wrong. Try again';
     } else {
