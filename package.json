@@ -26,6 +26,7 @@
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "css-loader": "^6.8.1",
+    "dotenv-webpack": "^8.0.1",
     "eslint": "^8.46.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
@@ -58,6 +59,7 @@
   },
   "dependencies": {
     "@commercetools/platform-sdk": "^5.0.0",
-    "@commercetools/sdk-client-v2": "^2.2.0"
+    "@commercetools/sdk-client-v2": "^2.2.0",
+    "cross-fetch": "^4.0.0"
   }
 }

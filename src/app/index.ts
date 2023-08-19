@@ -1,11 +1,9 @@
-import './app.scss';
-
-import Registration from '../components/registration';
+import Router from '../components/router/router';
 
 export default class App {
-  private registration = new Registration();
+  public static appRouter?: Router;
 
-  public init(): void {
-    document.body.append(this.registration.render());
+  public static init(): void {
+    App.appRouter = new Router();
   }
 }

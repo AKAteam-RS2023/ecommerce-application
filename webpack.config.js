@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   devtool: process.env.NODE_ENV === 'development' ? 'source-map' : false,
@@ -17,8 +18,12 @@ module.exports = {
     clean: true,
   },
   devServer: {
+    open: true,
+    host: 'localhost',
     port: 4200,
-    hot: false,
+    hot: true,
+    static: path.resolve(__dirname, './dist'),
+    historyApiFallback: true,
   },
   module: {
     rules: [
@@ -47,6 +52,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv(),
     new ESLintPlugin({ extensions: 'ts' }),
     new HtmlWebpackPlugin({ template: './index.html' }),
     new MiniCssExtractPlugin({ filename: './style.css' }), 
