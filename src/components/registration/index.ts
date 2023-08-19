@@ -17,8 +17,9 @@ import { CountriesList } from './country.data';
 import { createCustomer } from '../../services/registration';
 import { Address } from './address';
 import { renderInput } from './render-input';
+import { IPage } from '../../types/interfaces/page';
 
-class Registration {
+class Registration implements IPage {
   private email = createElement<HTMLInputElement>('input', {
     class: 'registration__email--input',
     type: 'text',
