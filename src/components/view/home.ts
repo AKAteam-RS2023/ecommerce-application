@@ -1,6 +1,7 @@
 import App from '../../app';
+import { IPage } from '../../types/interfaces/page';
 
-export class Home {
+export class Home implements IPage {
   public render(): HTMLButtonElement {
     const button = document.createElement('button');
     button.innerText = 'button';

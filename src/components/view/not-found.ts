@@ -1,6 +1,7 @@
 import createElement from '../../dom-helper/create-elements';
+import { IPage } from '../../types/interfaces/page';
 
-export class NotFound {
+export class NotFound implements IPage {
   private containerPage?: HTMLDivElement;
 
   private pageHeader?: HTMLElement;
