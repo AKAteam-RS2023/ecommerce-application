@@ -1,9 +1,9 @@
-import Login from '../components/login';
+import Router from '../components/router/router';
 
 export default class App {
-  private login = new Login();
+  public static appRouter?: Router;
 
-  public init(): void {
-    document.body.append(this.login.render());
+  public static init(): void {
+    App.appRouter = new Router();
   }
 }
