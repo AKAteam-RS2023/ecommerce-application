@@ -19,7 +19,7 @@ export default class Router {
     window.history.pushState(null, '', `/${url}`);
   }
 
-  public navigate(url: unknown | null): void {
+  public navigate = (url: unknown | null): void => {
     if (typeof url === 'string') {
       Router.setHistory(url);
     }
@@ -30,7 +30,7 @@ export default class Router {
     [result.path = '', result.resource = ''] = path;
 
     this.urlChangedHandler(result);
-  }
+  };
 
   private urlChangedHandler(requestParams: { resource?: string, path?: string }): void {
     const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/{id}`;
