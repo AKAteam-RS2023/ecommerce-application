@@ -25,14 +25,14 @@ export default class Router {
     }
     const urlString = window.location.pathname.slice(1);
 
-    const result: { path?: string, resource?: string } = {};
+    const result: { path?: string; resource?: string } = {};
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
 
     this.urlChangedHandler(result);
   };
 
-  private urlChangedHandler(requestParams: { resource?: string, path?: string }): void {
+  private urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
     const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/{id}`;
     const route = routes.find((item) => item.path === pathForFind);
 
