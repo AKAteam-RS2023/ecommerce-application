@@ -1,4 +1,4 @@
-import createElement from '../../dom-helper/create-elements';
+import createElement from '../../dom-helper/create-element';
 import { IPage } from '../../types/interfaces/page';
 
 export class NotFound implements IPage {

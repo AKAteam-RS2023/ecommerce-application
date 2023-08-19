@@ -41,8 +41,8 @@ export default class Router {
       return;
     }
 
-    const component = new route.component();
     document.body.innerHTML = '';
+    const component = new route.component();
     document.body.appendChild(component.render());
     // route.callback(requestParams.resource);
   }
