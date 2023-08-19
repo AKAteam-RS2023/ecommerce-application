@@ -7,7 +7,7 @@ export class Home implements IPage {
     button.innerText = 'button';
     button.addEventListener('click', () => {
       console.log('click', this);
-      App.appRouter?.navigate('jkhvg');
+      App.appRouter?.navigate('login');
     });
     return button;
   }

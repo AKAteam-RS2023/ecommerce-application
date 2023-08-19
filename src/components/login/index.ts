@@ -9,8 +9,9 @@ import hidePassword from '../../assets/image/hide-password.png';
 import visiblePassword from '../../assets/image/visible-password.png';
 
 import './login.scss';
+import { IPage } from '../../types/interfaces/page';
 
-export default class Login {
+export default class Login implements IPage {
   private email = createElement<HTMLInputElement>('input', {
     class: 'login__email--input',
     type: 'text',
