@@ -40,8 +40,6 @@
     "@typescript-eslint/explicit-function-return-type": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/no-non-null-assertion": "error",
-    "no-console": "off",
-    "new-cap": "off",
-    "import/no-cycle": "off"
+    "new-cap": "off"
     }
 }

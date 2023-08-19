@@ -1,14 +1,12 @@
-import App from '../../app';
+import createElement from '../../dom-helper/create-element';
 import { IPage } from '../../types/interfaces/page';
 
 export class Home implements IPage {
-  public render(): HTMLButtonElement {
-    const button = document.createElement('button');
-    button.innerText = 'Login';
-    button.addEventListener('click', () => {
-      console.log('click', this);
-      App.appRouter?.navigate('login');
-    });
-    return button;
+  private linkWrapper?: HTMLDivElement;
+
+  public render(): HTMLDivElement {
+    this.linkWrapper = createElement('div');
+    this.linkWrapper.innerHTML = '<a href="/login">Login</a>';
+    return this.linkWrapper;
   }
 }
