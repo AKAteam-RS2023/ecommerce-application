@@ -2,6 +2,7 @@
 
 .login {
   width: 250px;
+  margin: 10px auto;
 
   &__password,
   &__email {
@@ -16,6 +17,10 @@
       padding: 5px;
       border: 2px solid $grey-xl;
       border-radius: 5px;
+  
+      &.invalid {
+        border: 2px solid $error;
+      }
     }
 
     &--label {
@@ -40,11 +45,12 @@
 
   &__submit {
     width: 100px;
-    transform: translateX(80px);
     padding: 7px;
     border: 2px solid $primary ;
     background-color: transparent;
     color: $primary;
+    font-size: inherit;
+    font-family: inherit;
     cursor: pointer;
 
     &:disabled {
@@ -56,10 +62,12 @@
   &__error {
     position: absolute;
     z-index: 3;
-    padding: 3px;
+    margin-left: 10px;
+    padding: 2px;
     background-color: $primary;
     color: $light-xl;
     font-size: 12px;
+    
 
     &::before {
       content: "";
@@ -73,14 +81,26 @@
 
   }
 
+  &__btns {
+    display: flex;
+    justify-content: space-around;
+  }
+
 }
 
 .authorization__error {
   position: absolute;
   z-index: 3;
-  padding: 3px;
+  padding: 2px;
   background-color: $primary;
   color: $light-xl;
   font-size: 12px;
 }
 
+.button {
+  display: block;
+  padding: 7px;
+  border: 2px solid $primary;
+  background-color: transparent;
+  color: $primary;
+}

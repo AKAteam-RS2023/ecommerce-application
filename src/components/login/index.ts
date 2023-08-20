@@ -34,6 +34,11 @@ export default class Login implements IPage {
     disabled: '',
   });
 
+  private registrationBtn = createElement<HTMLAnchorElement>('a', {
+    class: 'button',
+    href: '/registration',
+  });
+
   private emailErrorMessage = new ShowError('login__error', true);
 
   private passwordErrorMessage = new ShowError('login__error', true);
@@ -46,10 +51,15 @@ export default class Login implements IPage {
     this.initInputElement(this.email, this.emailErrorMessage, checkEmail);
     this.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
+    this.initRegistrationBtn();
   }
 
   private toggleDisabledEnter(): void {
     this.enter.disabled = this.emailErrorMessage.isError || this.passwordErrorMessage.isError;
+  }
+
+  private initRegistrationBtn(): void {
+    this.registrationBtn.textContent = 'Registration';
   }
 
   private initEnter(): void {
@@ -63,7 +73,7 @@ export default class Login implements IPage {
           return;
         }
         const { right, bottom } = this.enter.getBoundingClientRect();
-        this.loginErrorMessage.show(e.message, { right, bottom });
+        this.loginErrorMessage.show(e.message, { right: right + 15, bottom });
       }
     });
   }
@@ -74,6 +84,7 @@ export default class Login implements IPage {
     cb: (value: string) => void,
   ): void {
     input.addEventListener('input', () => {
+      input.classList.remove('invalid');
       this.loginErrorMessage.hide();
       const { right, bottom } = input.getBoundingClientRect();
       try {
@@ -83,6 +94,7 @@ export default class Login implements IPage {
         if (!(e instanceof Error)) {
           return;
         }
+        input.classList.add('invalid');
         erorrMessage.show(e.message, { right, bottom });
       } finally {
         this.toggleDisabledEnter();
@@ -118,12 +130,17 @@ export default class Login implements IPage {
   }
 
   public render(): HTMLElement {
-    const container = createElement('div', { class: 'login' });
-    container.append(
+    const form = createElement<HTMLFormElement>('form', { class: 'login', type: 'submit' });
+    form.addEventListener('submit', (e): void => {
+      e.preventDefault();
+    });
+    const wrapper = createElement('div', { class: 'login__btns' });
+    wrapper.append(this.enter, this.registrationBtn);
+    form.append(
       this.renderInput('email', this.email),
       this.renderInput('password', this.password),
-      this.enter,
+      wrapper,
     );
-    return container;
+    return form;
   }
 }
