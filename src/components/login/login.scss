@@ -56,10 +56,11 @@
   &__error {
     position: absolute;
     z-index: 3;
-    padding: 3px;
+    padding: 2px;
     background-color: $primary;
     color: $light-xl;
     font-size: 12px;
+    
 
     &::before {
       content: "";
@@ -78,7 +79,7 @@
 .authorization__error {
   position: absolute;
   z-index: 3;
-  padding: 3px;
+  padding: 2px;
   background-color: $primary;
   color: $light-xl;
   font-size: 12px;

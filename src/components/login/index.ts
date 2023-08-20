@@ -40,12 +40,24 @@ export default class Login implements IPage {
 
   private loginErrorMessage = new ShowError('authorization__error', false);
 
+  private hasUser = !!localStorage.getItem('userToken');
+
   constructor() {
     this.passwordBtn.addEventListener('click', this.toggleVisiblePassword);
     this.toggleVisiblePassword();
     this.initInputElement(this.email, this.emailErrorMessage, checkEmail);
     this.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
+    document.addEventListener('keyup', (e): void => {
+      if (
+        e.key === 'Enter'
+        && (this.email === document.activeElement || this.password === document.activeElement)
+        && !this.enter.disabled
+      ) {
+        const click = new Event('click');
+        this.enter.dispatchEvent(click);
+      }
+    });
   }
 
   private toggleDisabledEnter(): void {
@@ -57,12 +69,13 @@ export default class Login implements IPage {
     this.enter.addEventListener('click', async () => {
       try {
         await loginIfExist(this.email.value, this.password.value);
+        window.location.href = '/';
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
         const { right, bottom } = this.enter.getBoundingClientRect();
-        this.loginErrorMessage.show(e.message, { right, bottom });
+        this.loginErrorMessage.show(e.message, { right: right + 15, bottom });
       }
     });
   }
