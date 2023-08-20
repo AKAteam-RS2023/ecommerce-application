@@ -1,7 +1,6 @@
 import createElement from '../../dom-helper/create-element';
-import { IPage } from '../../types/interfaces/page';
 
-export class Footer implements IPage {
+export class Footer {
   private footer?: HTMLElement;
 
   private footerWrapper?: HTMLDivElement;

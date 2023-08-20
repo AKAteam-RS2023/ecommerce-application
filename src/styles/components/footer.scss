@@ -17,3 +17,11 @@
     padding-top: 35px;
   }
 }
+
+@media (max-width: $medium) {
+  .footer {
+    &__wrapper {
+      padding: 20px 20px;
+    }
+  }
+}
