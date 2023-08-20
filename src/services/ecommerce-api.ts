@@ -6,15 +6,6 @@ const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
 });
 
-// const apiRootUser = createApiBuilderFromCtpClient(client).withProjectKey({
-//   projectKey: process.env.CTP_PROJECT_KEY as string,
-// });
-
-// apiRootUser.me().get().execute().then(console.log)
-//   .catch(console.log);
-
-// console.log(tokenCache);
-
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
   .get({
