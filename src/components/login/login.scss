@@ -16,6 +16,10 @@
       padding: 5px;
       border: 2px solid $grey-xl;
       border-radius: 5px;
+  
+      &.invalid {
+        border: 2px solid $error;
+      }
     }
 
     &--label {
@@ -56,6 +60,7 @@
   &__error {
     position: absolute;
     z-index: 3;
+    margin-left: 10px;
     padding: 2px;
     background-color: $primary;
     color: $light-xl;

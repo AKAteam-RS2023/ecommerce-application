@@ -48,16 +48,6 @@ export default class Login implements IPage {
     this.initInputElement(this.email, this.emailErrorMessage, checkEmail);
     this.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
-    document.addEventListener('keyup', (e): void => {
-      if (
-        e.key === 'Enter'
-        && (this.email === document.activeElement || this.password === document.activeElement)
-        && !this.enter.disabled
-      ) {
-        const click = new Event('click');
-        this.enter.dispatchEvent(click);
-      }
-    });
   }
 
   private toggleDisabledEnter(): void {
@@ -86,6 +76,7 @@ export default class Login implements IPage {
     cb: (value: string) => void,
   ): void {
     input.addEventListener('input', () => {
+      input.classList.remove('invalid');
       this.loginErrorMessage.hide();
       const { right, bottom } = input.getBoundingClientRect();
       try {
@@ -95,6 +86,7 @@ export default class Login implements IPage {
         if (!(e instanceof Error)) {
           return;
         }
+        input.classList.add('invalid');
         erorrMessage.show(e.message, { right, bottom });
       } finally {
         this.toggleDisabledEnter();
@@ -130,12 +122,15 @@ export default class Login implements IPage {
   }
 
   public render(): HTMLElement {
-    const container = createElement('div', { class: 'login' });
-    container.append(
+    const form = createElement<HTMLFormElement>('form', { class: 'login', type: 'submit' });
+    form.addEventListener('submit', (e): void => {
+      e.preventDefault();
+    });
+    form.append(
       this.renderInput('email', this.email),
       this.renderInput('password', this.password),
       this.enter,
     );
-    return container;
+    return form;
   }
 }

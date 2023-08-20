@@ -30,6 +30,7 @@ export class Home implements IPage {
     logoutLink.innerText = 'Logout';
     logoutLink.onclick = (): void => {
       localStorage.clear();
+      // conf.client = null;
     };
 
     const registrationLink = createElement('a', {
