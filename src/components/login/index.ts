@@ -57,6 +57,7 @@ export default class Login implements IPage {
     this.enter.addEventListener('click', async () => {
       try {
         await loginIfExist(this.email.value, this.password.value);
+        window.location.href = '/';
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
