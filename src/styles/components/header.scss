@@ -1,0 +1,45 @@
+.header {
+  &__wrapper {
+    padding: 40px 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    width: 150px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__logo a{
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: $dark-xl;
+  }
+}
+
+.links__wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 400px;
+
+}
+
+.links__item {
+  color: $dark-l;
+}
+
+@media (max-width: $medium) {
+  .header {
+    &__wrapper {
+      padding: 20px;
+    }
+  }
+
+  .links__wrapper {
+    flex-direction: column;
+  }
+}

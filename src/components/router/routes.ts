@@ -14,7 +14,7 @@ export const routes: IRoute<IPage>[] = [
     component: Login,
   },
   {
-    path: 'register',
+    path: 'registration',
     component: Registration,
   },
 ];

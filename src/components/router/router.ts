@@ -1,8 +1,17 @@
+import { Footer } from '../view/footer';
+import { Header } from '../view/header';
+import { MainSection } from '../view/main';
 import { NotFound } from '../view/not-found';
 import { routes } from './routes';
 
 export default class Router {
   private notFoundPage?: NotFound;
+
+  private main = new MainSection();
+
+  private footer = new Footer();
+
+  private header = new Header();
 
   constructor() {
     document.addEventListener('DOMContentLoaded', () => {
@@ -43,7 +52,9 @@ export default class Router {
 
     document.body.innerHTML = '';
     const component = new route.component();
-    document.body.appendChild(component.render());
+    const mainSection = this.main.render();
+    this.main.mainWrapper?.append(component.render());
+    document.body.append(this.header.render(), mainSection, this.footer.render());
     // route.callback(requestParams.resource);
   }
 
