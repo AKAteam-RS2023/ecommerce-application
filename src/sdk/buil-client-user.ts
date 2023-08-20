@@ -2,7 +2,7 @@ import fetch from 'cross-fetch';
 import {
   ClientBuilder,
   // type AuthMiddlewareOptions, // Required for auth
-  // type HttpMiddlewareOptions,
+  type HttpMiddlewareOptions,
   TokenCache,
 } from '@commercetools/sdk-client-v2';
 
@@ -24,11 +24,11 @@ const scopes = (JSON.parse(process.env.CTP_SCOPES as string) as string[]).map(
 //   fetch,
 // };
 
-// // Configure httpMiddlewareOptions
-// const httpMiddlewareOptions: HttpMiddlewareOptions = {
-//   host: process.env.CTP_API_URL as string,
-//   fetch,
-// };
+// Configure httpMiddlewareOptions
+const httpMiddlewareOptions: HttpMiddlewareOptions = {
+  host: process.env.CTP_API_URL as string,
+  fetch,
+};
 
 type PasswordAuthMiddlewareOptions = {
   host: string;
@@ -47,7 +47,7 @@ type PasswordAuthMiddlewareOptions = {
   fetch?: typeof fetch;
 };
 
-const tokenCache = new UserTokenCache();
+export const tokenCache = new UserTokenCache();
 
 const passwordAuthOptions: PasswordAuthMiddlewareOptions = {
   host: process.env.CTP_AUTH_URL as string,
@@ -68,6 +68,6 @@ const passwordAuthOptions: PasswordAuthMiddlewareOptions = {
 // Export the ClientBuilder
 export const client = new ClientBuilder()
   .withPasswordFlow(passwordAuthOptions)
-  // .withHttpMiddleware(httpMiddlewareOptions)
+  .withHttpMiddleware(httpMiddlewareOptions)
   .withLoggerMiddleware() // Include middleware for logging
   .build();
