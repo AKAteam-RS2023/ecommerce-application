@@ -26,6 +26,9 @@ body {
 }
 
 .main {
-  background: $grey-xl;
+  color: $grey-xl;
   overflow: auto;
+  &__wrapper {
+    padding: 40px 100px;
+  }
 }
