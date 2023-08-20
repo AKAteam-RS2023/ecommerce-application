@@ -1,4 +1,4 @@
-import { client } from './buil-client-user';
+import { createClient } from './buil-client-user';
 import { ctpClient } from './build-client';
 
-export { ctpClient, client };
+export { ctpClient, createClient };
