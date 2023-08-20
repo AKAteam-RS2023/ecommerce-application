@@ -34,7 +34,7 @@ export class Footer {
     });
     this.footerCopyright.innerText = '2023 furino. All rights reverved';
 
-    this.footerLogoLink.innerText = 'Funiro.';
+    this.footerLogoLink.innerText = 'Furniro.';
     this.footerLogo.append(this.footerLogoLink);
     this.footerWrapper.append(this.footerLogo, this.footerCopyright);
     this.footer.append(this.footerWrapper);

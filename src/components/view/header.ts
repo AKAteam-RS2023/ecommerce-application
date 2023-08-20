@@ -44,7 +44,7 @@ export class Header {
       class: 'logo__link',
       href: '/',
     });
-    headerLogoLink.innerText = 'Funiro.';
+    headerLogoLink.innerText = 'Furniro.';
 
     this.headerLogo.append(headerLogoLink);
   }
