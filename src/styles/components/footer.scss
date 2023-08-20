@@ -1,0 +1,19 @@
+.footer {
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 100px 40px;
+  }
+
+  &__logo a{
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: $dark-xl;
+  }
+
+  &__copyright {
+    border-top: 1px solid $grey-l;
+    padding-top: 35px;
+  }
+}

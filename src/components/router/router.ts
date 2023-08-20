@@ -1,8 +1,11 @@
+import { Footer } from '../view/footer';
 import { NotFound } from '../view/not-found';
 import { routes } from './routes';
 
 export default class Router {
   private notFoundPage?: NotFound;
+
+  private footer = new Footer();
 
   constructor() {
     document.addEventListener('DOMContentLoaded', () => {
@@ -43,7 +46,7 @@ export default class Router {
 
     document.body.innerHTML = '';
     const component = new route.component();
-    document.body.appendChild(component.render());
+    document.body.append(component.render(), this.footer.render());
     // route.callback(requestParams.resource);
   }
 
