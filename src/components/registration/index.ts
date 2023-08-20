@@ -84,6 +84,8 @@ class Registration implements IPage {
 
   private enter = createElement('button', { class: 'registration__submit' });
 
+  private loginLink = createElement('div', { class: 'registration__login' });
+
   private enterMessage = createElement<HTMLElement>('div', {
     class: 'registration__enter--error',
   });
@@ -127,6 +129,14 @@ class Registration implements IPage {
     this.toggleVisiblePassword();
     this.initEnter();
     this.initAddressCheckbox();
+    this.initLoginLink();
+  }
+
+  private initLoginLink(): void {
+    this.loginLink.textContent = 'Already have an account? ';
+    const a = createElement('a', { href: '/login' });
+    a.textContent = 'Login';
+    this.loginLink.append(a);
   }
 
   private initAddressCheckbox(): void {
@@ -262,6 +272,7 @@ class Registration implements IPage {
       renderInput('Set as address for billing and shipping', this.addressCheckbox),
       this.billingAddress.render(),
       this.enter,
+      this.loginLink,
       this.enterMessage,
     );
     return container;
