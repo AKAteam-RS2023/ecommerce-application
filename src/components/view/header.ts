@@ -35,7 +35,7 @@ export class Header {
     return this.header;
   }
 
-  private renderLogo(): HTMLElement {
+  private renderLogo(): void {
     this.headerLogo = createElement('div', {
       class: 'header__logo',
     });
@@ -47,10 +47,9 @@ export class Header {
     headerLogoLink.innerText = 'Funiro.';
 
     this.headerLogo.append(headerLogoLink);
-    return this.headerLogo;
   }
 
-  private renderLinks(): HTMLElement {
+  private renderLinks(): void {
     this.linksWrapper = createElement('div', {
       class: 'links__wrapper',
     });
@@ -87,6 +86,5 @@ export class Header {
     if (this.hasUser) {
       this.linksWrapper.append(logoutLink);
     }
-    return this.linksWrapper;
   }
 }
