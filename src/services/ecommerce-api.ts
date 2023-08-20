@@ -1,6 +1,8 @@
 import { Customer, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 
-import { ctpClient, createClient } from '../sdk';
+import { ctpClient } from '../sdk/build-client';
+
+import conf, { initClient } from '../sdk/create-client-user';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -22,8 +24,8 @@ export const getCustomer = async (email: string): Promise<Customer | string> => 
   });
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => {
-  const { client, tokenCache } = createClient(email, password);
-  const apiRootUser = createApiBuilderFromCtpClient(client).withProjectKey({
+  initClient(email, password);
+  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
     projectKey: process.env.CTP_PROJECT_KEY as string,
   });
 
@@ -32,9 +34,12 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     .get()
     .execute()
     .then(() => {
-      localStorage.setItem('userToken', tokenCache.userCaсhe.token);
-      localStorage.setItem('userRefreshToken', tokenCache.userCaсhe.refreshToken || '');
-      localStorage.setItem('userExpirationTime', `${tokenCache.userCaсhe.expirationTime || 0}`);
+      localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
+      localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
+      localStorage.setItem(
+        'userExpirationTime',
+        `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
+      );
       return true;
     })
     .catch(() => false);

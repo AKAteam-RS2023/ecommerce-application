@@ -36,33 +36,44 @@ type PasswordAuthMiddlewareOptions = {
   fetch?: typeof fetch;
 };
 
-export const createClient = (
+const tokenCache = new UserTokenCache();
+
+const conf: {
+  client: Client | null;
+  tokenCache: UserTokenCache;
+} = {
+  client: null,
+  tokenCache,
+};
+
+const initPasswordAuthOptions = (
   email: string,
   password: string,
-): { client: Client; tokenCache: UserTokenCache } => {
-  const tokenCache = new UserTokenCache();
-
-  const passwordAuthOptions: PasswordAuthMiddlewareOptions = {
-    host: process.env.CTP_AUTH_URL as string,
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-    credentials: {
-      clientId: process.env.CTP_CLIENT_ID as string,
-      clientSecret: process.env.CTP_CLIENT_SECRET as string,
-      user: {
-        username: email,
-        password,
-      },
+): PasswordAuthMiddlewareOptions => ({
+  host: process.env.CTP_AUTH_URL as string,
+  projectKey: process.env.CTP_PROJECT_KEY as string,
+  credentials: {
+    clientId: process.env.CTP_CLIENT_ID as string,
+    clientSecret: process.env.CTP_CLIENT_SECRET as string,
+    user: {
+      username: email,
+      password,
     },
-    scopes,
-    fetch,
-    tokenCache,
-  };
-  return {
-    client: new ClientBuilder()
-      .withPasswordFlow(passwordAuthOptions)
-      .withHttpMiddleware(httpMiddlewareOptions)
-      .withLoggerMiddleware() // Include middleware for logging
-      .build(),
-    tokenCache,
-  };
+  },
+  scopes,
+  fetch,
+  tokenCache,
+});
+
+export const initClient = (email: string, password: string): void => {
+  if (conf.client) {
+    return;
+  }
+  conf.client = new ClientBuilder()
+    .withPasswordFlow(initPasswordAuthOptions(email, password))
+    .withHttpMiddleware(httpMiddlewareOptions)
+    .withLoggerMiddleware() // Include middleware for logging
+    .build();
 };
+
+export default conf;
