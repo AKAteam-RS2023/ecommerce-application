@@ -38,6 +38,7 @@ export default class Router {
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
 
+    this.header.toggleActive();
     this.urlChangedHandler(result);
   };
 
