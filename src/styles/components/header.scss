@@ -30,6 +30,10 @@
 
 .links__item {
   color: $dark-l;
+
+  &.active {
+    color: $primary;
+  }
 }
 
 @media (max-width: $medium) {
