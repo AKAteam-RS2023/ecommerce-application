@@ -5,7 +5,13 @@ export default class Router {
 
   private hasUser?: boolean;
 
+  public static instance: Router;
+
   constructor() {
+    if (Router.instance) {
+      throw new Error('Second instance');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       this.navigate(null);
     });
@@ -22,6 +28,7 @@ export default class Router {
       }
     });
     window.addEventListener('popstate', this.navigate);
+    Router.instance = this;
   }
 
   private static setHistory(url: string): void {

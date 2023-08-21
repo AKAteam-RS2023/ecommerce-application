@@ -10,9 +10,11 @@ import visiblePassword from '../../assets/image/visible-password.png';
 
 import './login.scss';
 import { IPage } from '../../types/interfaces/page';
-import App from '../../app';
+import Router from '../router/router';
 
 export default class Login implements IPage {
+  private router = Router.instance;
+
   private email = createElement<HTMLInputElement>('input', {
     class: 'login__email--input',
     type: 'text',
@@ -68,7 +70,7 @@ export default class Login implements IPage {
     this.enter.addEventListener('click', async () => {
       try {
         await loginIfExist(this.email.value, this.password.value);
-        App.appRouter?.navigate('');
+        this.router?.navigate('');
       } catch (e) {
         if (!(e instanceof Error)) {
           return;

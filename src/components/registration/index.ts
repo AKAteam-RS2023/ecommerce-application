@@ -19,9 +19,11 @@ import { Address } from './address';
 import { renderInput } from './render-input';
 import { IPage } from '../../types/interfaces/page';
 import { loginIfExist } from '../../controller/customers';
-import App from '../../app';
+import Router from '../router/router';
 
 class Registration implements IPage {
+  private router = Router.instance;
+
   private email = createElement<HTMLInputElement>('input', {
     class: 'registration__email--input',
     type: 'text',
@@ -235,7 +237,7 @@ class Registration implements IPage {
   private async loginAndRedirect(email: string, password: string): Promise<void> {
     try {
       await loginIfExist(email, password);
-      App.appRouter?.navigate('');
+      this.router?.navigate('');
     } catch (e) {
       if (!(e instanceof Error)) {
         return;
