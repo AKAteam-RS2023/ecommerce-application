@@ -30,6 +30,15 @@
 
 .links__item {
   color: $dark-l;
+
+  &.active {
+    color: $primary;
+    cursor: default;
+  }
+
+  &:hover:not(.active) {
+    color: $grey-xl;
+  }
 }
 
 @media (max-width: $medium) {
