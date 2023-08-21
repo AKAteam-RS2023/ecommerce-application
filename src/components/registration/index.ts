@@ -18,6 +18,7 @@ import { createCustomer } from '../../services/registration';
 import { Address } from './address';
 import { renderInput } from './render-input';
 import { IPage } from '../../types/interfaces/page';
+import { loginIfExist } from '../../controller/customers';
 
 class Registration implements IPage {
   private email = createElement<HTMLInputElement>('input', {
@@ -197,7 +198,7 @@ class Registration implements IPage {
       defaultShippingAddress: 0,
       defaultBillingAddress: 1,
     })
-      .then((resp) => this.handleResponse(resp))
+      .then((resp) => this.handleResponse(resp, this.email.value, this.password.value))
       .catch((err: ErrorResponse) => {
         this.handleError(err);
       });
@@ -215,19 +216,36 @@ class Registration implements IPage {
     this.enterMessage.textContent = '';
   }
 
-  private handleResponse(resp: ClientResponse<CustomerSignInResult> | ErrorResponse): void {
+  private handleResponse(
+    resp: ClientResponse<CustomerSignInResult> | ErrorResponse,
+    email: string,
+    password: string,
+  ): void {
     this.enableEnter();
     if (resp.statusCode === 201) {
       this.enterMessage.textContent = 'Registration has been completed successfully!';
       this.enterMessage.style.color = 'green';
+      this.loginAndRedirect(email, password);
     } else if ((resp as ErrorResponse) != null) {
       this.handleError(resp as ErrorResponse);
     }
   }
 
+  private async loginAndRedirect(email: string, password: string): Promise<void> {
+    try {
+      await loginIfExist(email, password);
+      window.location.href = '/';
+    } catch (e) {
+      if (!(e instanceof Error)) {
+        return;
+      }
+      this.showServerError();
+    }
+  }
+
   private handleError(err?: ErrorResponse): void {
     if (err == null || err.statusCode >= 500) {
-      this.enterMessage.textContent = 'Something went wrong. Try again';
+      this.showServerError();
     } else {
       const duplicateEmailError = 'There is already an existing customer with the provided email.';
       if (err.message === duplicateEmailError) {
@@ -237,6 +255,11 @@ class Registration implements IPage {
         this.enterMessage.textContent = validationErrorMessage;
       }
     }
+  }
+
+  private showServerError(): void {
+    this.enterMessage.style.color = 'red';
+    this.enterMessage.textContent = 'Something went wrong. Try again';
   }
 
   private toggleVisiblePassword = (): void => {
