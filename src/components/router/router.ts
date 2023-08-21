@@ -29,7 +29,6 @@ export default class Router {
   }
 
   public navigate = (url: unknown | null): void => {
-    this.header.toggleActive();
     if (typeof url === 'string') {
       Router.setHistory(url);
     }
@@ -39,6 +38,7 @@ export default class Router {
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
 
+    this.header.toggleActive();
     this.urlChangedHandler(result);
   };
 
