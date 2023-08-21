@@ -1,27 +1,34 @@
-import { Footer } from '../view/footer';
-import { Header } from '../view/header';
-import { MainSection } from '../view/main';
-import { NotFound } from '../view/not-found';
-import { routes } from './routes';
+import UrlHandler from './url-changed-handler';
 
 export default class Router {
-  private notFoundPage?: NotFound;
+  private urlHandler = new UrlHandler();
 
-  private main = new MainSection();
+  private hasUser?: boolean;
 
-  private footer = new Footer();
-
-  private header = new Header();
+  public static instance: Router;
 
   constructor() {
+    if (Router.instance) {
+      throw new Error('Second instance');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       this.navigate(null);
     });
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target instanceof HTMLAnchorElement) {
+        e.preventDefault();
+        let url = target.href.split('/').pop();
+        if (!url) {
+          url = '';
+        }
+        Router.setHistory(url);
+        this.navigate(null);
+      }
+    });
     window.addEventListener('popstate', this.navigate);
-  }
-
-  private disable(): void {
-    window.removeEventListener('popstate', this.navigate);
+    Router.instance = this;
   }
 
   private static setHistory(url: string): void {
@@ -38,30 +45,12 @@ export default class Router {
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
 
-    this.header.toggleActive();
-    this.urlChangedHandler(result);
-  };
-
-  private urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
-    const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/{id}`;
-    const route = routes.find((item) => item.path === pathForFind);
-
-    if (!route) {
-      this.renderToNotFoundPage();
-      return;
+    this.hasUser = !!localStorage.getItem('userToken');
+    if ((result.path === 'login' || result.path === 'registration') && this.hasUser) {
+      result.path = '';
+      this.navigate(result.path);
     }
 
-    document.body.innerHTML = '';
-    const component = new route.component();
-    const mainSection = this.main.render();
-    this.main.mainWrapper?.append(component.render());
-    document.body.append(this.header.render(), mainSection, this.footer.render());
-    // route.callback(requestParams.resource);
-  }
-
-  private renderToNotFoundPage(): void {
-    this.notFoundPage = new NotFound();
-    document.body.innerHTML = '';
-    document.body.appendChild(this.notFoundPage.render());
-  }
+    this.urlHandler.urlChangedHandler(result);
+  };
 }

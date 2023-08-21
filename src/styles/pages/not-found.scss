@@ -1,3 +1,5 @@
+@import '../../styles/constants/';
+
 .not-found-img {
   display: block;
   margin: 0 auto;
@@ -6,14 +8,32 @@
 
 .not-found {
   margin: 0 auto;
+  padding: 0 100px;
 }
 
 .not-found h1 {
-  font-size: 32px;
+  font-size: 3.2rem;
+  line-height: 4.5rem;
+  padding: 40px 0;
   text-align: center;
 }
 
 .not-found p {
-  font-size: 24px;
+  font-size: 2.4rem;
+  line-height: 4.5rem;
   text-align: center;
+}
+
+@media (max-width: $medium) {
+  .not-found {
+    padding: 0 20px;
+  }
+  .not-found h1 {
+    font-size: 2.4rem;
+    line-height: 3.2rem;
+  }
+  .not-found p {
+    font-size: 2.0rem;
+    line-height: 3.2rem;
+  }
 }
