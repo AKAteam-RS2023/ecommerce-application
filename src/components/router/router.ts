@@ -13,15 +13,25 @@ export default class Router {
 
   private header = new Header();
 
+  private hasUser = !!localStorage.getItem('userToken');
+
   constructor() {
     document.addEventListener('DOMContentLoaded', () => {
       this.navigate(null);
     });
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target instanceof HTMLAnchorElement) {
+        e.preventDefault();
+        let url = target.href.split('/').pop();
+        if (!url) {
+          url = '';
+        }
+        Router.setHistory(url);
+        this.navigate(null);
+      }
+    });
     window.addEventListener('popstate', this.navigate);
-  }
-
-  private disable(): void {
-    window.removeEventListener('popstate', this.navigate);
   }
 
   private static setHistory(url: string): void {
@@ -37,6 +47,11 @@ export default class Router {
     const result: { path?: string; resource?: string } = {};
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
+
+    if ((result.path === 'login' || result.path === 'registration') && this.hasUser) {
+      result.path = '';
+      window.location.href = '/';
+    }
 
     this.urlChangedHandler(result);
   };
