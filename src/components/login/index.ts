@@ -34,10 +34,7 @@ export default class Login implements IPage {
     disabled: '',
   });
 
-  private registrationBtn = createElement<HTMLAnchorElement>('a', {
-    class: 'button',
-    href: '/registration',
-  });
+  private registrationLink = createElement('div', { class: 'login__link' });
 
   private emailErrorMessage = new ShowError('login__error', true);
 
@@ -51,15 +48,18 @@ export default class Login implements IPage {
     this.initInputElement(this.email, this.emailErrorMessage, checkEmail);
     this.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
-    this.initRegistrationBtn();
+    this.initRegistrationLink();
   }
 
   private toggleDisabledEnter(): void {
     this.enter.disabled = this.emailErrorMessage.isError || this.passwordErrorMessage.isError;
   }
 
-  private initRegistrationBtn(): void {
-    this.registrationBtn.textContent = 'Registration';
+  private initRegistrationLink(): void {
+    this.registrationLink.textContent = 'Have not had an account yet? Go to ';
+    const link = createElement<HTMLAnchorElement>('a', { href: '/registration' });
+    link.textContent = 'registration';
+    this.registrationLink.append(link);
   }
 
   private initEnter(): void {
@@ -134,8 +134,8 @@ export default class Login implements IPage {
     form.addEventListener('submit', (e): void => {
       e.preventDefault();
     });
-    const wrapper = createElement('div', { class: 'login__btns' });
-    wrapper.append(this.enter, this.registrationBtn);
+    const wrapper = createElement('div', { class: 'login__wrapper' });
+    wrapper.append(this.enter, this.registrationLink);
     form.append(
       this.renderInput('email', this.email),
       this.renderInput('password', this.password),
