@@ -6,7 +6,7 @@ import {
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 
-const scopes = (JSON.parse(process.env.CTP_SCOPES as string) as string[]).map(
+const scopes = (JSON.parse(process.env.CTP_SCOPES || '[]') as string[]).map(
   (item) => `${item}:${process.env.CTP_PROJECT_KEY}`,
 );
 
