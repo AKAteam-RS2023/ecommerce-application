@@ -12,15 +12,16 @@ export default class ShowError {
     this.container = createElement('div', { class: classNames });
     this.container.style.display = 'none';
     this.isError = required;
-    document.body.append(this.container);
   }
 
-  public show(message: string, { right, bottom }: Record<string, number>): void {
+  public render(): HTMLElement {
+    return this.container;
+  }
+
+  public show(message: string): void {
     this.isError = true;
     this.container.textContent = message;
     this.container.style.display = 'block';
-    this.container.style.right = `calc(100vw - ${right}px)`;
-    this.container.style.top = `${bottom + 1}px`;
   }
 
   public hide(): void {

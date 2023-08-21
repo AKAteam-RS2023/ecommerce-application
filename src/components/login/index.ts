@@ -72,8 +72,7 @@ export default class Login implements IPage {
         if (!(e instanceof Error)) {
           return;
         }
-        const { right, bottom } = this.enter.getBoundingClientRect();
-        this.loginErrorMessage.show(e.message, { right: right + 15, bottom });
+        this.loginErrorMessage.show(e.message);
       }
     });
   }
@@ -86,7 +85,6 @@ export default class Login implements IPage {
     input.addEventListener('input', () => {
       input.classList.remove('invalid');
       this.loginErrorMessage.hide();
-      const { right, bottom } = input.getBoundingClientRect();
       try {
         cb(input.value);
         erorrMessage.hide();
@@ -95,7 +93,7 @@ export default class Login implements IPage {
           return;
         }
         input.classList.add('invalid');
-        erorrMessage.show(e.message, { right, bottom });
+        erorrMessage.show(e.message);
       } finally {
         this.toggleDisabledEnter();
       }
@@ -118,11 +116,11 @@ export default class Login implements IPage {
     this.passwordBtn.append(buttonImage);
   };
 
-  private renderInput(type: string, input: HTMLInputElement): HTMLElement {
+  private renderInput(type: string, input: HTMLInputElement, error: HTMLElement): HTMLElement {
     const wrapper = createElement('div', { class: `login__${type}` });
     const label = createElement('label', { class: `login__${type}--label`, for: input.id });
     label.textContent = type;
-    wrapper.append(label, input);
+    wrapper.append(label, input, error);
     if (type === 'password') {
       wrapper.append(this.passwordBtn);
     }
@@ -135,10 +133,10 @@ export default class Login implements IPage {
       e.preventDefault();
     });
     const wrapper = createElement('div', { class: 'login__wrapper' });
-    wrapper.append(this.enter, this.registrationLink);
+    wrapper.append(this.enter, this.registrationLink, this.loginErrorMessage.render());
     form.append(
-      this.renderInput('email', this.email),
-      this.renderInput('password', this.password),
+      this.renderInput('email', this.email, this.emailErrorMessage.render()),
+      this.renderInput('password', this.password, this.passwordErrorMessage.render()),
       wrapper,
     );
     return form;

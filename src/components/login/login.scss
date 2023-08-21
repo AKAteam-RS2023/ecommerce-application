@@ -62,7 +62,10 @@
 
   &__error {
     position: absolute;
+    right: 0;
+    top: 35px;
     z-index: 3;
+    width: max-content;
     margin-left: 10px;
     padding: 2px;
     background-color: $primary;
@@ -87,6 +90,7 @@
 
   &__wrapper {
     display: flex;
+    position: relative;
     flex-direction: column;
     align-items: center;
     gap: 25px;
@@ -96,6 +100,7 @@
 
 .authorization__error {
   position: absolute;
+  top: 40px;
   z-index: 3;
   padding: 2px;
   background-color: $primary;
