@@ -50,8 +50,6 @@ export default class Router {
       result.path = '';
       this.navigate(result.path);
     }
-    
-    this.header.toggleActive();
 
     this.urlHandler.urlChangedHandler(result);
   };

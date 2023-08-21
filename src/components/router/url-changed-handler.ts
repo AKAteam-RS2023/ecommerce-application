@@ -25,6 +25,7 @@ export default class UrlHandler {
     document.body.innerHTML = '';
     this.header = new Header();
     this.footer = new Footer();
+    this.header.toggleActive();
     const component = new route.component();
     const mainSection = this.main.render();
     this.main.mainWrapper?.append(component.render());

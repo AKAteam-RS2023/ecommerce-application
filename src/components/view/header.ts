@@ -91,10 +91,7 @@ export class Header {
     this.linksWrapper = createElement('div', {
       class: 'links__wrapper',
     });
-    this.homeLink = createElement('a', {
-      class: 'links__item link--home',
-      href: '/',
-    });
+
     this.homeLink.innerText = 'Home';
 
     this.loginLink.innerText = 'Login';
