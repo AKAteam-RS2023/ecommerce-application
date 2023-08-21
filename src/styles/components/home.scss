@@ -1,0 +1,11 @@
+.home-links__wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-links__item {
+  display: block;
+  width: 160px;
+  color: $dark-l;
+  padding: 10px 0;
+}
