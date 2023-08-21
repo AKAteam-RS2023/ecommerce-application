@@ -59,8 +59,8 @@ export default class Router {
   }
 
   private renderToNotFoundPage(): void {
-    this.notFoundPage = new NotFound();
     document.body.innerHTML = '';
-    document.body.appendChild(this.notFoundPage.render());
+    this.notFoundPage = new NotFound();
+    document.body.append(this.header.render(), this.notFoundPage.render(), this.footer.render());
   }
 }
