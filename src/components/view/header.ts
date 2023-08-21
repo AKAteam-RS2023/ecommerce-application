@@ -104,6 +104,11 @@ export class Header {
     logoutLink.onclick = (): void => {
       localStorage.clear();
       conf.client = null;
+      conf.tokenCache.set({
+        token: '',
+        expirationTime: 0,
+        refreshToken: '',
+      });
     };
 
     this.registrationLink.innerText = 'Registration';

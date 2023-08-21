@@ -42,5 +42,8 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
       );
       return true;
     })
-    .catch(() => false);
+    .catch(() => {
+      conf.client = null;
+      return false;
+    });
 };
