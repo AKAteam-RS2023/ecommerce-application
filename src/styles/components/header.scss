@@ -33,6 +33,11 @@
 
   &.active {
     color: $primary;
+    cursor: default;
+  }
+
+  &:hover:not(.active) {
+    color: $grey-xl;
   }
 }
 
