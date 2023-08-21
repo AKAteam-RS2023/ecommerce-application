@@ -34,6 +34,8 @@ export default class Login implements IPage {
     disabled: '',
   });
 
+  private registrationLink = createElement('div', { class: 'login__link' });
+
   private emailErrorMessage = new ShowError('login__error', true);
 
   private passwordErrorMessage = new ShowError('login__error', true);
@@ -46,10 +48,18 @@ export default class Login implements IPage {
     this.initInputElement(this.email, this.emailErrorMessage, checkEmail);
     this.initInputElement(this.password, this.passwordErrorMessage, checkPassword);
     this.initEnter();
+    this.initRegistrationLink();
   }
 
   private toggleDisabledEnter(): void {
     this.enter.disabled = this.emailErrorMessage.isError || this.passwordErrorMessage.isError;
+  }
+
+  private initRegistrationLink(): void {
+    this.registrationLink.textContent = 'Have not had an account yet? Go to ';
+    const link = createElement<HTMLAnchorElement>('a', { href: '/registration' });
+    link.textContent = 'registration';
+    this.registrationLink.append(link);
   }
 
   private initEnter(): void {
@@ -57,12 +67,12 @@ export default class Login implements IPage {
     this.enter.addEventListener('click', async () => {
       try {
         await loginIfExist(this.email.value, this.password.value);
+        window.location.href = '/';
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
-        const { right, bottom } = this.enter.getBoundingClientRect();
-        this.loginErrorMessage.show(e.message, { right, bottom });
+        this.loginErrorMessage.show(e.message);
       }
     });
   }
@@ -73,8 +83,8 @@ export default class Login implements IPage {
     cb: (value: string) => void,
   ): void {
     input.addEventListener('input', () => {
+      input.classList.remove('invalid');
       this.loginErrorMessage.hide();
-      const { right, bottom } = input.getBoundingClientRect();
       try {
         cb(input.value);
         erorrMessage.hide();
@@ -82,7 +92,8 @@ export default class Login implements IPage {
         if (!(e instanceof Error)) {
           return;
         }
-        erorrMessage.show(e.message, { right, bottom });
+        input.classList.add('invalid');
+        erorrMessage.show(e.message);
       } finally {
         this.toggleDisabledEnter();
       }
@@ -105,11 +116,11 @@ export default class Login implements IPage {
     this.passwordBtn.append(buttonImage);
   };
 
-  private renderInput(type: string, input: HTMLInputElement): HTMLElement {
+  private renderInput(type: string, input: HTMLInputElement, error: HTMLElement): HTMLElement {
     const wrapper = createElement('div', { class: `login__${type}` });
     const label = createElement('label', { class: `login__${type}--label`, for: input.id });
     label.textContent = type;
-    wrapper.append(label, input);
+    wrapper.append(label, input, error);
     if (type === 'password') {
       wrapper.append(this.passwordBtn);
     }
@@ -117,12 +128,17 @@ export default class Login implements IPage {
   }
 
   public render(): HTMLElement {
-    const container = createElement('div', { class: 'login' });
-    container.append(
-      this.renderInput('email', this.email),
-      this.renderInput('password', this.password),
-      this.enter,
+    const form = createElement<HTMLFormElement>('form', { class: 'login', type: 'submit' });
+    form.addEventListener('submit', (e): void => {
+      e.preventDefault();
+    });
+    const wrapper = createElement('div', { class: 'login__wrapper' });
+    wrapper.append(this.enter, this.registrationLink, this.loginErrorMessage.render());
+    form.append(
+      this.renderInput('email', this.email, this.emailErrorMessage.render()),
+      this.renderInput('password', this.password, this.passwordErrorMessage.render()),
+      wrapper,
     );
-    return container;
+    return form;
   }
 }

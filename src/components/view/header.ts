@@ -1,4 +1,5 @@
 import createElement from '../../dom-helper/create-element';
+import conf from '../../sdk/create-client-user';
 
 export class Header {
   private hasUser = !!localStorage.getItem('userToken');
@@ -62,7 +63,7 @@ export class Header {
 
     const loginLink = createElement('a', {
       class: 'links__item link--login',
-      href: this.hasUser ? '/' : '/login',
+      href: '/login',
     });
     loginLink.innerText = 'Login';
 
@@ -73,7 +74,7 @@ export class Header {
     logoutLink.innerText = 'Logout';
     logoutLink.onclick = (): void => {
       localStorage.clear();
-      // conf.client = null;
+      conf.client = null;
     };
 
     const registrationLink = createElement('a', {
@@ -82,9 +83,11 @@ export class Header {
     });
     registrationLink.innerText = 'Registration';
 
-    this.linksWrapper.append(homeLink, registrationLink, loginLink);
+    this.linksWrapper.append(homeLink, registrationLink);
     if (this.hasUser) {
       this.linksWrapper.append(logoutLink);
+    } else {
+      this.linksWrapper.append(loginLink);
     }
   }
 }
