@@ -4,8 +4,6 @@ import { IPage } from '../../types/interfaces/page';
 export class Home implements IPage {
   private linksWrapper?: HTMLDivElement;
 
-  // private hasUser = !!localStorage.getItem('userToken');
-
   public render(): HTMLDivElement {
     this.linksWrapper = createElement('div', {
       class: 'home-links__wrapper',
@@ -20,7 +18,6 @@ export class Home implements IPage {
     const loginLink = createElement('a', {
       class: 'home-links__item link--login',
       href: '/login',
-    //  href: this.hasUser ? '/' : '/login',
     });
     loginLink.innerText = 'Login';
 

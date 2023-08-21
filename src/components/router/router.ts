@@ -1,19 +1,9 @@
-import { Footer } from '../view/footer';
-import { Header } from '../view/header';
-import { MainSection } from '../view/main';
-import { NotFound } from '../view/not-found';
-import { routes } from './routes';
+import UrlHandler from './url-changed-handler';
 
 export default class Router {
-  private notFoundPage?: NotFound;
+  private urlHandler = new UrlHandler();
 
-  private main = new MainSection();
-
-  private footer = new Footer();
-
-  private header = new Header();
-
-  private hasUser = !!localStorage.getItem('userToken');
+  private hasUser?: boolean;
 
   constructor() {
     document.addEventListener('DOMContentLoaded', () => {
@@ -48,34 +38,12 @@ export default class Router {
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
 
+    this.hasUser = !!localStorage.getItem('userToken');
     if ((result.path === 'login' || result.path === 'registration') && this.hasUser) {
       result.path = '';
-      window.location.href = '/';
+      this.navigate(result.path);
     }
 
-    this.urlChangedHandler(result);
+    this.urlHandler.urlChangedHandler(result);
   };
-
-  private urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
-    const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/{id}`;
-    const route = routes.find((item) => item.path === pathForFind);
-
-    if (!route) {
-      this.renderToNotFoundPage();
-      return;
-    }
-
-    document.body.innerHTML = '';
-    const component = new route.component();
-    const mainSection = this.main.render();
-    this.main.mainWrapper?.append(component.render());
-    document.body.append(this.header.render(), mainSection, this.footer.render());
-    // route.callback(requestParams.resource);
-  }
-
-  private renderToNotFoundPage(): void {
-    document.body.innerHTML = '';
-    this.notFoundPage = new NotFound();
-    document.body.append(this.header.render(), this.notFoundPage.render(), this.footer.render());
-  }
 }

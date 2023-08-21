@@ -54,7 +54,6 @@ export class Header {
     this.linksWrapper = createElement('div', {
       class: 'links__wrapper',
     });
-
     const homeLink = createElement('a', {
       class: 'links__item link--home',
       href: '/',
