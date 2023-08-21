@@ -1,5 +1,9 @@
 export default function validateBirthdate(birthdate: string): void {
   const date = new Date(birthdate);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error('please enter valid date');
+  }
+
   const curDate = new Date();
   const minAllowedAge = 13;
   const maxAllowedAge = 120;
