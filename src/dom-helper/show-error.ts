@@ -7,7 +7,7 @@ export default class ShowError {
 
   constructor(
     public classNames: string,
-    required: boolean,
+    public required: boolean,
   ) {
     this.container = createElement('div', { class: classNames });
     this.container.style.display = 'none';
