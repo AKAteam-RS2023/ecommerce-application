@@ -1,4 +1,8 @@
-import { Customer, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import {
+  Customer,
+  ClientResponse,
+  createApiBuilderFromCtpClient,
+} from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
 
@@ -46,4 +50,14 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
       conf.client = null;
       return false;
     });
+};
+
+export const getProfile = async (): Promise<ClientResponse<Customer>> => {
+  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+  });
+
+  const res = await apiRootUser.me().get().execute();
+
+  return res;
 };

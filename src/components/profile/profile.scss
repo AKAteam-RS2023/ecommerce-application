@@ -1,0 +1,41 @@
+@import '../../styles/constants/';
+
+.profile {
+  width: 300px;
+  margin: 0 auto;
+  &__title {
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: $primary;
+  }
+  &__firstname,
+  &__lastname,
+  &__birthdate,
+  &__country,
+  &__city,
+  &__street,
+  &__postcode {
+    display: flex;
+    position: relative;
+    margin-bottom: 35px;
+    justify-content: space-between;
+    align-items: center;
+
+    &--input {
+      display: block;
+      padding: 5px;
+      border: 2px solid white;
+      border-radius: 5px;
+      width: 60%;
+    }
+
+    &--label {
+      display: block;
+      cursor: pointer;
+    }
+  }
+}
+
+input[type=date]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
