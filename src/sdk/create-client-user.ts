@@ -38,11 +38,28 @@ type PasswordAuthMiddlewareOptions = {
 
 const tokenCache = new UserTokenCache();
 
+type ExistingTokenMiddlewareOptions = {
+  force?: boolean;
+};
+
+const authorization = `Bearer ${tokenCache.userCaсhe.token}`;
+
+const options: ExistingTokenMiddlewareOptions = {
+  force: true,
+};
+
 const conf: {
   client: Client | null;
   tokenCache: UserTokenCache;
 } = {
-  client: null,
+  client:
+    tokenCache.userCaсhe.token === ''
+      ? null
+      : new ClientBuilder()
+        .withExistingTokenFlow(authorization, options)
+        .withHttpMiddleware(httpMiddlewareOptions)
+        .withLoggerMiddleware()
+        .build(),
   tokenCache,
 };
 
