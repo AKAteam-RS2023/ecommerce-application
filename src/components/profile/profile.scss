@@ -1,7 +1,7 @@
 @import '../../styles/constants/';
 
 .profile {
-  width: 300px;
+  width: 350px;
   margin: 0 auto;
   &__title {
     font-weight: bold;
@@ -38,4 +38,19 @@
 
 input[type=date]::-webkit-calendar-picker-indicator {
   opacity: 0;
+}
+
+.address-list__table {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-collapse: collapse;
+  font-size: 12px;
+  td {
+    color: black;
+    padding-right: 8px;
+  }
+  .address-cell-label__default {
+    margin-left: 5px;
+    color: $primary;
+  }
 }

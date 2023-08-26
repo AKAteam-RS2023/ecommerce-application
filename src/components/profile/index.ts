@@ -30,14 +30,26 @@ export class Profile implements IPage {
     placeholder: 'DD-MM-YYYY',
   });
 
-  private addressList = new AddressList();
+  private shippingList = new AddressList('Shipping');
+
+  private billingList = new AddressList('Billing');
 
   private loadProfile = (res: ClientResponse<Customer>): void => {
     this.firstname.value = res?.body?.firstName ?? '';
     this.lastname.value = res?.body?.lastName ?? '';
     this.birthdate.value = res?.body?.dateOfBirth ?? '';
 
-    this.addressList.loadAddresses(res.body.addresses);
+    this.shippingList.loadAddresses(
+      res.body.addresses,
+      res.body.shippingAddressIds ?? [],
+      res.body.defaultShippingAddressId ?? '',
+    );
+
+    this.billingList.loadAddresses(
+      res.body.addresses,
+      res.body.billingAddressIds ?? [],
+      res.body.defaultBillingAddressId ?? '',
+    );
   };
 
   public render(): HTMLElement {
@@ -45,12 +57,19 @@ export class Profile implements IPage {
     const title = createElement('div', { class: 'profile__title' });
     title.textContent = 'My information';
 
+    const myAddresses = createElement<HTMLDivElement>('div', {
+      class: 'profile__title',
+    });
+    myAddresses.textContent = 'My addresses';
+
     container.append(
       title,
       renderInput('First name', this.firstname),
       renderInput('Last name', this.lastname),
       renderInput('Birth date', this.birthdate),
-      this.addressList.render(),
+      myAddresses,
+      this.shippingList.render(),
+      this.billingList.render(),
     );
 
     getProfile().then((res) => this.loadProfile(res));

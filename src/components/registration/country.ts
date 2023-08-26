@@ -14,4 +14,12 @@ export class Country {
 
     return Country.lithuaniaCode;
   }
+
+  public static getCountryName(code: string): string {
+    if (code.toLowerCase() === Country.polandCode.toLowerCase()) {
+      return Country.Poland;
+    }
+
+    return Country.Lithuania;
+  }
 }
