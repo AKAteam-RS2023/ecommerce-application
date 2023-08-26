@@ -12,6 +12,7 @@ export default class Catalog {
   private init(): void {
     getProducts().then((productsResponse) => {
       if (!Array.isArray(productsResponse)) {
+        this.container.textContent = productsResponse;
         return;
       }
       this.products = productsResponse.map((product) => new Product(product));
