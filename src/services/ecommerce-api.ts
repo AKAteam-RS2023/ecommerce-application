@@ -54,18 +54,20 @@ export const getProducts = async (): Promise<IProduct[] | string> => {
     const res = await apiRoot.products().get().execute();
     return res.body.results.map((item) => ({
       id: item.id,
-      name: item.masterData.current.metaTitle ? item.masterData.current.metaTitle['en-US'] : '',
+      name: item.masterData.current.metaTitle
+        ? item.masterData.current.metaTitle['en-US']
+        : 'No name',
       description: item.masterData.current.description
         ? item.masterData.current.description['en-US']
-        : '',
+        : 'No description',
       imageUrl: item.masterData.current.masterVariant.images
         ? item.masterData.current.masterVariant.images[0].url
-        : '',
+        : '../assets/image/image-not-found.png',
       price: item.masterData.staged.masterVariant.prices
         ? `${item.masterData.staged.masterVariant.prices[0].value.centAmount / 100} ${
           item.masterData.staged.masterVariant.prices[0].value.currencyCode
         }`
-        : '',
+        : 'No price',
     }));
   } catch {
     return 'No products';

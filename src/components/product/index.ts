@@ -15,7 +15,7 @@ export default class Product {
     const img = createElement<HTMLImageElement>('img', {
       class: 'product__img',
       src: this.product.imageUrl,
-      alt: "product's photo",
+      alt: this.product.description,
     });
     const name = createElement('div', {
       class: 'product__title',

@@ -5,7 +5,7 @@ import './catalog.scss';
 import { getProducts } from '../../services/ecommerce-api';
 
 export default class Catalog {
-  private container = createElement('div', { class: 'catalog' });
+  private container = createElement('section', { class: 'catalog' });
 
   private products: Product[] | null = null;
 
