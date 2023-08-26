@@ -3,6 +3,7 @@ import { Customer, createApiBuilderFromCtpClient } from '@commercetools/platform
 import { ctpClient } from '../sdk/build-client';
 
 import conf, { initClient } from '../sdk/create-client-user';
+import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -46,4 +47,27 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
       conf.client = null;
       return false;
     });
+};
+
+export const getProducts = async (): Promise<IProduct[] | string> => {
+  try {
+    const res = await apiRoot.products().get().execute();
+    return res.body.results.map((item) => ({
+      id: item.id,
+      name: item.masterData.current.metaTitle ? item.masterData.current.metaTitle['en-US'] : '',
+      description: item.masterData.current.description
+        ? item.masterData.current.description['en-US']
+        : '',
+      imageUrl: item.masterData.current.masterVariant.images
+        ? item.masterData.current.masterVariant.images[0].url
+        : '',
+      price: item.masterData.staged.masterVariant.prices
+        ? `${item.masterData.staged.masterVariant.prices[0].value.centAmount / 100} ${
+          item.masterData.staged.masterVariant.prices[0].value.currencyCode
+        }`
+        : '',
+    }));
+  } catch {
+    return 'No products';
+  }
 };
