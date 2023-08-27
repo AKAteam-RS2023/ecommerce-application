@@ -66,12 +66,12 @@
     top: 35px;
     z-index: 3;
     width: max-content;
-    margin-left: 10px;
+    max-width: 80vw;
     padding: 2px;
     background-color: $primary;
     color: $light-xl;
     font-size: 12px;
-    
+    line-height: 130%;   
 
     &::before {
       content: "";
