@@ -59,7 +59,14 @@ export const getProducts = async (): Promise<Product[]> => {
   }
 };
 
-export const getProductDisconts = async (): Promise<ProductDiscount[]> => {
-  const res = await apiRoot.productDiscounts().get().execute();
-  return res.body.results;
+export const getProductDiscontById = async (id: string): Promise<ProductDiscount> => {
+  const res = await apiRoot
+    .productDiscounts()
+    .get({
+      queryArgs: {
+        where: `id="${id}"`,
+      },
+    })
+    .execute();
+  return res.body.results[0];
 };
