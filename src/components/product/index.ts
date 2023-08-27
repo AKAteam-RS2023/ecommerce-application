@@ -20,7 +20,7 @@ export default class Product {
     if (!this.product.discount || !this.product.discount.value) {
       return;
     }
-    this.oldPrice = createElement('span');
+    this.oldPrice = createElement('div', { class: 'product__old-price' });
     this.oldPrice.textContent = this.product.discount.value;
   }
 
@@ -66,14 +66,16 @@ export default class Product {
       class: 'product__price',
     });
     price.textContent = this.product.price;
+    const wrapperPrices = createElement('div', { class: 'product__wrapper-prices' });
+    wrapperPrices.append(price);
+    this.initOldPrice();
+    if (this.oldPrice) {
+      wrapperPrices.append(this.oldPrice);
+    }
     const wrapper = createElement('div', {
       class: 'product__wrapper',
     });
-    this.initOldPrice();
-    if (this.oldPrice) {
-      price.append(' ', this.oldPrice);
-    }
-    wrapper.append(name, description, price);
+    wrapper.append(name, description, wrapperPrices);
     this.productElement.append(img, wrapper);
   }
 

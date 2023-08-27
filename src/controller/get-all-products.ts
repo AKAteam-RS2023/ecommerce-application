@@ -34,7 +34,7 @@ const getDiscount = (
   if ('masterVariant' in data) {
     return data.masterVariant.prices && data.masterVariant.prices[0]?.discounted
       ? {
-        id: data.masterVariant.prices[0]?.discounted?.discount.id,
+        id: data.masterVariant.prices[0]?.discounted.discount.id,
         value: `${data.masterVariant.prices[0]?.discounted?.value.centAmount} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`,
       }
       : undefined;

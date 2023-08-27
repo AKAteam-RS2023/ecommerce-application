@@ -1,6 +1,7 @@
 @import '../../styles/constants/';
 
 .product {
+  position: relative;
   width: 285px;
   height: 446px;
   background-color: $light;
@@ -37,5 +38,29 @@
     line-height: 150%;
     font-weight: bold;
     color: $dark;
+  }
+
+  &__wrapper-prices {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__old-price {
+    text-decoration: line-through;
+    color: $grey-m;
+    font-size: 16px;
+  }
+
+  &__discount {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: max-content;
+    padding: 5px;
+    border-radius: 20px;
+    background-color: $red-accents;
+    color: $light-xl;
   }
 }
