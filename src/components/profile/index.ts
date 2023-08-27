@@ -1,7 +1,7 @@
-import { Customer, ClientResponse } from '@commercetools/platform-sdk';
+import { Customer, ClientResponse, CustomerUpdateAction } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
-import { getProfile } from '../../services/ecommerce-api';
+import { getProfile, updateCustomer } from '../../services/ecommerce-api';
 import { IPage } from '../../types/interfaces/page';
 import Router from '../router/router';
 import './profile.scss';
@@ -73,7 +73,37 @@ export class Profile implements IPage {
 
   private billingList = new AddressList('Billing');
 
+  private customer?: { version: number; id: string };
+
+  private saveFirstName = (): void => {
+    this.saveChanges({ action: 'setFirstName', firstName: this.firstname.value });
+  };
+
+  private saveLastName = (): void => {
+    this.saveChanges({ action: 'setLastName', lastName: this.lastname.value });
+  };
+
+  private saveBirthdate = (): void => {
+    this.saveChanges({ action: 'setDateOfBirth', dateOfBirth: this.birthdate.value });
+  };
+
+  private saveChanges(action: CustomerUpdateAction): void {
+    if (!this.customer) {
+      return;
+    }
+
+    updateCustomer(this.customer.id, {
+      version: this.customer.version,
+      actions: [action],
+    }).then((res) => this.loadProfile(res));
+  }
+
   private loadProfile = (res: ClientResponse<Customer>): void => {
+    this.customer = {
+      version: res.body.version,
+      id: res.body.id,
+    };
+
     this.firstname.value = res?.body?.firstName ?? '';
     this.lastname.value = res?.body?.lastName ?? '';
     this.birthdate.value = res?.body?.dateOfBirth ?? '';
@@ -95,24 +125,30 @@ export class Profile implements IPage {
     const container = createElement('div', { class: 'profile' });
     const title = createElement('div', { class: 'profile__title' });
     title.textContent = 'My information';
-
     const myAddresses = createElement<HTMLDivElement>('div', {
       class: 'profile__title title__addresses',
     });
     myAddresses.textContent = 'My addresses';
-
     container.append(
       title,
       renderEditableInput(
         'First name',
         this.firstname,
+        this.saveFirstName,
         this.firstnameError,
         this.firstnameValidator,
       ),
-      renderEditableInput('Last name', this.lastname, this.lastnameError, this.lastnameValidator),
+      renderEditableInput(
+        'Last name',
+        this.lastname,
+        this.saveLastName,
+        this.lastnameError,
+        this.lastnameValidator,
+      ),
       renderEditableInput(
         'Birth date',
         this.birthdate,
+        this.saveBirthdate,
         this.birthdateError,
         this.birthdateValidator,
       ),
@@ -120,9 +156,7 @@ export class Profile implements IPage {
       this.shippingList.render(),
       this.billingList.render(),
     );
-
     getProfile().then((res) => this.loadProfile(res));
-
     return container;
   }
 }

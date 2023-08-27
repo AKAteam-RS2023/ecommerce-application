@@ -6,6 +6,7 @@ interface ListenerOptions {
   okBtn: HTMLElement;
   cancelBtn: HTMLElement;
   validator?: ElementValidator;
+  save: () => void;
 }
 
 class EditListener {
@@ -27,6 +28,7 @@ class EditListener {
       }
       this.originalValue = this.opts.input.value;
       this.stopEdit();
+      this.opts.save();
     }
   };
 
@@ -73,6 +75,7 @@ class EditListener {
 export function renderEditableInput(
   type: string,
   input: HTMLInputElement,
+  save: () => void,
   inputError?: HTMLElement,
   validator?: ElementValidator,
 ): HTMLElement {
@@ -101,6 +104,7 @@ export function renderEditableInput(
     okBtn,
     cancelBtn,
     validator,
+    save,
   });
   if (inputError != null) {
     wrapper.append(inputError);
