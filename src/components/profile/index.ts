@@ -3,10 +3,13 @@ import { Customer, ClientResponse } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import { getProfile } from '../../services/ecommerce-api';
 import { IPage } from '../../types/interfaces/page';
-import { renderInput } from '../registration/render-input';
 import Router from '../router/router';
 import './profile.scss';
 import { AddressList } from './address-list';
+import { ElementValidator } from '../registration/validation/validate';
+import validateBirthdate from '../registration/validation/validate-birthdate';
+import validateName from '../registration/validation/validate-name';
+import { renderEditableInput } from './render-editable-input';
 
 export class Profile implements IPage {
   private router = Router.instance;
@@ -17,10 +20,18 @@ export class Profile implements IPage {
     id: 'firstname',
   });
 
+  private firstnameError = createElement<HTMLElement>('div', {
+    class: 'profile__firstname--error',
+  });
+
   private lastname = createElement<HTMLInputElement>('input', {
     class: 'profile__lastname--input',
     type: 'text',
     id: 'lastname',
+  });
+
+  private lastnameError = createElement<HTMLElement>('div', {
+    class: 'profile__lastname--error',
   });
 
   private birthdate = createElement<HTMLInputElement>('input', {
@@ -29,6 +40,34 @@ export class Profile implements IPage {
     id: 'birthdate',
     placeholder: 'DD-MM-YYYY',
   });
+
+  private birthdateError = createElement<HTMLElement>('div', {
+    class: 'profile__birthdate--error',
+  });
+
+  private firstnameValidator: ElementValidator = new ElementValidator(
+    this.firstname,
+    this.firstnameError,
+    validateName,
+    () => this.firstname.classList.contains('edit'),
+    'profile',
+  );
+
+  private lastnameValidator: ElementValidator = new ElementValidator(
+    this.lastname,
+    this.lastnameError,
+    validateName,
+    () => this.lastname.classList.contains('edit'),
+    'profile',
+  );
+
+  private birthdateValidator: ElementValidator = new ElementValidator(
+    this.birthdate,
+    this.birthdateError,
+    validateBirthdate,
+    () => this.birthdate.classList.contains('edit'),
+    'profile',
+  );
 
   private shippingList = new AddressList('Shipping');
 
@@ -58,15 +97,25 @@ export class Profile implements IPage {
     title.textContent = 'My information';
 
     const myAddresses = createElement<HTMLDivElement>('div', {
-      class: 'profile__title',
+      class: 'profile__title title__addresses',
     });
     myAddresses.textContent = 'My addresses';
 
     container.append(
       title,
-      renderInput('First name', this.firstname),
-      renderInput('Last name', this.lastname),
-      renderInput('Birth date', this.birthdate),
+      renderEditableInput(
+        'First name',
+        this.firstname,
+        this.firstnameError,
+        this.firstnameValidator,
+      ),
+      renderEditableInput('Last name', this.lastname, this.lastnameError, this.lastnameValidator),
+      renderEditableInput(
+        'Birth date',
+        this.birthdate,
+        this.birthdateError,
+        this.birthdateValidator,
+      ),
       myAddresses,
       this.shippingList.render(),
       this.billingList.render(),

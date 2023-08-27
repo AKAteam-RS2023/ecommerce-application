@@ -17,7 +17,7 @@
   &__postcode {
     display: flex;
     position: relative;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
     justify-content: space-between;
     align-items: center;
 
@@ -27,6 +27,10 @@
       border: 2px solid white;
       border-radius: 5px;
       width: 60%;
+      &:hover {
+        background-color: rgba(159, 159, 159, 0.2);
+        
+      }
     }
 
     &--label {
@@ -34,10 +38,55 @@
       cursor: pointer;
     }
   }
+
+  &__error {
+    width: 98%;
+    position: absolute;
+    z-index: 3;
+    top: 36px;
+    padding: 1px;
+    background-color: $primary;
+    color: $light-xl;
+    text-align: center;
+    font-size: 12px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 60px;
+      top: -12px;
+      z-index: 2;
+      border: 5px solid transparent;
+      border-bottom: 8px solid $primary;
+    }
+  }
+}
+
+.title__addresses {
+  margin-top: 60px;
+}
+
+.profile__error {
+  display: none;
+  &--active {
+    display: block;
+  }
 }
 
 input[type=date]::-webkit-calendar-picker-indicator {
   opacity: 0;
+}
+
+.edit-wrapper input[type=date]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+input:hover {
+  cursor: default;
+}
+
+.edit-wrapper input:hover {
+  cursor: text;
 }
 
 .address-list__table {
@@ -53,4 +102,22 @@ input[type=date]::-webkit-calendar-picker-indicator {
     margin-left: 5px;
     color: $primary;
   }
+}
+
+.hidden {
+  color: white;
+}
+
+.edit-btn:hover {
+  cursor: pointer;
+  color: $primary;
+}
+
+input {
+  border: 1px solid white;
+}
+
+.edit-wrapper input {
+  border: 1px solid $primary;
+  outline: none;
 }
