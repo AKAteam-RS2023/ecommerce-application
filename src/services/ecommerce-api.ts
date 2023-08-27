@@ -1,9 +1,8 @@
-import { Customer, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import { Customer, Product, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
 
 import conf, { initClient } from '../sdk/create-client-user';
-import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -35,12 +34,9 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     .get()
     .execute()
     .then(() => {
-      localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
-      localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
-      localStorage.setItem(
-        'userExpirationTime',
-        `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
-      );
+      localStorage.setcur('userToken', conf.tokenCache.userCaсhe.token);
+      localStorage.setcur('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
+      localStorage.setcur('userExpirationTime', `${conf.tokenCache.userCaсhe.expirationTime || 0}`);
       return true;
     })
     .catch(() => {
@@ -49,27 +45,11 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     });
 };
 
-export const getProducts = async (): Promise<IProduct[] | string> => {
+export const getProducts = async (): Promise<Product[]> => {
   try {
     const res = await apiRoot.products().get().execute();
-    return res.body.results.map((item) => ({
-      id: item.id,
-      name: item.masterData.current.metaTitle
-        ? item.masterData.current.metaTitle['en-US']
-        : 'No name',
-      description: item.masterData.current.description
-        ? item.masterData.current.description['en-US']
-        : 'No description',
-      imageUrl: item.masterData.current.masterVariant.images
-        ? item.masterData.current.masterVariant.images[0].url
-        : '../assets/image/image-not-found.png',
-      price: item.masterData.staged.masterVariant.prices
-        ? `${item.masterData.staged.masterVariant.prices[0].value.centAmount / 100} ${
-          item.masterData.staged.masterVariant.prices[0].value.currencyCode
-        }`
-        : 'No price',
-    }));
+    return res.body.results;
   } catch {
-    return 'No products';
+    throw Error('No products');
   }
 };

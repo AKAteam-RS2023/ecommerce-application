@@ -2,7 +2,7 @@ import createElement from '../../dom-helper/create-element';
 import Product from '../product';
 import './catalog.scss';
 
-import { getProducts } from '../../services/ecommerce-api';
+import getAllProducts from '../../controller/get-all-products';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -10,14 +10,14 @@ export default class Catalog {
   private products: Product[] | null = null;
 
   private init(): void {
-    getProducts().then((productsResponse) => {
-      if (!Array.isArray(productsResponse)) {
-        this.container.textContent = productsResponse;
-        return;
-      }
-      this.products = productsResponse.map((product) => new Product(product));
-      this.products?.forEach((product) => this.container.append(product.render()));
-    });
+    getAllProducts()
+      .then((productsResponse) => {
+        this.products = productsResponse.map((product) => new Product(product));
+        this.products?.forEach((product) => this.container.append(product.render()));
+      })
+      .catch((err) => {
+        this.container.textContent = err.message;
+      });
   }
 
   public render(): HTMLElement {
