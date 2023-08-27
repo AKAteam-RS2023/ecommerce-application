@@ -1,4 +1,9 @@
-import { Customer, Product, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import {
+  Customer,
+  Product,
+  ProductDiscount,
+  createApiBuilderFromCtpClient,
+} from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
 
@@ -52,4 +57,9 @@ export const getProducts = async (): Promise<Product[]> => {
   } catch {
     throw Error('No products');
   }
+};
+
+export const getProductDisconts = async (): Promise<ProductDiscount[]> => {
+  const res = await apiRoot.productDiscounts().get().execute();
+  return res.body.results;
 };

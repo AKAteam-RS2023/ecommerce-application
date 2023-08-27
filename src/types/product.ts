@@ -4,4 +4,8 @@ export default interface IProduct {
   description: string;
   price: string;
   imageUrl: string;
+  discount?: {
+    id?: string;
+    value?: string;
+  };
 }

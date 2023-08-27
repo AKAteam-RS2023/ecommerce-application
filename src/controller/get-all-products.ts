@@ -1,5 +1,51 @@
+import { ProductData, ProductVariant } from '@commercetools/platform-sdk';
 import { getProducts } from '../services/ecommerce-api';
 import IProduct from '../types/product';
+
+const getName = (data: ProductData): string => (data.metaTitle ? data.metaTitle['en-US'] : 'No name');
+
+const getDescription = (data: ProductData): string => (data.description ? data.description['en-US'] : 'No description');
+
+const getUrl = (data: ProductData | ProductVariant): string => {
+  if ('masterVariant' in data) {
+    return data.masterVariant.images
+      ? data.masterVariant.images[0].url
+      : '../assets/image/image-not-found.png';
+  }
+  return data.images ? data.images[0].url : '../assets/image/image-not-found.png';
+};
+
+const getPrice = (data: ProductData | ProductVariant): string => {
+  if ('masterVariant' in data) {
+    return data.masterVariant.prices
+      ? `${data.masterVariant.prices[0].value.centAmount / 100} ${
+        data.masterVariant.prices[0].value.currencyCode
+      }`
+      : 'No price';
+  }
+  return data.prices
+    ? `${data.prices[0].value.centAmount / 100} ${data.prices[0].value.currencyCode}`
+    : 'no prices';
+};
+
+const getDiscount = (
+  data: ProductData | ProductVariant,
+): { id?: string; value?: string } | undefined => {
+  if ('masterVariant' in data) {
+    return data.masterVariant.prices && data.masterVariant.prices[0]?.discounted
+      ? {
+        id: data.masterVariant.prices[0]?.discounted?.discount.id,
+        value: `${data.masterVariant.prices[0]?.discounted?.value.centAmount} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`,
+      }
+      : undefined;
+  }
+  return data.prices && data.prices[0]?.discounted
+    ? {
+      id: data.prices[0]?.discounted?.discount.id,
+      value: `${data.prices[0]?.discounted?.value.centAmount} ${data.prices[0]?.discounted?.value.currencyCode}`,
+    }
+    : undefined;
+};
 
 export default async function getAllProducts(): Promise<IProduct[]> {
   const res = await getProducts();
@@ -7,33 +53,21 @@ export default async function getAllProducts(): Promise<IProduct[]> {
   res.forEach((item) => {
     result.push({
       id: item.id,
-      name: item.masterData.current.metaTitle
-        ? item.masterData.current.metaTitle['en-US']
-        : 'No name',
-      description: item.masterData.current.description
-        ? item.masterData.current.description['en-US']
-        : 'No description',
-      imageUrl: item.masterData.current.masterVariant.images
-        ? item.masterData.current.masterVariant.images[0].url
-        : '../assets/image/image-not-found.png',
-      price: item.masterData.staged.masterVariant.prices
-        ? `${item.masterData.staged.masterVariant.prices[0].value.centAmount / 100} ${
-          item.masterData.staged.masterVariant.prices[0].value.currencyCode
-        }`
-        : 'No price',
+      name: getName(item.masterData.current),
+      description: getDescription(item.masterData.current),
+      imageUrl: getUrl(item.masterData.current),
+      price: getPrice(item.masterData.current),
+      discount: getDiscount(item.masterData.current),
     });
     if (item.masterData.current.variants.length > 0) {
       item.masterData.current.variants.forEach((variant) => {
         result.push({
           id: item.id,
-          name: item.masterData.current.metaTitle
-            ? item.masterData.current.metaTitle['en-US']
-            : 'No name',
+          name: getName(item.masterData.current),
           description: variant.key ? variant.key : 'No description',
-          imageUrl: variant.images ? variant.images[0].url : '../assets/image/image-not-found.png',
-          price: variant.prices
-            ? `${variant.prices[0].value.centAmount / 100} ${variant.prices[0].value.currencyCode}`
-            : 'no prices',
+          imageUrl: getUrl(variant),
+          price: getPrice(variant),
+          discount: getDiscount(variant),
         });
       });
     }
