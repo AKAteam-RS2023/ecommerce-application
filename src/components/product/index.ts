@@ -33,7 +33,7 @@ export default class Product {
       const { type } = res.value;
       switch (type) {
         case 'relative': {
-          discount.textContent = `${res.value.permyriad / 100}`;
+          discount.textContent = `${res.value.permyriad / 100}%`;
           break;
         }
         case 'absolute': {

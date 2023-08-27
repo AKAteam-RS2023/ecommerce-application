@@ -32,17 +32,31 @@ const getDiscount = (
   data: ProductData | ProductVariant,
 ): { id?: string; value?: string } | undefined => {
   if ('masterVariant' in data) {
-    return data.masterVariant.prices && data.masterVariant.prices[0]?.discounted
+    if (!data.masterVariant.prices) {
+      return undefined;
+    }
+    const value = data.masterVariant.prices[0]?.discounted?.value.centAmount;
+    return data.masterVariant.prices
+      && data.masterVariant.prices[0]?.discounted
+      && !Number.isNaN(data.masterVariant.prices[0]?.discounted?.value.centAmount)
       ? {
         id: data.masterVariant.prices[0]?.discounted.discount.id,
-        value: `${data.masterVariant.prices[0]?.discounted?.value.centAmount} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`,
+        value: value
+          ? `${value / 100} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`
+          : undefined,
       }
       : undefined;
   }
+  if (!data.prices) {
+    return undefined;
+  }
+  const value = data.prices[0]?.discounted?.value.centAmount;
   return data.prices && data.prices[0]?.discounted
     ? {
       id: data.prices[0]?.discounted?.discount.id,
-      value: `${data.prices[0]?.discounted?.value.centAmount} ${data.prices[0]?.discounted?.value.currencyCode}`,
+      value: value
+        ? `${value / 100} ${data.prices[0]?.discounted?.value.currencyCode}`
+        : undefined,
     }
     : undefined;
 };
