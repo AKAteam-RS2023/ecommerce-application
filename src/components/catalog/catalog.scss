@@ -1,0 +1,29 @@
+@import '../../styles/constants/';
+
+.catalog {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: repeat(4, auto);
+  column-gap: 32px;
+  row-gap: 40px;
+  margin: auto;
+
+  @media screen and (max-width: $x-large){
+    grid-template-columns: repeat(3, auto);
+    column-gap: 30px;
+    row-gap: 35px;
+  }
+
+  @media screen and (max-width: $large){
+    grid-template-columns: repeat(2, auto);
+    column-gap: 25px;
+    row-gap: 30px;
+  }
+
+  @media screen and (max-width: $medium){
+    grid-template-columns: repeat(1, auto);
+    column-gap: 20px;
+    row-gap: 25px;
+  }
+}
