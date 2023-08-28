@@ -3,6 +3,8 @@ import { getProductDiscontById } from '../../services/ecommerce-api';
 
 import IProduct from '../../types/product';
 
+import Router from '../router/router';
+
 import './product-card.scss';
 
 export default class ProductCard {
@@ -12,10 +14,17 @@ export default class ProductCard {
 
   public currencyCode = 'PLN';
 
+  private router = Router.instance;
+
   constructor(public product: IProduct) {
     this.product = product;
     this.initOldPrice();
     this.initDiscount();
+    this.productElement.onclick = (): void => {
+      this.router?.navigate(
+        `catalog/${this.product.id}${this.product.variantId ? `?${this.product.variantId}` : ''}`,
+      );
+    };
   }
 
   private initOldPrice(): void {

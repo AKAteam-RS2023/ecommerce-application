@@ -1,3 +1,4 @@
+import ProductInfo from '../product-info';
 import { Footer } from '../view/footer';
 import { Header } from '../view/header';
 import { MainSection } from '../view/main';
@@ -13,9 +14,17 @@ export default class UrlHandler {
 
   private header?: Header;
 
+  private aboutProductPage?: ProductInfo;
+
   public urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
     const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/{id}`;
     const route = routes.find((item) => item.path === pathForFind);
+
+    if (requestParams.path === 'catalog' && requestParams.resource) {
+      const params = requestParams.resource.split('?');
+      this.renderAboutProductPage(params[0], params[1]);
+      return;
+    }
 
     if (!route) {
       this.renderToNotFoundPage();
@@ -30,6 +39,18 @@ export default class UrlHandler {
     const mainSection = this.main.render();
     this.main.mainWrapper?.append(component.render());
     document.body.append(this.header?.render(), mainSection, this.footer?.render());
+  }
+
+  private renderAboutProductPage(id: string, variantID?: string): void {
+    document.body.innerHTML = '';
+    this.header = new Header();
+    this.footer = new Footer();
+    this.aboutProductPage = new ProductInfo(id, variantID);
+    document.body.append(
+      this.header.render(),
+      this.aboutProductPage.render(),
+      this.footer.render(),
+    );
   }
 
   private renderToNotFoundPage(): void {
