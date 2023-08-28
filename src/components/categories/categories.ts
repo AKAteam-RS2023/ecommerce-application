@@ -11,7 +11,20 @@ export default class Categories {
 
   private init(): void {
     getCategories()
-      .then(() => this.container.append('Categories'))
+      .then((res) => {
+        const categories = res.filter((item) => !item.parent);
+        categories.forEach((item) => {
+          const category = createElement('div', { class: 'categories__item' });
+          category.textContent = item.name['en-US'];
+          const subCategories = res.filter((elem) => elem.parent?.id === item.id);
+          subCategories.forEach((elem) => {
+            const subCategory = createElement('div', { class: 'categories__item--sub' });
+            subCategory.textContent = elem.name['en-US'];
+            category.append(subCategory);
+          });
+          this.container.append(category);
+        });
+      })
       .catch(() => this.container.append('No categories'));
   }
 
