@@ -29,6 +29,7 @@ export class AddressList {
   }
 
   public loadAddresses(addresses: Address[], addressIds: string[], defaultId: string): void {
+    this.table.innerHTML = '';
     for (let i = 0; i < addressIds.length; i += 1) {
       const address = addresses.find((addr) => addr.id === addressIds[i]);
       if (address) {

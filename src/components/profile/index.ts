@@ -1,4 +1,9 @@
-import { Customer, ClientResponse, CustomerUpdateAction } from '@commercetools/platform-sdk';
+import {
+  Customer,
+  ClientResponse,
+  CustomerUpdateAction,
+  ErrorResponse,
+} from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
 import { getProfile, updateCustomer } from '../../services/ecommerce-api';
@@ -44,6 +49,8 @@ export class Profile implements IPage {
   private birthdateError = createElement<HTMLElement>('div', {
     class: 'profile__birthdate--error',
   });
+
+  private saveResult = createElement('div', { class: 'profile__saveresult' });
 
   private firstnameValidator: ElementValidator = new ElementValidator(
     this.firstname,
@@ -95,7 +102,38 @@ export class Profile implements IPage {
     updateCustomer(this.customer.id, {
       version: this.customer.version,
       actions: [action],
-    }).then((res) => this.loadProfile(res));
+    })
+      .then((res) => this.handleResponse(res))
+      .catch((err) => this.handleError(err as ErrorResponse));
+  }
+
+  private handleResponse(resp: ClientResponse<Customer> | ErrorResponse): void {
+    if (resp.statusCode !== 200) {
+      this.handleError(resp as ErrorResponse);
+    } else {
+      this.loadProfile(resp as ClientResponse<Customer>);
+      this.showMessage('✓ Saved successfully', 'profile-success');
+    }
+  }
+
+  private handleError(err?: ErrorResponse): void {
+    const errMessage = `✕ ${err?.message ?? 'Something went wrong. Please try again'}`;
+    this.showMessage(errMessage, 'profile-error');
+    const changedVersionCode1 = 429;
+    const changedVersionCode2 = 409;
+    if (err?.statusCode === changedVersionCode1 || err?.statusCode === changedVersionCode2) {
+      this.reload();
+    }
+  }
+
+  private showMessage(msg: string, cssClass: string): void {
+    this.saveResult.textContent = msg;
+    this.saveResult.classList.add(cssClass);
+    const timeout = cssClass === 'profile-error' ? 5000 : 1500;
+    setTimeout(() => {
+      this.saveResult.textContent = '';
+      this.saveResult.classList.remove(cssClass);
+    }, timeout);
   }
 
   private loadProfile = (res: ClientResponse<Customer>): void => {
@@ -129,34 +167,51 @@ export class Profile implements IPage {
       class: 'profile__title title__addresses',
     });
     myAddresses.textContent = 'My addresses';
-    container.append(
-      title,
-      renderEditableInput(
-        'First name',
-        this.firstname,
-        this.saveFirstName,
-        this.firstnameError,
-        this.firstnameValidator,
-      ),
-      renderEditableInput(
-        'Last name',
-        this.lastname,
-        this.saveLastName,
-        this.lastnameError,
-        this.lastnameValidator,
-      ),
-      renderEditableInput(
-        'Birth date',
-        this.birthdate,
-        this.saveBirthdate,
-        this.birthdateError,
-        this.birthdateValidator,
-      ),
+    const profileWrapper = createElement('div');
+    profileWrapper.append(
+      this.createFirstName(),
+      this.createLastName(),
+      this.createBirthdate(),
       myAddresses,
       this.shippingList.render(),
       this.billingList.render(),
     );
-    getProfile().then((res) => this.loadProfile(res));
+    container.append(title, profileWrapper, this.saveResult);
+    this.reload();
     return container;
+  }
+
+  private reload(): void {
+    getProfile().then((res) => this.loadProfile(res));
+  }
+
+  private createFirstName(): HTMLElement {
+    return renderEditableInput(
+      'First name',
+      this.firstname,
+      this.saveFirstName,
+      this.firstnameError,
+      this.firstnameValidator,
+    );
+  }
+
+  private createLastName(): HTMLElement {
+    return renderEditableInput(
+      'Last name',
+      this.lastname,
+      this.saveLastName,
+      this.lastnameError,
+      this.lastnameValidator,
+    );
+  }
+
+  private createBirthdate(): HTMLElement {
+    return renderEditableInput(
+      'Birth date',
+      this.birthdate,
+      this.saveBirthdate,
+      this.birthdateError,
+      this.birthdateValidator,
+    );
   }
 }
