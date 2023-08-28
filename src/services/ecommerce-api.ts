@@ -72,7 +72,7 @@ export const getProductDiscontById = async (id: string): Promise<ProductDiscount
   return res.body.results[0];
 };
 
-export const getCategories = async (): Promise<Category[]> => {
+export const getAllCategories = async (): Promise<Category[]> => {
   try {
     const res = await apiRoot.categories().get().execute();
     return res.body.results;

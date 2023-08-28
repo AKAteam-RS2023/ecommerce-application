@@ -1,9 +1,12 @@
+import { getCategories } from '../../controller/get-categories';
 import createElement from '../../dom-helper/create-element';
-import { getCategories } from '../../services/ecommerce-api';
+import Category from '../category';
 import './categories.scss';
 
 export default class Categories {
   private container = createElement('div', { class: 'categories' });
+
+  private categories: Category[] = [];
 
   constructor() {
     this.init();
@@ -12,18 +15,10 @@ export default class Categories {
   private init(): void {
     getCategories()
       .then((res) => {
-        const categories = res.filter((item) => !item.parent);
-        categories.forEach((item) => {
-          const category = createElement('div', { class: 'categories__item' });
-          category.textContent = item.name['en-US'];
-          const subCategories = res.filter((elem) => elem.parent?.id === item.id);
-          subCategories.forEach((elem) => {
-            const subCategory = createElement('div', { class: 'categories__item--sub' });
-            subCategory.textContent = elem.name['en-US'];
-            category.append(subCategory);
-          });
-          this.container.append(category);
+        res.forEach((item) => {
+          this.categories.push(new Category(item.id, item.name));
         });
+        this.categories.forEach((item) => this.container.append(item.render()));
       })
       .catch(() => this.container.append('No categories'));
   }
