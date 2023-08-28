@@ -5,6 +5,7 @@ import SubCategory from '../subcategory';
 import arrowImg from '../../assets/image/arrow.png';
 
 import './category.scss';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class Category {
   private container = createElement('div', { class: 'category' });
@@ -50,6 +51,9 @@ export default class Category {
   }
 
   private init(): void {
+    this.categoryTitle.onclick = (): void => {
+      eventEmitter.emit('event: change-category', this.id);
+    };
     this.categoryIcon.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggleShowingSubCategories();

@@ -72,6 +72,7 @@ export default async function getAllProducts(): Promise<IProduct[]> {
       imageUrl: getUrl(item.masterData.current),
       price: getPrice(item.masterData.current),
       discount: getDiscount(item.masterData.current),
+      categories: item.masterData.current.categories.map((category) => category.id),
     });
     if (item.masterData.current.variants.length > 0) {
       item.masterData.current.variants.forEach((variant) => {
@@ -83,6 +84,7 @@ export default async function getAllProducts(): Promise<IProduct[]> {
           price: getPrice(variant),
           discount: getDiscount(variant),
           variantId: variant.id,
+          categories: item.masterData.current.categories.map((category) => category.id),
         });
       });
     }

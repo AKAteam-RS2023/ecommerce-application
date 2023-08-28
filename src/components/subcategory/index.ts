@@ -1,5 +1,7 @@
 import createElement from '../../dom-helper/create-element';
 
+import eventEmitter from '../../dom-helper/event-emitter';
+
 import './subcategory.scss';
 
 export default class SubCategory {
@@ -16,6 +18,9 @@ export default class SubCategory {
 
   private init(): void {
     this.subCategory.textContent = this.name;
+    this.subCategory.onclick = (): void => {
+      eventEmitter.emit('event: change-category', this.id);
+    };
   }
 
   public show(): void {

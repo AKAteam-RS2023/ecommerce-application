@@ -9,4 +9,5 @@ export default interface IProduct {
     id?: string;
     value?: string;
   };
+  categories: string[];
 }
