@@ -118,9 +118,14 @@ export class Address {
       streetName: this.street.value,
       postalCode: this.postcode.value,
       city: this.city.value,
+      key: Address.uniqueID(),
     };
 
     return address;
+  }
+
+  private static uniqueID(): string {
+    return Math.floor(Math.random() * Date.now()).toString();
   }
 
   public disable(): void {

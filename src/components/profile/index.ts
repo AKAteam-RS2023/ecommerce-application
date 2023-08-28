@@ -15,6 +15,8 @@ import { ElementValidator } from '../registration/validation/validate';
 import validateBirthdate from '../registration/validation/validate-birthdate';
 import validateName from '../registration/validation/validate-name';
 import { renderEditableInput } from './render-editable-input';
+import { Address } from '../registration/address';
+import { renderInput } from '../registration/render-input';
 
 export class Profile implements IPage {
   private router = Router.instance;
@@ -83,25 +85,34 @@ export class Profile implements IPage {
   private customer?: { version: number; id: string };
 
   private saveFirstName = (): void => {
-    this.saveChanges({ action: 'setFirstName', firstName: this.firstname.value });
+    const actions: CustomerUpdateAction[] = [
+      { action: 'setFirstName', firstName: this.firstname.value },
+    ];
+    this.saveChanges(actions);
   };
 
   private saveLastName = (): void => {
-    this.saveChanges({ action: 'setLastName', lastName: this.lastname.value });
+    const actions: CustomerUpdateAction[] = [
+      { action: 'setLastName', lastName: this.lastname.value },
+    ];
+    this.saveChanges(actions);
   };
 
   private saveBirthdate = (): void => {
-    this.saveChanges({ action: 'setDateOfBirth', dateOfBirth: this.birthdate.value });
+    const actions: CustomerUpdateAction[] = [
+      { action: 'setDateOfBirth', dateOfBirth: this.birthdate.value },
+    ];
+    this.saveChanges(actions);
   };
 
-  private saveChanges(action: CustomerUpdateAction): void {
+  private saveChanges(action: CustomerUpdateAction[]): void {
     if (!this.customer) {
       return;
     }
 
     updateCustomer(this.customer.id, {
       version: this.customer.version,
-      actions: [action],
+      actions: action,
     })
       .then((res) => this.handleResponse(res))
       .catch((err) => this.handleError(err as ErrorResponse));
@@ -136,6 +147,52 @@ export class Profile implements IPage {
     }, timeout);
   }
 
+  private static createAddressCheckbox(type: string): HTMLInputElement {
+    return createElement('input', {
+      type: 'checkbox',
+      class: `address__${type}`,
+      id: `address__${type}`,
+    });
+  }
+
+  private addAddress = (): void => {
+    const modal = createElement('div', { class: 'modal__overlay' });
+    const address = new Address('New address');
+    const addressElement = address.render();
+    addressElement.classList.add('modal__address');
+    const shippingCheckBox: HTMLInputElement = Profile.createAddressCheckbox('shipping');
+    const billingCheckBox: HTMLInputElement = Profile.createAddressCheckbox('billing');
+    const def: HTMLInputElement = Profile.createAddressCheckbox('default');
+    const buttons = createElement('div', { class: 'modal__buttons' });
+    const saveAddressBtn = createElement('input', { type: 'button', value: 'ADD' });
+    const cancelAddressBtn = createElement('input', { type: 'button', value: 'CANCEL' });
+    buttons.append(saveAddressBtn, cancelAddressBtn);
+    addressElement.append(
+      renderInput('Shipping address', shippingCheckBox),
+      renderInput('Billing address', billingCheckBox),
+      renderInput('Default address', def),
+      buttons,
+    );
+    modal.append(addressElement);
+    modal.style.display = 'block';
+    document.body.appendChild(modal);
+    cancelAddressBtn.addEventListener('click', () => modal.remove());
+    saveAddressBtn.addEventListener('click', () => {
+      if (address.validate()) {
+        const baseAddress = address.createBaseAddress();
+        const actions: CustomerUpdateAction[] = [{ action: 'addAddress', address: baseAddress }];
+        if (shippingCheckBox.checked) {
+          actions.push({ action: 'addShippingAddressId', addressKey: baseAddress.key });
+        }
+        if (billingCheckBox.checked) {
+          actions.push({ action: 'addBillingAddressId', addressKey: baseAddress.key });
+        }
+        this.saveChanges(actions);
+        modal.remove();
+      }
+    });
+  };
+
   private loadProfile = (res: ClientResponse<Customer>): void => {
     this.customer = {
       version: res.body.version,
@@ -167,6 +224,16 @@ export class Profile implements IPage {
       class: 'profile__title title__addresses',
     });
     myAddresses.textContent = 'My addresses';
+    const addAdressBtn = createElement('div', {
+      class: 'addAdress__btn',
+    });
+    addAdressBtn.textContent = '+';
+    const span = createElement('span', {
+      class: 'tooltip',
+    });
+    span.textContent = 'Add address';
+    addAdressBtn.append(span);
+    addAdressBtn.addEventListener('click', this.addAddress);
     const profileWrapper = createElement('div');
     profileWrapper.append(
       this.createFirstName(),
@@ -175,6 +242,7 @@ export class Profile implements IPage {
       myAddresses,
       this.shippingList.render(),
       this.billingList.render(),
+      addAdressBtn,
     );
     container.append(title, profileWrapper, this.saveResult);
     this.reload();
