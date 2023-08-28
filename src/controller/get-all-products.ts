@@ -82,6 +82,7 @@ export default async function getAllProducts(): Promise<IProduct[]> {
           imageUrl: getUrl(variant),
           price: getPrice(variant),
           discount: getDiscount(variant),
+          variantId: variant.id,
         });
       });
     }

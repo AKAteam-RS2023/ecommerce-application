@@ -3,12 +3,14 @@ import { getProductDiscontById } from '../../services/ecommerce-api';
 
 import IProduct from '../../types/product';
 
-import './product.scss';
+import './product-card.scss';
 
-export default class Product {
+export default class ProductCard {
   private productElement = createElement('article', { class: 'product' });
 
   private oldPrice: HTMLElement | null = null;
+
+  public currencyCode = 'PLN';
 
   constructor(public product: IProduct) {
     this.product = product;
@@ -38,8 +40,9 @@ export default class Product {
         }
         case 'absolute': {
           discount.textContent = `${
-            res.value.money.filter((item) => item.currencyCode === 'PLN')[0].centAmount / 100
-          } PLN`;
+            res.value.money.filter((item) => item.currencyCode === this.currencyCode)[0]
+              .centAmount / 100
+          } ${this.currencyCode}`;
           break;
         }
         default:
