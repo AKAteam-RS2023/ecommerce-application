@@ -13,8 +13,15 @@ export default class Catalog {
 
   private products: ProductCard[] | null = null;
 
+  private breadcrumb = createElement('div', { class: 'catalog__breadcrumb' });
+
   constructor() {
+    this.initBreadCrumb();
     this.init();
+  }
+
+  private initBreadCrumb(): void {
+    this.breadcrumb.textContent = 'catalog >';
   }
 
   private init(): void {
@@ -29,8 +36,8 @@ export default class Catalog {
   }
 
   public render(): HTMLElement {
-    const div = createElement('div');
-    div.append(this.categories.render(), this.container);
+    const div = createElement('div', { class: 'catalog__container' });
+    div.append(this.breadcrumb, this.categories.render(), this.container);
     return div;
   }
 }

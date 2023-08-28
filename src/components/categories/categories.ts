@@ -1,6 +1,7 @@
 import { getCategories } from '../../controller/get-categories';
 import createElement from '../../dom-helper/create-element';
 import Category from '../category';
+
 import './categories.scss';
 
 export default class Categories {

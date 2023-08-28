@@ -1,0 +1,53 @@
+@import '../../styles/constants/';
+
+.category {
+  position: relative;
+  font-size: 18px;
+  line-height: 120%;
+  font-weight: bold;
+  color: $dark;
+
+  &__wrapper {
+    position: absolute;
+    z-index: 2;
+    left: 5px;
+    padding: 5px;
+    width: max-content;
+    background-color: $light;
+    transition: .5s;
+    transform: scaleY(0);
+    transform-origin: 0 0;
+    
+    &.active {
+      transform: scaleY(1);
+    }
+  }
+
+  &__title {
+    display: flex;
+    gap: 10px;
+
+    &--name {
+      cursor: pointer;
+
+      &:hover,
+      &.active {
+        color: $dark-xl;
+      }
+    }
+
+    &--icon {
+      width: 15px;
+      transform: rotate(180deg);
+      cursor: pointer;
+
+      &.active {
+        transform: rotate(0);
+      }
+    }
+  }
+
+  @media screen and (max-width: $medium) {
+    font-size: 16px;    
+  }
+}
