@@ -1,25 +1,25 @@
 import createElement from '../../dom-helper/create-element';
-
 import eventEmitter from '../../dom-helper/event-emitter';
+import { ISubCategory } from '../../types/category';
 
 import './subcategory.scss';
 
 export default class SubCategory {
   private subCategory = createElement('div', { class: 'subcategory' });
 
-  constructor(
-    public id: string,
-    public name: string,
-  ) {
-    this.id = id;
-    this.name = name;
+  constructor(public data: ISubCategory) {
+    this.data = data;
     this.init();
   }
 
   private init(): void {
-    this.subCategory.textContent = this.name;
-    this.subCategory.onclick = (): void => {
-      eventEmitter.emit('event: change-category', this.id);
+    this.subCategory.textContent = this.data.name;
+    this.subCategory.onclick = (e): void => {
+      e.stopPropagation();
+      eventEmitter.emit('event: hide-subcategories', {
+        id: this.data.id,
+        parentId: this.data.parent,
+      });
     };
   }
 

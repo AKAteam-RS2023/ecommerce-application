@@ -15,8 +15,8 @@ describe('Event Emitter:', () => {
   test('should be emit work', () => {
     const testCallback = jest.fn();
     eventEmitter.subscribe('testEvent', testCallback);
-    eventEmitter.emit('testEvent', 'test');
+    eventEmitter.emit('testEvent', { id: 'test' });
     expect(testCallback).toBeCalledTimes(1);
-    expect(testCallback).toHaveBeenLastCalledWith('test');
+    expect(testCallback).toHaveBeenLastCalledWith({ id: 'test' });
   });
 });

@@ -1,4 +1,4 @@
-type Callback = (data: string) => void;
+type Callback = (data: Record<string, string> | undefined) => void;
 
 class EventEmitter {
   public events: Record<string, Callback[]>;
@@ -7,7 +7,7 @@ class EventEmitter {
     this.events = {};
   }
 
-  public emit(eventName: string, data: string): void {
+  public emit(eventName: string, data: Record<string, string> | undefined): void {
     const event = this.events[eventName];
     if (event) {
       event.forEach((fn) => {

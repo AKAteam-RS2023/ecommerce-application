@@ -21,8 +21,11 @@ export default class Catalog {
   constructor() {
     this.initBreadCrumb();
     this.init();
-    eventEmitter.subscribe('event: change-category', (id: string) => {
-      this.initByCategory(id);
+    eventEmitter.subscribe('event: change-category', (data) => {
+      if (!data || !('id' in data)) {
+        return;
+      }
+      this.initByCategory(data.id);
     });
   }
 
@@ -32,11 +35,11 @@ export default class Catalog {
 
   private init(): void {
     this.container.innerHTML = '';
+    this.products = [];
     getAllProducts()
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
-
-        this.products?.forEach((product) => this.container.append(product.render()));
+        this.products.forEach((product) => this.container.append(product.render()));
       })
       .catch((err) => {
         this.container.textContent = err.message;
@@ -45,11 +48,11 @@ export default class Catalog {
 
   private initByCategory(id: string): void {
     this.container.innerHTML = '';
+    this.products = [];
     getProductsbyCategory(id)
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
-
-        this.products?.forEach((product) => this.container.append(product.render()));
+        this.products.forEach((product) => this.container.append(product.render()));
       })
       .catch((err) => {
         this.container.textContent = err.message;

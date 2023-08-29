@@ -7,5 +7,5 @@ export const getSubCategories = async (id: string): Promise<ISubCategory[]> => {
   const res = await getAllCategories();
   return res
     .filter((item) => item.parent?.id === id)
-    .map((item) => ({ id: item.id, name: item.name[LANGUAGE] }));
+    .map((item) => ({ id: item.id, name: item.name[LANGUAGE], parent: id }));
 };
