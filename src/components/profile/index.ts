@@ -78,11 +78,33 @@ export class Profile implements IPage {
     'profile',
   );
 
-  private shippingList = new AddressList('Shipping');
-
-  private billingList = new AddressList('Billing');
-
   private customer?: { version: number; id: string };
+
+  private setDefaultShipping = (addressId: string): void => {
+    const actions: CustomerUpdateAction[] = [{ action: 'setDefaultShippingAddress', addressId }];
+    this.saveChanges(actions);
+  };
+
+  private setDefaultBilling = (addressId: string): void => {
+    const actions: CustomerUpdateAction[] = [{ action: 'setDefaultShippingAddress', addressId }];
+    this.saveChanges(actions);
+  };
+
+  private setDefaultAddress = (addressId: string, addressType: string): void => {
+    switch (addressType.toLowerCase()) {
+      case AddressList.Shipping.toLowerCase():
+        this.setDefaultShipping(addressId);
+        break;
+      case AddressList.Billing.toLowerCase():
+        this.setDefaultBilling(addressId);
+        break;
+      default:
+    }
+  };
+
+  private shippingList = new AddressList(AddressList.Shipping, this.setDefaultAddress);
+
+  private billingList = new AddressList(AddressList.Billing, this.setDefaultAddress);
 
   private saveFirstName = (): void => {
     const actions: CustomerUpdateAction[] = [

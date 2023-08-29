@@ -2,7 +2,15 @@ import { Address } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import { Country } from '../registration/country';
 
+export type SetDefaultFunc = (addressId: string, addressType: string) => void;
+
 export class AddressList {
+  public static Shipping = 'Shipping';
+
+  public static Billing = 'Billing';
+
+  private setDefault: SetDefaultFunc;
+
   private container = createElement<HTMLDivElement>('div', {
     class: 'address-list',
   });
@@ -13,8 +21,9 @@ export class AddressList {
 
   private header: string;
 
-  constructor(header: string) {
+  constructor(header: string, setDefault: SetDefaultFunc) {
     this.header = header;
+    this.setDefault = setDefault;
   }
 
   public render(): HTMLElement {
@@ -69,6 +78,7 @@ export class AddressList {
     labelInput.textContent = 'Default';
     asDefault.append(radioInput, labelInput);
     radioInput.checked = address.id === defaultId;
+    radioInput.addEventListener('change', () => this.setDefault(address.id ?? '', this.header));
     country.textContent = Country.getCountryName(address.country);
     postCode.textContent = address.postalCode ?? '';
     city.textContent = address.city ?? '';
