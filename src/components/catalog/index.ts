@@ -3,6 +3,7 @@ import eventEmitter from '../../dom-helper/event-emitter';
 
 import ProductCard from '../product-card';
 import Categories from '../categories/categories';
+import BreadCrumb from '../breadcrumb/breadcrumb';
 
 import getAllProducts from '../../controller/get-all-products';
 import getProductsbyCategory from '../../controller/get-products-by-category';
@@ -16,10 +17,9 @@ export default class Catalog {
 
   private products: ProductCard[] = [];
 
-  private breadcrumb = createElement('div', { class: 'catalog__breadcrumb' });
+  private breadcrumb = new BreadCrumb();
 
   constructor() {
-    this.initBreadCrumb();
     this.init();
     eventEmitter.subscribe('event: change-category', (data) => {
       if (!data || !('id' in data)) {
@@ -27,10 +27,6 @@ export default class Catalog {
       }
       this.initByCategory(data.id);
     });
-  }
-
-  private initBreadCrumb(): void {
-    this.breadcrumb.textContent = 'catalog >';
   }
 
   private init(): void {
@@ -61,7 +57,7 @@ export default class Catalog {
 
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-    div.append(this.breadcrumb, this.categories.render(), this.container);
+    div.append(this.breadcrumb.render(), this.categories.render(), this.container);
     return div;
   }
 }

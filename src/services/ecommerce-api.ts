@@ -114,3 +114,19 @@ export const getAllCategories = async (): Promise<Category[]> => {
     throw Error('No categories');
   }
 };
+
+export const getCategoryById = async (id: string): Promise<Category> => {
+  try {
+    const res = await apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: `id="${id}"`,
+        },
+      })
+      .execute();
+    return res.body.results[0];
+  } catch {
+    throw Error('No category');
+  }
+};

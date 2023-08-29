@@ -37,7 +37,10 @@ export default class Category {
       }
       this.hideSubCategories();
       if (this.id === data.parentId) {
-        setTimeout(() => eventEmitter.emit('event: change-category', { id: data.id }), 500);
+        setTimeout(
+          () => eventEmitter.emit('event: change-category', { id: data.id, parentId: this.id }),
+          500,
+        );
       }
     });
   }
