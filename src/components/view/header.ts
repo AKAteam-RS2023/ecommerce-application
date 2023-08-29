@@ -32,6 +32,11 @@ export class Header {
     href: '/catalog',
   });
 
+  private productLink = createElement('a', {
+    class: 'links__item link--login',
+    href: '/product-id',
+  });
+
   public toggleActive(): void {
     const url = window.location.href.split('/').pop();
     this.homeLink.classList.remove('active');
@@ -107,6 +112,8 @@ export class Header {
 
     this.catalogLink.innerText = 'Catalog';
 
+    this.productLink.innerText = 'Product';
+
     const logoutLink = createElement('a', {
       class: 'links__item link--login',
       href: '/login',
@@ -124,7 +131,7 @@ export class Header {
 
     this.registrationLink.innerText = 'Registration';
 
-    this.linksWrapper.append(this.homeLink, this.catalogLink);
+    this.linksWrapper.append(this.homeLink, this.catalogLink, this.productLink);
     if (this.hasUser) {
       this.linksWrapper.append(logoutLink);
     } else {

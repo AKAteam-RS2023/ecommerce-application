@@ -70,3 +70,12 @@ export const getProductDiscontById = async (id: string): Promise<ProductDiscount
     .execute();
   return res.body.results[0];
 };
+
+export const getProductById = async (productID: string): Promise<Product> => {
+  try {
+    const res = await apiRoot.products().withId({ ID: productID }).get().execute();
+    return res.body;
+  } catch {
+    throw Error('Product not found');
+  }
+};

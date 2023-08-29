@@ -4,6 +4,7 @@ import Catalog from '../catalog';
 import Login from '../login';
 import Registration from '../registration';
 import { Home } from '../view/home';
+import ProductView from '../product/product';
 
 export const routes: IRoute<IPage>[] = [
   {
@@ -21,5 +22,9 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'catalog',
     component: Catalog,
+  },
+  {
+    path: 'product-id',
+    component: ProductView,
   },
 ];
