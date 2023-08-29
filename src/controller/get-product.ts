@@ -2,7 +2,7 @@ import { Product, ProductData, ProductVariant } from '@commercetools/platform-sd
 import { getProductById } from '../services/ecommerce-api';
 import IProductDetails from '../types/interfaces/productDetails';
 
-const getName = (data: ProductData): string => (data.metaTitle ? data.metaTitle['en-US'] : 'No name');
+const getName = (data: ProductData): string => (data.name['pl-PL'] ? data.name['pl-PL'] : 'No name');
 
 const getDescription = (data: ProductData): string => (data.description ? data.description['en-US'] : 'No description');
 
