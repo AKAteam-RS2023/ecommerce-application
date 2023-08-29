@@ -3,6 +3,7 @@
 .crumb {
   position: relative;
   line-height: 100%;
+  color: $dark-l;
   cursor: pointer;
 
   &:hover::after {
@@ -10,6 +11,10 @@
     display: block;
     position: absolute;
     width: 95%;
-    border-top: 2px solid $grey-xxl;
+    border-top: 2px solid $dark-l;
+  }
+
+  @media screen and (max-width: $medium) {
+    font-size: 12px;
   }
 }
