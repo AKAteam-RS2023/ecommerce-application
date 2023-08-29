@@ -12,10 +12,10 @@ export default class ProductView implements IPage {
 
   private oldPrice: HTMLElement | null = null;
 
-  public currencyCode = 'PLN';
+  public currencyCode = 'zł';
 
   constructor() {
-    this.productId = '99ca38af-41dc-4c4e-824e-67bcb97d9d6d?6';
+    this.productId = 'bc6257e0-667f-4b83-a763-0c0bc787c154';
   }
 
   private init(): void {
@@ -37,7 +37,7 @@ export default class ProductView implements IPage {
 
   private renderProductDetails(): void {
     if (this.product) {
-      const imgContainer = createElement('div', { class: 'img-container' });
+      const imgContainer = createElement('div', { class: 'product-img__wrapper' });
       if (this.product.imagesUrl) {
         this.product.imagesUrl.forEach((item) => {
           const img = createElement<HTMLImageElement>('img', {
@@ -49,13 +49,13 @@ export default class ProductView implements IPage {
       }
 
       const name = createElement('div', {
-        class: 'product-details__title',
+        class: 'product-details__name',
       });
       name.textContent = this.product.name;
       const description = createElement('div', {
         class: 'product-details__description',
       });
-      description.textContent = this.product.description;
+      description.innerHTML = this.product.description;
       const price = createElement('div', {
         class: 'product-details__price',
       });
@@ -69,7 +69,7 @@ export default class ProductView implements IPage {
       const wrapper = createElement('div', {
         class: 'product-details__wrapper',
       });
-      wrapper.append(name, description, wrapperPrices);
+      wrapper.append(name, wrapperPrices, description);
       this.container.append(imgContainer, wrapper);
     }
   }
