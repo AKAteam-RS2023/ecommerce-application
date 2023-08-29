@@ -201,19 +201,48 @@ export class Profile implements IPage {
     cancelAddressBtn.addEventListener('click', () => modal.remove());
     saveAddressBtn.addEventListener('click', () => {
       if (address.validate()) {
-        const baseAddress = address.createBaseAddress();
-        const actions: CustomerUpdateAction[] = [{ action: 'addAddress', address: baseAddress }];
-        if (shippingCheckBox.checked) {
-          actions.push({ action: 'addShippingAddressId', addressKey: baseAddress.key });
+        const actions: CustomerUpdateAction[] = [];
+        Profile.addShipAddress(actions, shippingCheckBox, def, address);
+        Profile.addBillAddress(actions, billingCheckBox, def, address);
+        if (actions.length > 0) {
+          this.saveChanges(actions);
         }
-        if (billingCheckBox.checked) {
-          actions.push({ action: 'addBillingAddressId', addressKey: baseAddress.key });
-        }
-        this.saveChanges(actions);
         modal.remove();
       }
     });
   };
+
+  private static addBillAddress(
+    actions: CustomerUpdateAction[],
+    billingCheckBox: HTMLInputElement,
+    defaultCheckBox: HTMLInputElement,
+    address: Address,
+  ): void {
+    if (billingCheckBox.checked) {
+      const billAddress = address.createBaseAddress();
+      actions.push({ action: 'addAddress', address: billAddress });
+      actions.push({ action: 'addBillingAddressId', addressKey: billAddress.key });
+      if (defaultCheckBox.checked) {
+        actions.push({ action: 'setDefaultBillingAddress', addressKey: billAddress.key });
+      }
+    }
+  }
+
+  private static addShipAddress(
+    actions: CustomerUpdateAction[],
+    shippingCheckBox: HTMLInputElement,
+    defaultCheckBox: HTMLInputElement,
+    address: Address,
+  ): void {
+    if (shippingCheckBox.checked) {
+      const shipAddress = address.createBaseAddress();
+      actions.push({ action: 'addAddress', address: shipAddress });
+      actions.push({ action: 'addShippingAddressId', addressKey: shipAddress.key });
+      if (defaultCheckBox.checked) {
+        actions.push({ action: 'setDefaultShippingAddress', addressKey: shipAddress.key });
+      }
+    }
+  }
 
   private loadProfile = (res: ClientResponse<Customer>): void => {
     this.customer = {
