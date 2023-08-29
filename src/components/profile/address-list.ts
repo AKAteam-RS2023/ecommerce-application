@@ -4,12 +4,16 @@ import { Country } from '../registration/country';
 
 export type SetDefaultFunc = (addressId: string, addressType: string) => void;
 
+export type DeleteFunc = (addressId: string) => void;
+
 export class AddressList {
   public static Shipping = 'Shipping';
 
   public static Billing = 'Billing';
 
   private setDefault: SetDefaultFunc;
+
+  private deleteAddress: DeleteFunc;
 
   private container = createElement<HTMLDivElement>('div', {
     class: 'address-list',
@@ -21,9 +25,10 @@ export class AddressList {
 
   private header: string;
 
-  constructor(header: string, setDefault: SetDefaultFunc) {
+  constructor(header: string, setDefault: SetDefaultFunc, deleteAddress: DeleteFunc) {
     this.header = header;
     this.setDefault = setDefault;
+    this.deleteAddress = deleteAddress;
   }
 
   public render(): HTMLElement {
@@ -48,24 +53,17 @@ export class AddressList {
   }
 
   private appendAddress(address: Address, defaultId: string): void {
-    const row = createElement<HTMLTableRowElement>('tr', {
-      class: 'address-row',
+    const row = createElement<HTMLTableRowElement>('tr', { class: 'address-row' });
+    const deleteAddress = createElement<HTMLTableCellElement>('td', {
+      class: 'address-cell__delete',
     });
-    const country = createElement<HTMLTableCellElement>('td', {
-      class: 'address-cell__country',
-    });
-    const postCode = createElement<HTMLTableCellElement>('td', {
-      class: 'address-cell__postcode',
-    });
-    const city = createElement<HTMLTableCellElement>('td', {
-      class: 'address-cell__city',
-    });
-    const street = createElement<HTMLTableCellElement>('td', {
-      class: 'address-cell__street',
-    });
-    const asDefault = createElement<HTMLTableCellElement>('td', {
-      class: 'address-cell__default',
-    });
+    deleteAddress.textContent = '✕';
+    deleteAddress.addEventListener('click', () => this.deleteAddress(address.id ?? ''));
+    const country = createElement<HTMLTableCellElement>('td', { class: 'address-cell__country' });
+    const postCode = createElement<HTMLTableCellElement>('td', { class: 'address-cell__postcode' });
+    const city = createElement<HTMLTableCellElement>('td', { class: 'address-cell__city' });
+    const street = createElement<HTMLTableCellElement>('td', { class: 'address-cell__street' });
+    const asDefault = createElement<HTMLTableCellElement>('td', { class: 'address-cell__default' });
     const radioInput = createElement<HTMLInputElement>('input', {
       type: 'radio',
       name: this.header.toLowerCase(),
@@ -84,7 +82,7 @@ export class AddressList {
     city.textContent = address.city ?? '';
     street.textContent = address.streetName ?? '';
 
-    row.append(country, postCode, city, street, asDefault);
+    row.append(deleteAddress, country, postCode, city, street, asDefault);
     this.table.append(row);
   }
 }

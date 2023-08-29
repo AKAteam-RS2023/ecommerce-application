@@ -213,3 +213,8 @@ input {
 .modal__buttons input[type="button"] {
   cursor: pointer;
 }
+
+.address-cell__delete:hover {
+  color: red;
+  cursor: pointer;
+}

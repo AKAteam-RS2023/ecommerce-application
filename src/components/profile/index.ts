@@ -90,6 +90,11 @@ export class Profile implements IPage {
     this.saveChanges(actions);
   };
 
+  private deleteAddress = (addressId: string): void => {
+    const actions: CustomerUpdateAction[] = [{ action: 'removeAddress', addressId }];
+    this.saveChanges(actions);
+  };
+
   private setDefaultAddress = (addressId: string, addressType: string): void => {
     switch (addressType.toLowerCase()) {
       case AddressList.Shipping.toLowerCase():
@@ -102,9 +107,17 @@ export class Profile implements IPage {
     }
   };
 
-  private shippingList = new AddressList(AddressList.Shipping, this.setDefaultAddress);
+  private shippingList = new AddressList(
+    AddressList.Shipping,
+    this.setDefaultAddress,
+    this.deleteAddress,
+  );
 
-  private billingList = new AddressList(AddressList.Billing, this.setDefaultAddress);
+  private billingList = new AddressList(
+    AddressList.Billing,
+    this.setDefaultAddress,
+    this.deleteAddress,
+  );
 
   private saveFirstName = (): void => {
     const actions: CustomerUpdateAction[] = [
