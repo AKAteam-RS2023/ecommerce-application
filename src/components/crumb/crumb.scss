@@ -1,0 +1,15 @@
+@import '../../styles/constants/';
+
+.crumb {
+  position: relative;
+  line-height: 100%;
+  cursor: pointer;
+
+  &:hover::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 95%;
+    border-top: 2px solid $grey-xxl;
+  }
+}
