@@ -1,11 +1,13 @@
 import createElement from '../../dom-helper/create-element';
-import ProductCard from '../product-card';
+import eventEmitter from '../../dom-helper/event-emitter';
 
-import getAllProducts from '../../controller/get-all-products';
+import ProductCard from '../product-card';
 import Categories from '../categories/categories';
 
+import getAllProducts from '../../controller/get-all-products';
+import getProductsbyCategory from '../../controller/get-products-by-category';
+
 import './catalog.scss';
-import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -20,10 +22,7 @@ export default class Catalog {
     this.initBreadCrumb();
     this.init();
     eventEmitter.subscribe('event: change-category', (id: string) => {
-      const cb = (
-        item: ProductCard,
-      ): boolean => item.product.categories.some((category) => category === id);
-      this.init(cb);
+      this.initByCategory(id);
     });
   }
 
@@ -31,14 +30,25 @@ export default class Catalog {
     this.breadcrumb.textContent = 'catalog >';
   }
 
-  private init(cb?: (item: ProductCard) => boolean): void {
+  private init(): void {
     this.container.innerHTML = '';
     getAllProducts()
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
-        if (cb) {
-          this.products = this.products.filter(cb);
-        }
+
+        this.products?.forEach((product) => this.container.append(product.render()));
+      })
+      .catch((err) => {
+        this.container.textContent = err.message;
+      });
+  }
+
+  private initByCategory(id: string): void {
+    this.container.innerHTML = '';
+    getProductsbyCategory(id)
+      .then((productsResponse) => {
+        this.products = productsResponse.map((product) => new ProductCard(product));
+
         this.products?.forEach((product) => this.container.append(product.render()));
       })
       .catch((err) => {

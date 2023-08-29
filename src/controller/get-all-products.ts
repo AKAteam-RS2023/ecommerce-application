@@ -1,8 +1,8 @@
-import { ProductData, ProductVariant } from '@commercetools/platform-sdk';
+import { Product, ProductData, ProductVariant } from '@commercetools/platform-sdk';
 import { getProducts } from '../services/ecommerce-api';
 import IProduct from '../types/product';
 
-const getName = (data: ProductData): string => (data.metaTitle ? data.metaTitle['en-US'] : 'No name');
+const getName = (data: ProductData): string => data.name['en-US'];
 
 const getDescription = (data: ProductData): string => (data.description ? data.description['en-US'] : 'No description');
 
@@ -61,19 +61,22 @@ const getDiscount = (
     : undefined;
 };
 
+export function doProduct(product: Product): IProduct {
+  return {
+    id: product.id,
+    name: getName(product.masterData.current),
+    description: getDescription(product.masterData.current),
+    imageUrl: getUrl(product.masterData.current),
+    price: getPrice(product.masterData.current),
+    discount: getDiscount(product.masterData.current),
+  };
+}
+
 export default async function getAllProducts(): Promise<IProduct[]> {
   const res = await getProducts();
   const result: IProduct[] = [];
   res.forEach((item) => {
-    result.push({
-      id: item.id,
-      name: getName(item.masterData.current),
-      description: getDescription(item.masterData.current),
-      imageUrl: getUrl(item.masterData.current),
-      price: getPrice(item.masterData.current),
-      discount: getDiscount(item.masterData.current),
-      categories: item.masterData.current.categories.map((category) => category.id),
-    });
+    result.push(doProduct(item));
     if (item.masterData.current.variants.length > 0) {
       item.masterData.current.variants.forEach((variant) => {
         result.push({
@@ -84,7 +87,6 @@ export default async function getAllProducts(): Promise<IProduct[]> {
           price: getPrice(variant),
           discount: getDiscount(variant),
           variantId: variant.id,
-          categories: item.masterData.current.categories.map((category) => category.id),
         });
       });
     }

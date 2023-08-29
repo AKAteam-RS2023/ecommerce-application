@@ -3,6 +3,7 @@ import {
   Customer,
   Product,
   ProductDiscount,
+  ProductProjection,
   createApiBuilderFromCtpClient,
 } from '@commercetools/platform-sdk';
 
@@ -54,6 +55,39 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
 export const getProducts = async (): Promise<Product[]> => {
   try {
     const res = await apiRoot.products().get().execute();
+    return res.body.results;
+  } catch {
+    throw Error('No products');
+  }
+};
+
+export const getProductByID = async (id: string): Promise<Product> => {
+  try {
+    const res = await apiRoot
+      .products()
+      .get({
+        queryArgs: {
+          where: `id="${id}"`,
+        },
+      })
+      .execute();
+    return res.body.results[0];
+  } catch {
+    throw Error('No product');
+  }
+};
+
+export const getProductsByCategoryId = async (id: string): Promise<ProductProjection[]> => {
+  try {
+    const res = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          filter: `categories.id:"${id}"`,
+        },
+      })
+      .execute();
     return res.body.results;
   } catch {
     throw Error('No products');
