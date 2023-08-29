@@ -2,17 +2,29 @@ import { Product, ProductData, ProductVariant } from '@commercetools/platform-sd
 import { getProductById } from '../services/ecommerce-api';
 import IProductDetails from '../types/interfaces/productDetails';
 
-const getName = (data: ProductData): string => (data.name['pl-PL'] ? data.name['pl-PL'] : 'No name');
+const getName = (data: ProductData): string => (data.name['pl-PL'] ? data.name['pl-PL'] : 'Bez nazwy');
 
-const getDescription = (data: ProductData): string => (data.description ? data.description['en-US'] : 'No description');
-
-const getPictures = (data: ProductData | ProductVariant): string => {
-  if ('masterVariant' in data) {
-    return data.masterVariant.images
-      ? data.masterVariant.images[0].url
-      : '../assets/image/image-not-found.png';
+const getDescription = (data: ProductData): string => {
+  if (data.description) {
+    return data.description['pl-PL'] ? data.description['pl-PL'] : 'Bez opisu';
   }
-  return data.images ? data.images[0].url : '../assets/image/image-not-found.png';
+  return 'Bez opisu';
+};
+
+const getPictures = (data: ProductData | ProductVariant): string[] | undefined => {
+  const ArrayOfImages: string[] = [];
+  if ('masterVariant' in data) {
+    if (data.masterVariant.images) {
+      data.masterVariant.images.forEach((item) => {
+        ArrayOfImages.push(item.url);
+      });
+    } else ArrayOfImages.push('../assets/image/image-not-found.png');
+  } else if (data.images) {
+    data.images.forEach((item) => {
+      ArrayOfImages.push(item.url);
+    });
+  } else ArrayOfImages.push('../assets/image/image-not-found.png');
+  return ArrayOfImages;
 };
 
 const getPrice = (data: ProductData | ProductVariant): string => {
@@ -67,7 +79,7 @@ export default async function getProductDetails(productId: string): Promise<IPro
     id: res.id,
     name: getName(res.masterData.current),
     description: getDescription(res.masterData.current),
-    imageUrl: getPictures(res.masterData.current),
+    imagesUrl: getPictures(res.masterData.current),
     price: getPrice(res.masterData.current),
     discount: getDiscount(res.masterData.current),
   };

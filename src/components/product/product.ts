@@ -15,7 +15,7 @@ export default class ProductView implements IPage {
   public currencyCode = 'PLN';
 
   constructor() {
-    this.productId = '99ca38af-41dc-4c4e-824e-67bcb97d9d6d';
+    this.productId = '99ca38af-41dc-4c4e-824e-67bcb97d9d6d?6';
   }
 
   private init(): void {
@@ -37,11 +37,17 @@ export default class ProductView implements IPage {
 
   private renderProductDetails(): void {
     if (this.product) {
-      const img = createElement<HTMLImageElement>('img', {
-        class: 'product-details__img',
-        src: this.product.imageUrl,
-        alt: this.product.description,
-      });
+      const imgContainer = createElement('div', { class: 'img-container' });
+      if (this.product.imagesUrl) {
+        this.product.imagesUrl.forEach((item) => {
+          const img = createElement<HTMLImageElement>('img', {
+            class: 'product-details__img',
+            src: item,
+          });
+          imgContainer.append(img);
+        });
+      }
+
       const name = createElement('div', {
         class: 'product-details__title',
       });
@@ -64,7 +70,7 @@ export default class ProductView implements IPage {
         class: 'product-details__wrapper',
       });
       wrapper.append(name, description, wrapperPrices);
-      this.container.append(img, wrapper);
+      this.container.append(imgContainer, wrapper);
     }
   }
 
