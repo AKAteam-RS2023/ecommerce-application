@@ -3,6 +3,7 @@ import {
   Product,
   ProductDiscount,
   createApiBuilderFromCtpClient,
+  ClientResponse,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -69,4 +70,14 @@ export const getProductDiscontById = async (id: string): Promise<ProductDiscount
     })
     .execute();
   return res.body.results[0];
+};
+
+export const getProfile = async (): Promise<ClientResponse<Customer>> => {
+  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+  });
+
+  const res = await apiRootUser.me().get().execute();
+
+  return res;
 };
