@@ -2,9 +2,11 @@ import { Product, ProductData, ProductVariant } from '@commercetools/platform-sd
 import { getProducts } from '../services/ecommerce-api';
 import IProduct from '../types/product';
 
-const getName = (data: ProductData): string => data.name['en-US'];
+const LANGUAGE = 'pl-PL';
 
-const getDescription = (data: ProductData): string => (data.description ? data.description['en-US'] : 'No description');
+const getName = (data: ProductData): string => data.name[LANGUAGE];
+
+const getDescription = (data: ProductData): string => (data.description ? data.description[LANGUAGE] : 'No description');
 
 const getUrl = (data: ProductData | ProductVariant): string => {
   if ('masterVariant' in data) {
@@ -62,6 +64,7 @@ const getDiscount = (
 };
 
 export function doProduct(product: Product): IProduct {
+  console.log(product);
   return {
     id: product.id,
     name: getName(product.masterData.current),
