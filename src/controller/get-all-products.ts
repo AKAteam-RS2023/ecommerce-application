@@ -64,7 +64,6 @@ const getDiscount = (
 };
 
 export function doProduct(product: Product): IProduct {
-  console.log(product);
   return {
     id: product.id,
     name: getName(product.masterData.current),
