@@ -1,7 +1,9 @@
 import {
   Customer,
-  ClientResponse,
+  Product,
+  ProductDiscount,
   createApiBuilderFromCtpClient,
+  ClientResponse,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -38,18 +40,36 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     .get()
     .execute()
     .then(() => {
-      localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
-      localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
-      localStorage.setItem(
-        'userExpirationTime',
-        `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
-      );
+      localStorage.setcur('userToken', conf.tokenCache.userCaсhe.token);
+      localStorage.setcur('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
+      localStorage.setcur('userExpirationTime', `${conf.tokenCache.userCaсhe.expirationTime || 0}`);
       return true;
     })
     .catch(() => {
       conf.client = null;
       return false;
     });
+};
+
+export const getProducts = async (): Promise<Product[]> => {
+  try {
+    const res = await apiRoot.products().get().execute();
+    return res.body.results;
+  } catch {
+    throw Error('No products');
+  }
+};
+
+export const getProductDiscontById = async (id: string): Promise<ProductDiscount> => {
+  const res = await apiRoot
+    .productDiscounts()
+    .get({
+      queryArgs: {
+        where: `id="${id}"`,
+      },
+    })
+    .execute();
+  return res.body.results[0];
 };
 
 export const getProfile = async (): Promise<ClientResponse<Customer>> => {
