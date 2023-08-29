@@ -63,35 +63,37 @@ const getDiscount = (
     : undefined;
 };
 
-export function doProduct(product: Product): IProduct {
-  return {
+export function doProduct(product: Product): IProduct[] {
+  const result: IProduct[] = [];
+  result.push({
     id: product.id,
     name: getName(product.masterData.current),
     description: getDescription(product.masterData.current),
     imageUrl: getUrl(product.masterData.current),
     price: getPrice(product.masterData.current),
     discount: getDiscount(product.masterData.current),
-  };
+  });
+  if (product.masterData.current.variants.length > 0) {
+    product.masterData.current.variants.forEach((variant) => {
+      result.push({
+        id: product.id,
+        name: getName(product.masterData.current),
+        description: variant.key ? variant.key : 'No description',
+        imageUrl: getUrl(variant),
+        price: getPrice(variant),
+        discount: getDiscount(variant),
+        variantId: variant.id,
+      });
+    });
+  }
+  return result;
 }
 
 export default async function getAllProducts(): Promise<IProduct[]> {
   const res = await getProducts();
-  const result: IProduct[] = [];
+  let result: IProduct[] = [];
   res.forEach((item) => {
-    result.push(doProduct(item));
-    if (item.masterData.current.variants.length > 0) {
-      item.masterData.current.variants.forEach((variant) => {
-        result.push({
-          id: item.id,
-          name: getName(item.masterData.current),
-          description: variant.key ? variant.key : 'No description',
-          imageUrl: getUrl(variant),
-          price: getPrice(variant),
-          discount: getDiscount(variant),
-          variantId: variant.id,
-        });
-      });
-    }
+    result = [...result, ...doProduct(item)];
   });
   return result;
 }

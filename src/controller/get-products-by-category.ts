@@ -12,5 +12,5 @@ export default async function getProductsbyCategory(categoryId: string): Promise
       products.push(promise.value);
     }
   });
-  return products.map(doProduct);
+  return products.map(doProduct).flat();
 }
