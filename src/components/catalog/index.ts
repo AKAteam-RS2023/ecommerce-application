@@ -2,8 +2,8 @@ import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
 import ProductCard from '../product-card';
-import Categories from '../categories/categories';
-import BreadCrumb from '../breadcrumb/breadcrumb';
+import BreadCrumb from '../breadcrumb';
+import categories from '../categories';
 
 import getAllProducts from '../../controller/get-all-products';
 import getProductsbyCategory from '../../controller/get-products-by-category';
@@ -12,8 +12,6 @@ import './catalog.scss';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
-
-  private categories = new Categories();
 
   private products: ProductCard[] = [];
 
@@ -70,7 +68,7 @@ export default class Catalog {
 
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-    div.append(this.breadcrumb.render(), this.categories.render(), this.container);
+    div.append(this.breadcrumb.render(), categories.render(), this.container);
     return div;
   }
 }

@@ -4,7 +4,7 @@ import Category from '../category';
 
 import './categories.scss';
 
-export default class Categories {
+class Categories {
   private container = createElement('div', { class: 'categories' });
 
   private categories: Category[] = [];
@@ -28,3 +28,5 @@ export default class Categories {
     return this.container;
   }
 }
+
+export default new Categories();
