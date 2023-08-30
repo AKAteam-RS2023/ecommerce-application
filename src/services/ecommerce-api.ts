@@ -1,4 +1,5 @@
 import {
+  ClientResponse,
   Category,
   Customer,
   Product,
@@ -129,4 +130,14 @@ export const getCategoryById = async (id: string): Promise<Category> => {
   } catch {
     throw Error('No category');
   }
+};
+
+export const getProfile = async (): Promise<ClientResponse<Customer>> => {
+  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+  });
+
+  const res = await apiRootUser.me().get().execute();
+
+  return res;
 };
