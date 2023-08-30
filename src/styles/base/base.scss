@@ -33,7 +33,15 @@ body {
   }
 }
 
-@media (max-width: $medium) {
+@media screen and (max-width: $large) {
+  .main {
+    &__wrapper {
+      padding: 40px;
+    }
+  }
+}
+
+@media screen and (max-width: $medium) {
   .main {
     &__wrapper {
       padding: 20px;

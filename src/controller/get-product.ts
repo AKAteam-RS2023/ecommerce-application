@@ -1,4 +1,9 @@
-import { Product, ProductData, ProductVariant } from '@commercetools/platform-sdk';
+import {
+  Attribute,
+  Product,
+  ProductData,
+  ProductVariant,
+} from '@commercetools/platform-sdk';
 import { getProductById } from '../services/ecommerce-api';
 import IProductDetails from '../types/interfaces/productDetails';
 
@@ -38,6 +43,22 @@ const getPrice = (data: ProductData | ProductVariant): string => {
   return data.prices
     ? `${data.prices[0].value.centAmount / 100} ${data.prices[0].value.currencyCode}`
     : 'no prices';
+};
+
+const getAttributes = (data: ProductData | ProductVariant): Attribute[] | undefined => {
+  const attributes: Attribute[] = [];
+  if ('masterVariant' in data) {
+    if (data.masterVariant.attributes && data.masterVariant.attributes.length > 0) {
+      data.masterVariant.attributes.forEach((item) => {
+        attributes.push(item);
+      });
+    }
+  } else if (data.attributes && data.attributes.length > 0) {
+    data.attributes.forEach((item) => {
+      attributes.push(item);
+    });
+  }
+  return attributes.length > 0 ? attributes : undefined;
 };
 
 const getDiscount = (
@@ -86,10 +107,11 @@ export default async function getProductDetails(
       return {
         id: res.id,
         name: getName(res.masterData.current),
-        description: productVariant.key ? productVariant.key : 'No description',
+        description: getDescription(res.masterData.current),
         imagesUrl: getPictures(productVariant),
         price: getPrice(productVariant),
         discount: getDiscount(productVariant),
+        attributes: getAttributes(productVariant),
         variantId: productVariant.id,
       };
     }
@@ -101,5 +123,6 @@ export default async function getProductDetails(
     imagesUrl: getPictures(res.masterData.current),
     price: getPrice(res.masterData.current),
     discount: getDiscount(res.masterData.current),
+    attributes: getAttributes(res.masterData.current),
   };
 }

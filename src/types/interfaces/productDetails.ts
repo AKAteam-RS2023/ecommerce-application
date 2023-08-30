@@ -1,3 +1,5 @@
+import { Attribute } from '@commercetools/platform-sdk';
+
 export default interface IProductDetails {
   id: string;
   variantId?: number;
@@ -9,4 +11,5 @@ export default interface IProductDetails {
     id?: string;
     value?: string;
   };
+  attributes?: Attribute[];
 }
