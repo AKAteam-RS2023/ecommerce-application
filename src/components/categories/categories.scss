@@ -1,0 +1,23 @@
+@import '../../styles/constants/';
+
+.categories {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  padding: 10px;
+  background-color: $light-l;
+
+  @media screen and (max-width: $x-large) {
+    gap: 80px;    
+  }
+
+  @media screen and (max-width: $large) {
+    gap: 65px;
+  }
+
+  @media screen and (max-width: $medium) {
+    gap: 40px;
+    padding: 5px; 
+  }
+
+}

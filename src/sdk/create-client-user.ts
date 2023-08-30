@@ -58,7 +58,7 @@ const conf: {
       : new ClientBuilder()
         .withExistingTokenFlow(authorization, options)
         .withHttpMiddleware(httpMiddlewareOptions)
-        .withLoggerMiddleware()
+      // .withLoggerMiddleware()
         .build(),
   tokenCache,
 };
@@ -89,7 +89,7 @@ export const initClient = (email: string, password: string): void => {
   conf.client = new ClientBuilder()
     .withPasswordFlow(initPasswordAuthOptions(email, password))
     .withHttpMiddleware(httpMiddlewareOptions)
-    .withLoggerMiddleware() // Include middleware for logging
+    // .withLoggerMiddleware() // Include middleware for logging
     .build();
 };
 
