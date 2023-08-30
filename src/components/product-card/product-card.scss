@@ -6,6 +6,18 @@
   height: 446px;
   background-color: $light;
   cursor: pointer;
+  transition: .5s;
+
+  &:hover {
+    transform: scale(1.05);
+    background-color: $grey-l;
+    box-shadow: 5px 5px 5px $grey-xl;
+  }
+
+  &:active {
+    transform: scale(1);
+    box-shadow: 5px 5px 5px $grey-xxl;
+  }
 
   &__img {
     display: block;

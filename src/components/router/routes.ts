@@ -2,6 +2,7 @@ import { IPage } from '../../types/interfaces/page';
 import { IRoute } from '../../types/interfaces/route';
 import Catalog from '../catalog';
 import Login from '../login';
+import { Profile } from '../profile';
 import Registration from '../registration';
 import { Home } from '../view/home';
 
@@ -21,5 +22,9 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'catalog',
     component: Catalog,
+  },
+  {
+    path: 'profile',
+    component: Profile,
   },
 ];

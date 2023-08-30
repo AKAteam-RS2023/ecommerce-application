@@ -1,11 +1,11 @@
 import {
-  ClientResponse,
   Category,
   Customer,
   Product,
   ProductDiscount,
   ProductProjection,
   createApiBuilderFromCtpClient,
+  ClientResponse,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
