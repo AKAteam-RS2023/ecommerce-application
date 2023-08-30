@@ -2,6 +2,7 @@ import createElement from '../../dom-helper/create-element';
 import { IPage } from '../../types/interfaces/page';
 import getProductDetails from '../../controller/get-product';
 import IProductDetails from '../../types/interfaces/productDetails';
+import Router from '../router/router';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -10,20 +11,26 @@ export default class ProductView implements IPage {
 
   private productId: string;
 
+  private variantId: number;
+
   private oldPrice: HTMLElement | null = null;
 
+  private router = Router.instance;
+
   constructor() {
-    this.productId = '0792a980-dcf1-4660-8b99-719ba6dd34b9';
+    this.productId = this.router.queryParams.productID;
+    this.variantId = +this.router.queryParams.variantID;
   }
 
   private init(): void {
-    getProductDetails(this.productId, 2)
+    getProductDetails(this.productId, this.variantId)
       .then((productResponse) => {
         this.product = productResponse;
         this.renderProductDetails();
       })
       .catch((err) => {
         this.container.textContent = err.message;
+        this.router.navigate('not-found');
       });
   }
 
@@ -36,7 +43,6 @@ export default class ProductView implements IPage {
   private renderProductDetails(): void {
     if (this.product) {
       const wrapperImg: HTMLDivElement | undefined = this.renderImg();
-
       const name = createElement('div', {
         class: 'product-details__name',
       });
@@ -66,7 +72,7 @@ export default class ProductView implements IPage {
 
       if (wrapperAttribute) {
         wrapper.append(name, wrapperPrices, description, wrapperAttribute);
-      } else wrapper.append(wrapperPrices, description);
+      } else wrapper.append(name, wrapperPrices, description);
 
       if (wrapperImg) {
         this.container.append(wrapperImg, wrapper);

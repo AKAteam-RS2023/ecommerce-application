@@ -28,6 +28,9 @@
 }
 
 .product-details__wrapper-prices {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
   padding: 20px 0;
 }
 
@@ -78,6 +81,7 @@
     align-items: center;
     justify-content: center;
   }
+
   .product-details__wrapper {
     width: 100%;
     padding-top: 40px;

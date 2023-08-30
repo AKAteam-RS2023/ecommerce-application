@@ -24,7 +24,7 @@ export const routes: IRoute<IPage>[] = [
     component: Catalog,
   },
   {
-    path: 'product-id',
+    path: 'catalog/product',
     component: ProductView,
   },
 ];

@@ -35,13 +35,13 @@ const getPictures = (data: ProductData | ProductVariant): string[] | undefined =
 const getPrice = (data: ProductData | ProductVariant): string => {
   if ('masterVariant' in data) {
     return data.masterVariant.prices
-      ? `${data.masterVariant.prices[0].value.centAmount / 100} ${
+      ? `${(data.masterVariant.prices[0].value.centAmount / 100).toFixed(2)} ${
         data.masterVariant.prices[0].value.currencyCode
       }`
       : 'No price';
   }
   return data.prices
-    ? `${data.prices[0].value.centAmount / 100} ${data.prices[0].value.currencyCode}`
+    ? `${(data.prices[0].value.centAmount / 100).toFixed(2)} ${data.prices[0].value.currencyCode}`
     : 'no prices';
 };
 
@@ -75,7 +75,7 @@ const getDiscount = (
       ? {
         id: data.masterVariant.prices[0]?.discounted.discount.id,
         value: value
-          ? `${value / 100} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`
+          ? `${(value / 100).toFixed(2)} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`
           : undefined,
       }
       : undefined;
@@ -88,7 +88,7 @@ const getDiscount = (
     ? {
       id: data.prices[0]?.discounted?.discount.id,
       value: value
-        ? `${value / 100} ${data.prices[0]?.discounted?.value.currencyCode}`
+        ? `${(value / 100).toFixed(2)} ${data.prices[0]?.discounted?.value.currencyCode}`
         : undefined,
     }
     : undefined;
