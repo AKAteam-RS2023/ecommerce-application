@@ -1,8 +1,11 @@
 import {
+  Category,
   Customer,
   Product,
   ProductDiscount,
+  ProductProjection,
   createApiBuilderFromCtpClient,
+  ClientResponse,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -59,6 +62,23 @@ export const getProducts = async (): Promise<Product[]> => {
   }
 };
 
+export const getProductsByCategoryId = async (id: string): Promise<ProductProjection[]> => {
+  try {
+    const res = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          filter: `categories.id:"${id}"`,
+        },
+      })
+      .execute();
+    return res.body.results;
+  } catch {
+    throw Error('No products');
+  }
+};
+
 export const getProductDiscontById = async (id: string): Promise<ProductDiscount> => {
   const res = await apiRoot
     .productDiscounts()
@@ -69,6 +89,41 @@ export const getProductDiscontById = async (id: string): Promise<ProductDiscount
     })
     .execute();
   return res.body.results[0];
+};
+
+export const getAllCategories = async (): Promise<Category[]> => {
+  try {
+    const res = await apiRoot.categories().get().execute();
+    return res.body.results;
+  } catch {
+    throw Error('No categories');
+  }
+};
+
+export const getCategoryById = async (id: string): Promise<Category> => {
+  try {
+    const res = await apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: `id="${id}"`,
+        },
+      })
+      .execute();
+    return res.body.results[0];
+  } catch {
+    throw Error('No category');
+  }
+};
+
+export const getProfile = async (): Promise<ClientResponse<Customer>> => {
+  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+  });
+
+  const res = await apiRootUser.me().get().execute();
+
+  return res;
 };
 
 export const getProductById = async (productID: string): Promise<Product> => {
