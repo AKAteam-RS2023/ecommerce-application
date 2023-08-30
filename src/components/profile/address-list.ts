@@ -6,6 +6,8 @@ export type SetDefaultFunc = (addressId: string, addressType: string) => void;
 
 export type DeleteFunc = (addressId: string) => void;
 
+export type EditFunc = (address: Address) => void;
+
 export class AddressList {
   public static Shipping = 'Shipping';
 
@@ -14,6 +16,8 @@ export class AddressList {
   private setDefault: SetDefaultFunc;
 
   private deleteAddress: DeleteFunc;
+
+  private editAddress: EditFunc;
 
   private container = createElement<HTMLDivElement>('div', {
     class: 'address-list',
@@ -25,10 +29,16 @@ export class AddressList {
 
   private header: string;
 
-  constructor(header: string, setDefault: SetDefaultFunc, deleteAddress: DeleteFunc) {
+  constructor(
+    header: string,
+    setDefault: SetDefaultFunc,
+    deleteAddress: DeleteFunc,
+    editAddress: EditFunc,
+  ) {
     this.header = header;
     this.setDefault = setDefault;
     this.deleteAddress = deleteAddress;
+    this.editAddress = editAddress;
   }
 
   public render(): HTMLElement {
@@ -54,6 +64,9 @@ export class AddressList {
 
   private appendAddress(address: Address, defaultId: string): void {
     const row = createElement<HTMLTableRowElement>('tr', { class: 'address-row' });
+    const editAddress = createElement<HTMLTableCellElement>('td', { class: 'address-cell__edit' });
+    editAddress.textContent = '✎';
+    editAddress.addEventListener('click', () => this.editAddress(address));
     const deleteAddress = createElement<HTMLTableCellElement>('td', {
       class: 'address-cell__delete',
     });
@@ -82,7 +95,7 @@ export class AddressList {
     city.textContent = address.city ?? '';
     street.textContent = address.streetName ?? '';
 
-    row.append(deleteAddress, country, postCode, city, street, asDefault);
+    row.append(editAddress, deleteAddress, country, postCode, city, street, asDefault);
     this.table.append(row);
   }
 }

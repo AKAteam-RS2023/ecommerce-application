@@ -3,6 +3,7 @@ import {
   ClientResponse,
   CustomerUpdateAction,
   ErrorResponse,
+  Address as EcomAddress,
 } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
@@ -86,7 +87,7 @@ export class Profile implements IPage {
   };
 
   private setDefaultBilling = (addressId: string): void => {
-    const actions: CustomerUpdateAction[] = [{ action: 'setDefaultShippingAddress', addressId }];
+    const actions: CustomerUpdateAction[] = [{ action: 'setDefaultBillingAddress', addressId }];
     this.saveChanges(actions);
   };
 
@@ -107,16 +108,46 @@ export class Profile implements IPage {
     }
   };
 
+  private editAddress = (addr: EcomAddress): void => {
+    const modal = createElement('div', { class: 'modal__overlay' });
+    const address = new Address('Edit address');
+    const addressElement = address.render();
+    address.loadFrom(addr);
+    addressElement.classList.add('modal__address');
+    const buttons = createElement('div', { class: 'modal__buttons' });
+    const saveAddressBtn = createElement('input', { type: 'button', value: 'SAVE' });
+    const cancelAddressBtn = createElement('input', { type: 'button', value: 'CANCEL' });
+    buttons.append(saveAddressBtn, cancelAddressBtn);
+    addressElement.append(buttons);
+    modal.append(addressElement);
+    modal.style.display = 'block';
+    document.body.appendChild(modal);
+    cancelAddressBtn.addEventListener('click', () => modal.remove());
+    saveAddressBtn.addEventListener('click', () => {
+      if (address.validate()) {
+        const actions: CustomerUpdateAction[] = [
+          { action: 'changeAddress', addressId: addr.id, address: address.createBaseAddress() },
+        ];
+        if (actions.length > 0) {
+          this.saveChanges(actions);
+        }
+        modal.remove();
+      }
+    });
+  };
+
   private shippingList = new AddressList(
     AddressList.Shipping,
     this.setDefaultAddress,
     this.deleteAddress,
+    this.editAddress,
   );
 
   private billingList = new AddressList(
     AddressList.Billing,
     this.setDefaultAddress,
     this.deleteAddress,
+    this.editAddress,
   );
 
   private saveFirstName = (): void => {

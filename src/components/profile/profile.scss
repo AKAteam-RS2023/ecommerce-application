@@ -214,7 +214,14 @@ input {
   cursor: pointer;
 }
 
+.address-cell__delete:hover, .address-cell__edit:hover {
+  cursor: pointer;
+}
+
 .address-cell__delete:hover {
   color: red;
-  cursor: pointer;
+}
+
+.address-cell__edit:hover {
+  color: $primary;
 }
