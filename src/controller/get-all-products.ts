@@ -1,12 +1,19 @@
-import { ProductData, ProductVariant } from '@commercetools/platform-sdk';
+import {
+  Product,
+  ProductData,
+  ProductProjection,
+  ProductVariant,
+} from '@commercetools/platform-sdk';
 import { getProducts } from '../services/ecommerce-api';
 import IProduct from '../types/product';
 
-const getName = (data: ProductData): string => (data.metaTitle ? data.metaTitle['en-US'] : 'No name');
+const LANGUAGE = 'pl-PL';
 
-const getDescription = (data: ProductData): string => (data.description ? data.description['en-US'] : 'No description');
+const getName = (data: ProductData | ProductProjection): string => data.name[LANGUAGE];
 
-const getUrl = (data: ProductData | ProductVariant): string => {
+const getDescription = (data: ProductData | ProductProjection): string => (data.description ? data.description[LANGUAGE] : 'No description');
+
+const getUrl = (data: ProductData | ProductVariant | ProductProjection): string => {
   if ('masterVariant' in data) {
     return data.masterVariant.images
       ? data.masterVariant.images[0].url
@@ -15,7 +22,7 @@ const getUrl = (data: ProductData | ProductVariant): string => {
   return data.images ? data.images[0].url : '../assets/image/image-not-found.png';
 };
 
-const getPrice = (data: ProductData | ProductVariant): string => {
+const getPrice = (data: ProductData | ProductVariant | ProductProjection): string => {
   if ('masterVariant' in data) {
     return data.masterVariant.prices
       ? `${data.masterVariant.prices[0].value.centAmount / 100} ${
@@ -29,7 +36,7 @@ const getPrice = (data: ProductData | ProductVariant): string => {
 };
 
 const getDiscount = (
-  data: ProductData | ProductVariant,
+  data: ProductData | ProductVariant | ProductProjection,
 ): { id?: string; value?: string } | undefined => {
   if ('masterVariant' in data) {
     if (!data.masterVariant.prices) {
@@ -61,31 +68,38 @@ const getDiscount = (
     : undefined;
 };
 
+export function doProduct(product: Product | ProductProjection): IProduct[] {
+  const item = 'masterData' in product ? product.masterData.current : product;
+  const result: IProduct[] = [];
+  result.push({
+    id: product.id,
+    name: getName(item),
+    description: getDescription(item),
+    imageUrl: getUrl(item),
+    price: getPrice(item),
+    discount: getDiscount(item),
+  });
+  if (item.variants.length > 0) {
+    item.variants.forEach((variant) => {
+      result.push({
+        id: product.id,
+        name: getName(item),
+        description: variant.key ? variant.key : 'No description',
+        imageUrl: getUrl(variant),
+        price: getPrice(variant),
+        discount: getDiscount(variant),
+        variantId: variant.id,
+      });
+    });
+  }
+  return result;
+}
+
 export default async function getAllProducts(): Promise<IProduct[]> {
   const res = await getProducts();
-  const result: IProduct[] = [];
+  let result: IProduct[] = [];
   res.forEach((item) => {
-    result.push({
-      id: item.id,
-      name: getName(item.masterData.current),
-      description: getDescription(item.masterData.current),
-      imageUrl: getUrl(item.masterData.current),
-      price: getPrice(item.masterData.current),
-      discount: getDiscount(item.masterData.current),
-    });
-    if (item.masterData.current.variants.length > 0) {
-      item.masterData.current.variants.forEach((variant) => {
-        result.push({
-          id: item.id,
-          name: getName(item.masterData.current),
-          description: variant.key ? variant.key : 'No description',
-          imageUrl: getUrl(variant),
-          price: getPrice(variant),
-          discount: getDiscount(variant),
-          variantId: variant.id,
-        });
-      });
-    }
+    result = [...result, ...doProduct(item)];
   });
   return result;
 }

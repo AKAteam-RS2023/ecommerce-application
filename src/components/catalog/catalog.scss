@@ -9,6 +9,13 @@
   row-gap: 40px;
   margin: auto;
 
+  &__breadcrumb {
+    font-size: 20px;
+    line-height: 120%;
+    font-weight: bold;
+    color: $dark;
+  }
+
   @media screen and (max-width: $x-large){
     grid-template-columns: repeat(3, auto);
     column-gap: 30px;

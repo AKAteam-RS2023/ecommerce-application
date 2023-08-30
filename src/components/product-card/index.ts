@@ -74,6 +74,7 @@ export default class ProductCard {
       class: 'product__description',
     });
     description.textContent = this.product.description;
+    description.title = this.product.description;
     const price = createElement('div', {
       class: 'product__price',
     });
