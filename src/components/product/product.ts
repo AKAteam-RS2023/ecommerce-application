@@ -12,14 +12,12 @@ export default class ProductView implements IPage {
 
   private oldPrice: HTMLElement | null = null;
 
-  public currencyCode = 'zł';
-
   constructor() {
     this.productId = 'bc6257e0-667f-4b83-a763-0c0bc787c154';
   }
 
   private init(): void {
-    getProductDetails(this.productId)
+    getProductDetails(this.productId, 2)
       .then((productResponse) => {
         this.product = productResponse;
         this.renderProductDetails();

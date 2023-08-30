@@ -73,8 +73,27 @@ const getDiscount = (
     : undefined;
 };
 
-export default async function getProductDetails(productId: string): Promise<IProductDetails> {
+export default async function getProductDetails(
+  productId: string,
+  productVariantId?: number,
+): Promise<IProductDetails> {
   const res: Product = await getProductById(productId);
+  if (productVariantId) {
+    const productVariant = res.masterData.current.variants.find(
+      (variant) => variant.id === productVariantId,
+    );
+    if (productVariant) {
+      return {
+        id: res.id,
+        name: getName(res.masterData.current),
+        description: productVariant.key ? productVariant.key : 'No description',
+        imagesUrl: getPictures(productVariant),
+        price: getPrice(productVariant),
+        discount: getDiscount(productVariant),
+        variantId: productVariant.id,
+      };
+    }
+  }
   return {
     id: res.id,
     name: getName(res.masterData.current),
