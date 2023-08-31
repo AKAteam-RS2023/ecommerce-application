@@ -22,6 +22,8 @@ import validateEmail from '../registration/validation/validate-email';
 import { PasswordBtn } from './password-btn';
 import validatePassword from '../registration/validation/validate-password';
 import { ShowMessage } from './show-message';
+import { loginIfExist } from '../../controller/customers';
+import { clearClient } from '../../sdk/create-client-user';
 
 export class Profile implements IPage {
   private router = Router.instance;
@@ -392,26 +394,35 @@ export class Profile implements IPage {
     modal.style.display = 'block';
     document.body.appendChild(modal);
     cancelBtn.addEventListener('click', () => modal.remove());
-    saveNewPasswordBtn.addEventListener('click', () => {
+    saveNewPasswordBtn.addEventListener('click', async () => {
       if (oldPasswordValidator.validate() && newPasswordValidator.validate()) {
-        this.changePassword(oldPassword.value, newPassword.value, changePasswordMessageBox);
+        await this.changePassword(oldPassword.value, newPassword.value, changePasswordMessageBox);
       }
     });
   };
 
-  private changePassword(
+  private async changePassword(
     currentPassword: string,
     newPassword: string,
     messageBox: ShowMessage,
-  ): void {
-    changePasswordApi(
-      this.customer?.id ?? '',
-      currentPassword,
-      newPassword,
-      this.customer?.version ?? 0,
-    )
-      .then((res) => this.handleResponse(res, messageBox))
-      .catch((err) => this.handleError(messageBox, err));
+  ): Promise<void> {
+    try {
+      const res = await changePasswordApi(
+        this.customer?.id ?? '',
+        currentPassword,
+        newPassword,
+        this.customer?.version ?? 0,
+      );
+      this.handleResponse(res, messageBox);
+      clearClient();
+      await loginIfExist(this.email.value, newPassword);
+    } catch (err) {
+      if (!(err as ErrorResponse)) {
+        messageBox.showError('Something went wrong. Please try again.');
+        return;
+      }
+      this.handleError(messageBox, err as ErrorResponse);
+    }
   }
 
   public render(): HTMLElement {
