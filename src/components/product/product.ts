@@ -3,6 +3,7 @@ import { IPage } from '../../types/interfaces/page';
 import getProductDetails from '../../controller/get-product';
 import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
+import ProductSlider from '../product-slider/product-slider';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -16,6 +17,8 @@ export default class ProductView implements IPage {
   private oldPrice: HTMLElement | null = null;
 
   private router = Router.instance;
+
+  private slider = new ProductSlider();
 
   constructor() {
     this.productId = this.router.queryParams.productID;
@@ -42,7 +45,7 @@ export default class ProductView implements IPage {
 
   private renderProductDetails(): void {
     if (this.product) {
-      const wrapperImg: HTMLDivElement | undefined = this.renderImg();
+      const wrapperSlider: HTMLDivElement | undefined = this.slider.renderSlider(this.product);
       const name = createElement('div', {
         class: 'product-details__name',
       });
@@ -65,17 +68,14 @@ export default class ProductView implements IPage {
       description.innerHTML = this.product.description;
 
       const wrapperAttribute: HTMLDivElement | undefined = this.renderAttribute();
-
       const wrapper = createElement('div', {
         class: 'product-details__wrapper',
       });
-
       if (wrapperAttribute) {
         wrapper.append(name, wrapperPrices, description, wrapperAttribute);
       } else wrapper.append(name, wrapperPrices, description);
-
-      if (wrapperImg) {
-        this.container.append(wrapperImg, wrapper);
+      if (wrapperSlider) {
+        this.container.append(wrapperSlider, wrapper);
       } else this.container.append(wrapper);
     }
   }
@@ -108,21 +108,6 @@ export default class ProductView implements IPage {
         wrapperAttribute.append(attributeItem);
       });
       return wrapperAttribute;
-    }
-    return undefined;
-  }
-
-  private renderImg(): HTMLDivElement | undefined {
-    const wrapperImg: HTMLDivElement = createElement('div', { class: 'product-details__img-wrapper' });
-    if (this.product?.imagesUrl) {
-      this.product.imagesUrl.forEach((item) => {
-        const img = createElement<HTMLImageElement>('img', {
-          class: 'product-details__img',
-          src: item,
-        });
-        wrapperImg.append(img);
-      });
-      return wrapperImg;
     }
     return undefined;
   }
