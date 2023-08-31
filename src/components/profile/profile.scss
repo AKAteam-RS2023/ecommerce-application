@@ -65,7 +65,7 @@
 }
 
 .title__addresses {
-  margin-top: 60px;
+  margin-top: 30px;
 }
 
 .profile__error {
@@ -188,7 +188,7 @@ input {
   background-color: rgba(41, 41, 41, 0.6);
 }
 
-.modal__address {
+.modal__address, .modal__password {
   padding: 20px;
   position: absolute;
   top: 50%;
@@ -196,6 +196,42 @@ input {
   transform: translate(-50%, -50%);
   color: #9f9f9f;
   background-color: white;
+}
+
+.modal__changepassword {
+  &row {
+    display: flex;
+    position: relative;
+    margin-bottom: 35px;
+    justify-content: space-between;
+    align-items: center;
+
+    &--input {
+      display: block;
+      padding: 5px;
+      border: 2px solid $grey-xl;
+      border-radius: 5px;
+      margin-left: 15px;
+    }
+  
+    &--label {
+      display: block;
+      cursor: pointer;
+      width: 50%;
+    }
+  }
+
+  &--button {
+    position: absolute;
+    right: 5px;
+    cursor: pointer;
+
+    img {
+      display: flex;
+      width: 20px;
+      align-items: center;
+    }
+  }
 }
 
 .modal__address input {
@@ -207,9 +243,10 @@ input {
 }
 
 .modal__buttons {
-  margin-top: 10px;
+  margin-top: 50px;
   display: flex;
   justify-content: center;
+  gap: 20px;
 }
 
 .modal__buttons input[type="button"] {
@@ -226,4 +263,17 @@ input {
 
 .address-cell__edit:hover {
   color: $primary;
+}
+
+.profile__password--link {
+  color: $primary;
+  margin-top: 60px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.modal__message {
+  height: 20px;
+  margin: 0 auto;
+  text-align: center;
 }

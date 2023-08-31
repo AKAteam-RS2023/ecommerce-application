@@ -7,7 +7,7 @@ import {
 } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
-import { getProfile, updateCustomer } from '../../services/ecommerce-api';
+import { changePasswordApi, getProfile, updateCustomer } from '../../services/ecommerce-api';
 import { IPage } from '../../types/interfaces/page';
 import Router from '../router/router';
 import './profile.scss';
@@ -19,6 +19,9 @@ import { renderEditableInput } from './render-editable-input';
 import { Address } from '../registration/address';
 import { renderInput } from '../registration/render-input';
 import validateEmail from '../registration/validation/validate-email';
+import { PasswordBtn } from './password-btn';
+import validatePassword from '../registration/validation/validate-password';
+import { ShowMessage } from './show-message';
 
 export class Profile implements IPage {
   private router = Router.instance;
@@ -65,6 +68,8 @@ export class Profile implements IPage {
   });
 
   private saveResult = createElement('div', { class: 'profile__saveresult' });
+
+  private messageBox = new ShowMessage(this.saveResult);
 
   private firstnameValidator: ElementValidator = new ElementValidator(
     this.firstname,
@@ -204,37 +209,30 @@ export class Profile implements IPage {
       version: this.customer.version,
       actions: action,
     })
-      .then((res) => this.handleResponse(res))
-      .catch((err) => this.handleError(err as ErrorResponse));
+      .then((res) => this.handleResponse(res, this.messageBox))
+      .catch((err) => this.handleError(this.messageBox, err as ErrorResponse));
   }
 
-  private handleResponse(resp: ClientResponse<Customer> | ErrorResponse): void {
+  private handleResponse(
+    resp: ClientResponse<Customer> | ErrorResponse,
+    messageBox: ShowMessage,
+  ): void {
     if (resp.statusCode !== 200) {
-      this.handleError(resp as ErrorResponse);
+      this.handleError(messageBox, resp as ErrorResponse);
     } else {
       this.loadProfile(resp as ClientResponse<Customer>);
-      this.showMessage('✓ Saved successfully', 'profile-success');
+      messageBox.showSuccess();
     }
   }
 
-  private handleError(err?: ErrorResponse): void {
+  private handleError(messageBox: ShowMessage, err?: ErrorResponse): void {
     const errMessage = `✕ ${err?.message ?? 'Something went wrong. Please try again'}`;
-    this.showMessage(errMessage, 'profile-error');
+    messageBox.showError(errMessage);
     const changedVersionCode1 = 429;
     const changedVersionCode2 = 409;
     if (err?.statusCode === changedVersionCode1 || err?.statusCode === changedVersionCode2) {
       this.reload();
     }
-  }
-
-  private showMessage(msg: string, cssClass: string): void {
-    this.saveResult.textContent = msg;
-    this.saveResult.classList.add(cssClass);
-    const timeout = cssClass === 'profile-error' ? 5000 : 1500;
-    setTimeout(() => {
-      this.saveResult.textContent = '';
-      this.saveResult.classList.remove(cssClass);
-    }, timeout);
   }
 
   private static createAddressCheckbox(type: string): HTMLInputElement {
@@ -336,6 +334,86 @@ export class Profile implements IPage {
     );
   };
 
+  private static createPasswordInput(
+    header: string,
+    id: string,
+  ): [HTMLElement, HTMLInputElement, ElementValidator] {
+    const password = createElement<HTMLInputElement>('input', {
+      class: 'modal__changepasswordrow--input',
+      type: 'text',
+      id,
+    });
+    const passwordError = createElement<HTMLElement>('div', {
+      class: 'modal__changepasswordrow--error',
+    });
+    const passwordBtn = new PasswordBtn(password);
+    const passwordElement = renderInput(
+      'password',
+      password,
+      passwordError,
+      passwordBtn.render(),
+      header,
+    );
+    const passwordValidator: ElementValidator = new ElementValidator(
+      password,
+      passwordError,
+      validatePassword,
+    );
+    return [passwordElement, password, passwordValidator];
+  }
+
+  private showSetNewPassword = (): void => {
+    const modal = createElement('div', { class: 'modal__overlay' });
+    const wrapper = createElement('div', {
+      class: 'modal__changepassword',
+    });
+    const [oldPasswordDiv, oldPassword, oldPasswordValidator] = Profile.createPasswordInput(
+      'Current password',
+      'oldpassword',
+    );
+    const [newPasswordDiv, newPassword, newPasswordValidator] = Profile.createPasswordInput(
+      'New password',
+      'newpassword',
+    );
+    wrapper.append(oldPasswordDiv, newPasswordDiv);
+    const buttons = createElement('div', { class: 'modal__buttons' });
+    const saveNewPasswordBtn = createElement('input', { type: 'button', value: 'CHANGE' });
+    const cancelBtn = createElement('input', { type: 'button', value: 'CANCEL' });
+    buttons.append(saveNewPasswordBtn, cancelBtn);
+    const container = createElement('div', {
+      class: 'modal__password',
+    });
+    const messageDiv = createElement('div', {
+      class: 'modal__message',
+    });
+    container.append(wrapper, buttons, messageDiv);
+    const changePasswordMessageBox = new ShowMessage(messageDiv, () => modal.remove());
+    modal.append(container);
+    modal.style.display = 'block';
+    document.body.appendChild(modal);
+    cancelBtn.addEventListener('click', () => modal.remove());
+    saveNewPasswordBtn.addEventListener('click', () => {
+      if (oldPasswordValidator.validate() && newPasswordValidator.validate()) {
+        this.changePassword(oldPassword.value, newPassword.value, changePasswordMessageBox);
+      }
+    });
+  };
+
+  private changePassword(
+    currentPassword: string,
+    newPassword: string,
+    messageBox: ShowMessage,
+  ): void {
+    changePasswordApi(
+      this.customer?.id ?? '',
+      currentPassword,
+      newPassword,
+      this.customer?.version ?? 0,
+    )
+      .then((res) => this.handleResponse(res, messageBox))
+      .catch((err) => this.handleError(messageBox, err));
+  }
+
   public render(): HTMLElement {
     const container = createElement('div', { class: 'profile' });
     const title = createElement('div', { class: 'profile__title' });
@@ -354,12 +432,18 @@ export class Profile implements IPage {
     span.textContent = 'Add address';
     addAdressBtn.append(span);
     addAdressBtn.addEventListener('click', this.addAddress);
+    const setNewPassword = createElement('div', {
+      class: 'profile__password--link',
+    });
+    setNewPassword.textContent = 'Set new password';
+    setNewPassword.addEventListener('click', () => this.showSetNewPassword());
     const profileWrapper = createElement('div');
     profileWrapper.append(
       this.createFirstName(),
       this.createLastName(),
-      this.createBirthdate(),
       this.createEmail(),
+      this.createBirthdate(),
+      setNewPassword,
       myAddresses,
       this.shippingList.render(),
       this.billingList.render(),
