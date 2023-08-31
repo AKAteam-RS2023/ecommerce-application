@@ -6,6 +6,7 @@ import {
   ProductProjection,
   createApiBuilderFromCtpClient,
   ClientResponse,
+  CustomerUpdate,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -136,4 +137,17 @@ export const getProductById = async (productID: string): Promise<Product> => {
   } catch {
     throw Error('Product not found');
   }
+};
+
+export const updateCustomer = async (
+  id: string,
+  update: CustomerUpdate,
+): Promise<ClientResponse<Customer>> => {
+  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+  });
+
+  const res = apiRootUser.customers().withId({ ID: id }).post({ body: update }).execute();
+
+  return res;
 };

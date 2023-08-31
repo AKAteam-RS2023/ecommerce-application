@@ -1,8 +1,5 @@
 import {
-  Attribute,
-  Product,
-  ProductData,
-  ProductVariant,
+  Attribute, Product, ProductData, ProductVariant,
 } from '@commercetools/platform-sdk';
 import { getProductById } from '../services/ecommerce-api';
 import IProductDetails from '../types/interfaces/productDetails';
@@ -70,12 +67,13 @@ const getDiscount = (
     }
     const value = data.masterVariant.prices[0]?.discounted?.value.centAmount;
     return data.masterVariant.prices
-    && data.masterVariant.prices[0]?.discounted
-    && !Number.isNaN(data.masterVariant.prices[0]?.discounted?.value.centAmount)
+      && data.masterVariant.prices[0]?.discounted
+      && !Number.isNaN(data.masterVariant.prices[0]?.discounted?.value.centAmount)
       ? {
         id: data.masterVariant.prices[0]?.discounted.discount.id,
         value: value
-          ? `${(value / 100).toFixed(2)} ${data.masterVariant.prices[0]?.discounted?.value.currencyCode}`
+          ? `${(value / 100).toFixed(2)} ${data.masterVariant.prices[0]?.discounted?.value
+            .currencyCode}`
           : undefined,
       }
       : undefined;

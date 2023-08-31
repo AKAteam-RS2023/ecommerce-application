@@ -22,7 +22,9 @@ export default class ProductCard {
     this.initDiscount();
     this.productElement.onclick = (): void => {
       this.router?.navigate(
-        `catalog/product?productID=${this.product.id}${this.product.variantId ? `&variantID=${this.product.variantId}` : ''}`,
+        `catalog/product?productID=${this.product.id}${
+          this.product.variantId ? `&variantID=${this.product.variantId}` : ''
+        }`,
       );
     };
   }

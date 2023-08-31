@@ -90,7 +90,9 @@ export default class ProductView implements IPage {
 
   private renderAttribute(): HTMLDivElement | undefined {
     if (this.product?.attributes) {
-      const wrapperAttribute: HTMLDivElement = createElement('div', { class: 'product-attr__wrapper' });
+      const wrapperAttribute: HTMLDivElement = createElement('div', {
+        class: 'product-attr__wrapper',
+      });
       const attrHeader = createElement('h4', { class: 'product-attr__header' });
       attrHeader.textContent = 'Atrybuty produktu';
       wrapperAttribute.append(attrHeader);
@@ -113,7 +115,9 @@ export default class ProductView implements IPage {
   }
 
   private renderImg(): HTMLDivElement | undefined {
-    const wrapperImg: HTMLDivElement = createElement('div', { class: 'product-details__img-wrapper' });
+    const wrapperImg: HTMLDivElement = createElement('div', {
+      class: 'product-details__img-wrapper',
+    });
     if (this.product?.imagesUrl) {
       this.product.imagesUrl.forEach((item) => {
         const img = createElement<HTMLImageElement>('img', {
