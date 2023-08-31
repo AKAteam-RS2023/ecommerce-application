@@ -4,9 +4,10 @@ import {
   ProductProjection,
   ProductVariant,
 } from '@commercetools/platform-sdk';
-import { getProducts } from '../services/ecommerce-api';
 import IProduct from '../types/product';
 import { Sort } from '../types/sort';
+
+import { getProducts } from '../services/ecommerce-api';
 
 const LANGUAGE = 'pl-PL';
 
@@ -69,7 +70,7 @@ const getDiscount = (
     : undefined;
 };
 
-export function doProduct(product: Product | ProductProjection): IProduct[] {
+function doProduct(product: Product | ProductProjection): IProduct[] {
   const item = 'masterData' in product ? product.masterData.current : product;
   const result: IProduct[] = [];
   result.push({
@@ -95,12 +96,7 @@ export function doProduct(product: Product | ProductProjection): IProduct[] {
   }
   return result;
 }
-
-export default async function getAllProducts(sort: Sort): Promise<IProduct[]> {
-  const res = await getProducts(sort);
-  let result: IProduct[] = [];
-  res.forEach((item) => {
-    result = [...result, ...doProduct(item)];
-  });
-  return result;
+export default async function getIProducts(data: { id?: string; sort: Sort }): Promise<IProduct[]> {
+  const res = await getProducts(data);
+  return res.map(doProduct).flat();
 }

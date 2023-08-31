@@ -57,23 +57,6 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     });
 };
 
-export const getProducts = async (sort: Sort): Promise<ProductProjection[]> => {
-  try {
-    const res = await apiRoot
-      .productProjections()
-      .search()
-      .get({
-        queryArgs: {
-          sort,
-        },
-      })
-      .execute();
-    return res.body.results;
-  } catch {
-    throw Error('No products');
-  }
-};
-
 export const getProductByID = async (id: string): Promise<Product> => {
   try {
     const res = await apiRoot
@@ -90,14 +73,22 @@ export const getProductByID = async (id: string): Promise<Product> => {
   }
 };
 
-export const getProductsByCategoryId = async (id: string): Promise<ProductProjection[]> => {
+export const getProducts = async (data: {
+  id?: string;
+  sort: Sort;
+}): Promise<ProductProjection[]> => {
   try {
+    const filter: string[] = [];
+    if (data.id) {
+      filter.push(`categories.id:"${data.id}"`);
+    }
     const res = await apiRoot
       .productProjections()
       .search()
       .get({
         queryArgs: {
-          filter: `categories.id:"${id}"`,
+          filter,
+          sort: data.sort,
         },
       })
       .execute();

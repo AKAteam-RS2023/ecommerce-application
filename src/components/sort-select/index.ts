@@ -40,8 +40,8 @@ class SortSelect {
     label.textContent = 'Sortovanie:';
     this.selectElement.append(
       this.createOption('alfabetyczne', Sort.nameAsc),
-      this.createOption('cena: od najniszej', Sort.priceAsc),
-      this.createOption('cena: od najwyszej', Sort.priceDesc),
+      this.createOption('cena: od najniższej', Sort.priceAsc),
+      this.createOption('cena: od najwyższej', Sort.priceDesc),
     );
     this.selectElement.onchange = (): void => {
       if (this.value === this.selectElement.value) {

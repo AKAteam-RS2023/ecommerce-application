@@ -6,11 +6,11 @@ import BreadCrumb from '../breadcrumb';
 import categories from '../categories';
 import sortSelect from '../sort-select';
 
-import getAllProducts from '../../controller/get-all-products';
-import getProductsbyCategory from '../../controller/get-products-by-category';
+import getIProducts from '../../controller/get-products';
+
+import { Sort } from '../../types/sort';
 
 import './catalog.scss';
-import { Sort } from '../../types/sort';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -29,12 +29,14 @@ export default class Catalog {
       if (!data || !('id' in data)) {
         return;
       }
-      this.initByCategory(data.id);
+      this.selectCategory = data.id;
+      this.init();
     });
     eventEmitter.subscribe('event: show-all-products', () => {
       if (!this.selectCategory) {
         return;
       }
+      this.selectCategory = null;
       this.init();
     });
     eventEmitter.subscribe('event: select-sort', (data) => {
@@ -64,9 +66,10 @@ export default class Catalog {
 
   private init(): void {
     this.container.innerHTML = '';
-    this.products = [];
-    this.selectCategory = null;
-    getAllProducts(this.sort)
+    getIProducts({
+      sort: this.sort,
+      id: this.selectCategory ? this.selectCategory : undefined,
+    })
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
         if (this.sort === Sort.priceAsc) {
@@ -76,23 +79,6 @@ export default class Catalog {
           this.sortByPriceDesc();
         }
         this.products.forEach((product) => this.container.append(product.render()));
-      })
-      .catch((err) => {
-        this.container.textContent = err.message;
-      });
-  }
-
-  private initByCategory(id: string): void {
-    if (this.selectCategory && id === this.selectCategory) {
-      return;
-    }
-    this.container.innerHTML = '';
-    this.products = [];
-    getProductsbyCategory(id)
-      .then((productsResponse) => {
-        this.products = productsResponse.map((product) => new ProductCard(product));
-        this.products.forEach((product) => this.container.append(product.render()));
-        this.selectCategory = id;
       })
       .catch((err) => {
         this.container.textContent = err.message;
