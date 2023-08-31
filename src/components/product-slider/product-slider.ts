@@ -15,11 +15,17 @@ export default class ProductSlider {
 
   private buttonPrev: HTMLDivElement = createElement('div', { class: 'product-slider__button--prev' });
 
+  private index = 0;
+
+  private sliderLength = 0;
+
   public renderSlider(product: IProductDetails): HTMLDivElement | undefined {
     this.productSlider.innerHTML = '';
     this.wrapperProductSlider.innerHTML = '';
     this.productSliderWindow.innerHTML = '';
     this.sliderItems.innerHTML = '';
+    this.buttonNext.textContent = '>';
+    this.buttonPrev.textContent = '<';
     if (product?.imagesUrl) {
       product.imagesUrl.forEach((item, index) => {
         const sliderItem = createElement<HTMLImageElement>('div', {
@@ -43,13 +49,45 @@ export default class ProductSlider {
 
   public sliderInit(): void {
     const allSlides = Array.from(this.productSlider.getElementsByClassName('product-slider__item'));
-    let index = 0;
-    let sliderLength: number = allSlides.length;
+    this.sliderLength = allSlides.length;
 
     allSlides.forEach((item) => {
       const slide = item as HTMLDivElement;
-      slide.style.width = `${100 / sliderLength}%`;
+      slide.style.width = `${100 / this.sliderLength}%`;
     });
-    this.sliderItems.style.width = `${sliderLength * 100}%`;
+    this.sliderItems.style.width = `${this.sliderLength * 100}%`;
+
+    this.buttonPrev.addEventListener('click', () => {
+      this.prev();
+    });
+
+    this.buttonNext.addEventListener('click', () => {
+      this.next();
+    });
+  }
+
+  private next(): void {
+    this.goto(this.index + 1);
+  }
+
+  private prev(): void {
+    this.goto(this.index - 1);
+  }
+
+  private goto(i: number): void {
+    // изменить текущий индекс...
+    if (i > this.sliderLength - 1) {
+      this.index = 0;
+    } else if (i < 0) {
+      this.index = this.sliderLength - 1;
+    } else {
+      this.index = i;
+    }
+    this.move();
+  }
+
+  private move(): void {
+    const offset: number = (100 / this.sliderLength) * this.index;
+    this.sliderItems.style.transform = `translateX(-${offset}%)`;
   }
 }
