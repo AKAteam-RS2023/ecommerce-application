@@ -65,22 +65,6 @@ export const getProducts = async (): Promise<Product[]> => {
   }
 };
 
-export const getProductByID = async (id: string): Promise<Product> => {
-  try {
-    const res = await apiRoot
-      .products()
-      .get({
-        queryArgs: {
-          where: `id="${id}"`,
-        },
-      })
-      .execute();
-    return res.body.results[0];
-  } catch {
-    throw Error('No product');
-  }
-};
-
 export const getProductsByCategoryId = async (id: string): Promise<ProductProjection[]> => {
   try {
     const res = await apiRoot
@@ -143,4 +127,13 @@ export const getProfile = async (): Promise<ClientResponse<Customer>> => {
   const res = await apiRootUser.me().get().execute();
 
   return res;
+};
+
+export const getProductById = async (productID: string): Promise<Product> => {
+  try {
+    const res = await apiRoot.products().withId({ ID: productID }).get().execute();
+    return res.body;
+  } catch {
+    throw Error('Product not found');
+  }
 };
