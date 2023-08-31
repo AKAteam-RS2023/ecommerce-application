@@ -46,6 +46,7 @@ export default class ProductView implements IPage {
   private renderProductDetails(): void {
     if (this.product) {
       const wrapperSlider: HTMLDivElement | undefined = this.slider.renderSlider(this.product);
+      this.slider.sliderInit();
       const name = createElement('div', {
         class: 'product-details__name',
       });
