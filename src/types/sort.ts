@@ -1,8 +1,6 @@
 export enum Sort {
-  nameAsc = 'name.pl asc',
-  nameDeacs = 'name.pl desc',
+  nameAsc = 'name.pl-PL asc',
+  nameDeacs = 'name.pl-PL desc',
   priceAsc = 'price asc',
   priceDesc = 'price desc',
 }
-
-export default Sort;

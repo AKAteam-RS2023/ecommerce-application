@@ -6,6 +6,7 @@ import {
 } from '@commercetools/platform-sdk';
 import { getProducts } from '../services/ecommerce-api';
 import IProduct from '../types/product';
+import { Sort } from '../types/sort';
 
 const LANGUAGE = 'pl-PL';
 
@@ -95,8 +96,8 @@ export function doProduct(product: Product | ProductProjection): IProduct[] {
   return result;
 }
 
-export default async function getAllProducts(): Promise<IProduct[]> {
-  const res = await getProducts();
+export default async function getAllProducts(sort: Sort): Promise<IProduct[]> {
+  const res = await getProducts(sort);
   let result: IProduct[] = [];
   res.forEach((item) => {
     result = [...result, ...doProduct(item)];

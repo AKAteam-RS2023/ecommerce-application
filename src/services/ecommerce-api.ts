@@ -11,6 +11,7 @@ import {
 import { ctpClient } from '../sdk/build-client';
 
 import conf, { initClient } from '../sdk/create-client-user';
+import { Sort } from '../types/sort';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -56,9 +57,17 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     });
 };
 
-export const getProducts = async (): Promise<Product[]> => {
+export const getProducts = async (sort: Sort): Promise<ProductProjection[]> => {
   try {
-    const res = await apiRoot.products().get().execute();
+    const res = await apiRoot
+      .productProjections()
+      .search()
+      .get({
+        queryArgs: {
+          sort,
+        },
+      })
+      .execute();
     return res.body.results;
   } catch {
     throw Error('No products');

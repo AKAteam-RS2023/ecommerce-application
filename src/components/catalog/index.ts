@@ -20,6 +20,8 @@ export default class Catalog {
 
   private selectCategory: string | null = null;
 
+  private sort = sortSelect.value;
+
   constructor() {
     this.init();
     eventEmitter.subscribe('event: change-category', (data) => {
@@ -40,7 +42,7 @@ export default class Catalog {
     this.container.innerHTML = '';
     this.products = [];
     this.selectCategory = null;
-    getAllProducts()
+    getAllProducts(this.sort)
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
         this.products.forEach((product) => this.container.append(product.render()));
