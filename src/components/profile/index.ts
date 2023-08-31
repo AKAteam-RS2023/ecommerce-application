@@ -429,17 +429,15 @@ export class Profile implements IPage {
     const container = createElement('div', { class: 'profile' });
     const title = createElement('div', { class: 'profile__title' });
     title.textContent = 'My information';
+    const subtitle = createElement('div', { class: 'profile__subtitle' });
+    subtitle.textContent = 'Click on the field to edit it';
     const myAddresses = createElement<HTMLDivElement>('div', {
       class: 'profile__title title__addresses',
     });
     myAddresses.textContent = 'My addresses';
-    const addAdressBtn = createElement('div', {
-      class: 'addAdress__btn',
-    });
+    const addAdressBtn = createElement('div', { class: 'addAdress__btn' });
     addAdressBtn.textContent = '+';
-    const span = createElement('span', {
-      class: 'tooltip',
-    });
+    const span = createElement('span', { class: 'tooltip' });
     span.textContent = 'Add address';
     addAdressBtn.append(span);
     addAdressBtn.addEventListener('click', this.addAddress);
@@ -460,7 +458,7 @@ export class Profile implements IPage {
       this.billingList.render(),
       addAdressBtn,
     );
-    container.append(title, profileWrapper, this.saveResult);
+    container.append(title, subtitle, profileWrapper, this.saveResult);
     this.reload();
     return container;
   }

@@ -5,8 +5,11 @@
   margin: 0 auto;
   &__title {
     font-weight: bold;
-    margin-bottom: 30px;
     color: $primary;
+  }
+  &__subtitle {
+    font-size: 12px;
+    margin-bottom: 30px;
   }
   &__firstname,
   &__lastname,
