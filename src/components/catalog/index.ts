@@ -4,6 +4,7 @@ import eventEmitter from '../../dom-helper/event-emitter';
 import ProductCard from '../product-card';
 import BreadCrumb from '../breadcrumb';
 import categories from '../categories';
+import sortSelect from '../sort-select';
 
 import getAllProducts from '../../controller/get-all-products';
 import getProductsbyCategory from '../../controller/get-products-by-category';
@@ -68,7 +69,7 @@ export default class Catalog {
 
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-    div.append(this.breadcrumb.render(), categories.render(), this.container);
+    div.append(sortSelect.render(), this.breadcrumb.render(), categories.render(), this.container);
     return div;
   }
 }
