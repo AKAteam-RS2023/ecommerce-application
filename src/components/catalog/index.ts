@@ -10,6 +10,7 @@ import getAllProducts from '../../controller/get-all-products';
 import getProductsbyCategory from '../../controller/get-products-by-category';
 
 import './catalog.scss';
+import { Sort } from '../../types/sort';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -20,7 +21,7 @@ export default class Catalog {
 
   private selectCategory: string | null = null;
 
-  private sort = sortSelect.value;
+  private sort: Sort = sortSelect.value;
 
   constructor() {
     this.init();
@@ -36,6 +37,29 @@ export default class Catalog {
       }
       this.init();
     });
+    eventEmitter.subscribe('event: select-sort', (data) => {
+      if (!data || !('sort' in data)) {
+        return;
+      }
+      this.sort = data.sort as Sort;
+      this.init();
+    });
+  }
+
+  private sortByPriceAsc(): void {
+    this.products.sort((a, b) => {
+      const priceA = +a.product.price.replace(/\D/g, '');
+      const priceB = +b.product.price.replace(/\D/g, '');
+      return priceA - priceB;
+    });
+  }
+
+  private sortByPriceDesc(): void {
+    this.products.sort((a, b) => {
+      const priceA = +a.product.price.replace(/\D/g, '');
+      const priceB = +b.product.price.replace(/\D/g, '');
+      return priceB - priceA;
+    });
   }
 
   private init(): void {
@@ -45,6 +69,12 @@ export default class Catalog {
     getAllProducts(this.sort)
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
+        if (this.sort === Sort.priceAsc) {
+          this.sortByPriceAsc();
+        }
+        if (this.sort === Sort.priceDesc) {
+          this.sortByPriceDesc();
+        }
         this.products.forEach((product) => this.container.append(product.render()));
       })
       .catch((err) => {

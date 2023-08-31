@@ -1,4 +1,5 @@
 import createElement from '../../dom-helper/create-element';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 import { Sort } from '../../types/sort';
 
@@ -42,6 +43,13 @@ class SortSelect {
       this.createOption('cena: od najniszej', Sort.priceAsc),
       this.createOption('cena: od najwyszej', Sort.priceDesc),
     );
+    this.selectElement.onchange = (): void => {
+      if (this.value === this.selectElement.value) {
+        return;
+      }
+      this.value = this.selectElement.value as Sort;
+      eventEmitter.emit('event: select-sort', { sort: this.value });
+    };
     this.container.append(label, this.selectElement);
   }
 
