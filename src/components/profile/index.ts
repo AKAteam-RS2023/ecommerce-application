@@ -466,7 +466,9 @@ export class Profile implements IPage {
   }
 
   private reload(): void {
-    getProfile().then((res) => this.loadProfile(res));
+    getProfile()
+      .then((res) => this.loadProfile(res))
+      .catch(() => Router.instance.navigate('login'));
   }
 
   private createFirstName(): HTMLElement {
