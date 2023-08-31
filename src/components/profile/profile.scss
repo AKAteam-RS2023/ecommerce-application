@@ -14,7 +14,8 @@
   &__country,
   &__city,
   &__street,
-  &__postcode {
+  &__postcode,
+  &__email {
     display: flex;
     position: relative;
     margin-bottom: 40px;
@@ -36,6 +37,7 @@
     &--label {
       display: block;
       cursor: pointer;
+      width: 80px;
     }
   }
 

@@ -18,6 +18,7 @@ import validateName from '../registration/validation/validate-name';
 import { renderEditableInput } from './render-editable-input';
 import { Address } from '../registration/address';
 import { renderInput } from '../registration/render-input';
+import validateEmail from '../registration/validation/validate-email';
 
 export class Profile implements IPage {
   private router = Router.instance;
@@ -53,6 +54,16 @@ export class Profile implements IPage {
     class: 'profile__birthdate--error',
   });
 
+  private email = createElement<HTMLInputElement>('input', {
+    class: 'profile__email--input',
+    type: 'text',
+    id: 'email',
+  });
+
+  private emailError = createElement<HTMLElement>('div', {
+    class: 'profile__email--error',
+  });
+
   private saveResult = createElement('div', { class: 'profile__saveresult' });
 
   private firstnameValidator: ElementValidator = new ElementValidator(
@@ -76,6 +87,14 @@ export class Profile implements IPage {
     this.birthdateError,
     validateBirthdate,
     () => this.birthdate.classList.contains('edit'),
+    'profile',
+  );
+
+  private emailValidator: ElementValidator = new ElementValidator(
+    this.email,
+    this.emailError,
+    validateEmail,
+    () => this.email.classList.contains('edit'),
     'profile',
   );
 
@@ -168,6 +187,11 @@ export class Profile implements IPage {
     const actions: CustomerUpdateAction[] = [
       { action: 'setDateOfBirth', dateOfBirth: this.birthdate.value },
     ];
+    this.saveChanges(actions);
+  };
+
+  private saveEmail = (): void => {
+    const actions: CustomerUpdateAction[] = [{ action: 'changeEmail', email: this.email.value }];
     this.saveChanges(actions);
   };
 
@@ -297,6 +321,7 @@ export class Profile implements IPage {
     this.firstname.value = res?.body?.firstName ?? '';
     this.lastname.value = res?.body?.lastName ?? '';
     this.birthdate.value = res?.body?.dateOfBirth ?? '';
+    this.email.value = res?.body?.email ?? '';
 
     this.shippingList.loadAddresses(
       res.body.addresses,
@@ -334,6 +359,7 @@ export class Profile implements IPage {
       this.createFirstName(),
       this.createLastName(),
       this.createBirthdate(),
+      this.createEmail(),
       myAddresses,
       this.shippingList.render(),
       this.billingList.render(),
@@ -375,6 +401,16 @@ export class Profile implements IPage {
       this.saveBirthdate,
       this.birthdateError,
       this.birthdateValidator,
+    );
+  }
+
+  private createEmail(): HTMLElement {
+    return renderEditableInput(
+      'Email',
+      this.email,
+      this.saveEmail,
+      this.emailError,
+      this.emailValidator,
     );
   }
 }
