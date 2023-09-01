@@ -19,11 +19,9 @@ export default class ProductSlider {
 
   private sliderLength = 0;
 
+  private allSlides: HTMLDivElement[] = [];
+
   public renderSlider(product: IProductDetails): HTMLDivElement | undefined {
-    this.productSlider.innerHTML = '';
-    this.wrapperProductSlider.innerHTML = '';
-    this.productSliderWindow.innerHTML = '';
-    this.sliderItems.innerHTML = '';
     this.buttonNext.textContent = '>';
     this.buttonPrev.textContent = '<';
     if (product?.imagesUrl) {
@@ -37,10 +35,19 @@ export default class ProductSlider {
           alt: `${product?.name} image ${index + 1}`,
         });
         sliderItem.append(img);
+        this.allSlides.push(sliderItem);
         this.sliderItems.append(sliderItem);
         this.productSliderWindow.append(this.sliderItems);
       });
-      this.wrapperProductSlider.append(this.productSliderWindow, this.buttonNext, this.buttonPrev);
+      if (this.sliderLength === 1) {
+        this.wrapperProductSlider.append(this.productSliderWindow);
+      } else {
+        this.wrapperProductSlider.append(
+          this.productSliderWindow,
+          this.buttonNext,
+          this.buttonPrev,
+        );
+      }
       this.productSlider.append(this.wrapperProductSlider);
       return this.productSlider;
     }
@@ -48,11 +55,10 @@ export default class ProductSlider {
   }
 
   public sliderInit(): void {
-    const allSlides = Array.from(this.productSlider.getElementsByClassName('product-slider__item'));
-    this.sliderLength = allSlides.length;
+    this.sliderLength = this.allSlides.length;
 
-    allSlides.forEach((item) => {
-      const slide = item as HTMLDivElement;
+    this.allSlides.forEach((item) => {
+      const slide = item;
       slide.style.width = `${100 / this.sliderLength}%`;
     });
     this.sliderItems.style.width = `${this.sliderLength * 100}%`;

@@ -50,6 +50,7 @@
   &:hover {
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
   }
 }
 
@@ -64,5 +65,9 @@
 @media screen and (max-width: $medium) {
   .product-slider {
     width: 80%;
+  }
+
+  .product-slider__window {
+    height: 400px;
   }
 }
