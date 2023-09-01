@@ -19,6 +19,7 @@ class EditListener {
   constructor(opts: ListenerOptions) {
     this.opts = opts;
     this.opts.input.addEventListener('click', this.enterEditMode);
+    this.opts.input.tabIndex = -1;
   }
 
   private okClick = (): void => {
@@ -81,10 +82,7 @@ export function renderEditableInput(
 ): HTMLElement {
   const className = input.className.replace('--input', '');
   const wrapper = createElement('div', { class: `${className}` });
-  const label = createElement('label', {
-    class: `${className}--label`,
-    for: input.id,
-  });
+  const label = createElement('label', { class: `${className}--label`, for: input.id });
   label.textContent = type;
   if (input.type === 'checkbox') {
     wrapper.append(input, label);
