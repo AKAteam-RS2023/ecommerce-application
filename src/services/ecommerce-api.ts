@@ -104,6 +104,38 @@ export const getAllCategories = async (): Promise<Category[]> => {
   }
 };
 
+export const getCategories = async (): Promise<Category[]> => {
+  try {
+    const res = await apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: 'parent is not defined',
+        },
+      })
+      .execute();
+    return res.body.results;
+  } catch {
+    throw Error('No categories');
+  }
+};
+
+export const getSubCategories = async (parentId: string): Promise<Category[]> => {
+  try {
+    const res = await apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: `parent(id="${parentId}")`,
+        },
+      })
+      .execute();
+    return res.body.results;
+  } catch {
+    throw Error('No categories');
+  }
+};
+
 export const getCategoryById = async (id: string): Promise<Category> => {
   try {
     const res = await apiRoot
