@@ -7,17 +7,21 @@ export class ElementValidator {
 
   private enabledFunc?: () => boolean;
 
+  private classPrefix: string;
+
   constructor(
     element: HTMLInputElement,
     errorElement: HTMLElement,
     validateFunc: (value: string) => void,
     enabledFunc?: () => boolean,
+    classPrefix = 'registration',
   ) {
     this.element = element;
     this.errorElement = errorElement;
     this.validateFunc = validateFunc;
     this.enabledFunc = enabledFunc;
-    this.errorElement.classList.add('registration__error');
+    this.classPrefix = classPrefix;
+    this.errorElement.classList.add(`${this.classPrefix}__error`);
     this.element.addEventListener('focusout', () => this.validate());
     this.element.addEventListener('input', () => this.validate());
   }
@@ -36,13 +40,13 @@ export class ElementValidator {
       if (!(err instanceof Error)) {
         return false;
       }
-      this.errorElement.classList.add('registration__error--active');
+      this.errorElement.classList.add(`${this.classPrefix}__error--active`);
       this.errorElement.textContent = err.message;
       return false;
     }
   }
 
   private hideError(): void {
-    this.errorElement.classList.remove('registration__error--active');
+    this.errorElement.classList.remove(`${this.classPrefix}__error--active`);
   }
 }

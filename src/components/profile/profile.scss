@@ -5,8 +5,11 @@
   margin: 0 auto;
   &__title {
     font-weight: bold;
-    margin-bottom: 30px;
     color: $primary;
+  }
+  &__subtitle {
+    font-size: 12px;
+    margin-bottom: 30px;
   }
   &__firstname,
   &__lastname,
@@ -14,10 +17,11 @@
   &__country,
   &__city,
   &__street,
-  &__postcode {
+  &__postcode,
+  &__email {
     display: flex;
     position: relative;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
     justify-content: space-between;
     align-items: center;
 
@@ -27,17 +31,67 @@
       border: 2px solid white;
       border-radius: 5px;
       width: 60%;
+      &:hover {
+        background-color: rgba(159, 159, 159, 0.2);
+        
+      }
     }
 
     &--label {
       display: block;
       cursor: pointer;
+      width: 80px;
     }
+  }
+
+  &__error {
+    width: 98%;
+    position: absolute;
+    z-index: 3;
+    top: 36px;
+    padding: 1px;
+    background-color: $primary;
+    color: $light-xl;
+    text-align: center;
+    font-size: 12px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 60px;
+      top: -12px;
+      z-index: 2;
+      border: 5px solid transparent;
+      border-bottom: 8px solid $primary;
+    }
+  }
+}
+
+.title__addresses {
+  margin-top: 30px;
+}
+
+.profile__error {
+  display: none;
+  &--active {
+    display: block;
   }
 }
 
 input[type=date]::-webkit-calendar-picker-indicator {
   opacity: 0;
+}
+
+.edit-wrapper input[type=date]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+input:hover {
+  cursor: default;
+}
+
+.edit-wrapper input:hover {
+  cursor: text;
 }
 
 .address-list__table {
@@ -53,4 +107,176 @@ input[type=date]::-webkit-calendar-picker-indicator {
     margin-left: 5px;
     color: $primary;
   }
+}
+
+.hidden {
+  color: white;
+}
+
+.edit-btn:hover {
+  cursor: pointer;
+  color: $primary;
+}
+
+input {
+  border: 1px solid white;
+}
+
+.edit-wrapper input {
+  border: 1px solid $primary;
+  outline: none;
+}
+
+.profile__saveresult {
+  font-size: 16px;
+  padding: 5px;
+  text-align: center;
+  height: 15px;
+}
+
+.profile-error {
+  color: darkred;
+  display: block;
+}
+
+.profile-success {
+  color: green;
+  display: block;
+}
+.addAdress__btn {
+  position: relative;
+  margin: 0 auto;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid $primary;
+  border-radius: 100%;
+  transition: 0.6s;
+}
+.addAdress__btn:hover {
+  background-color: $primary;
+  color: white;
+  cursor: pointer;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 100px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 0;
+  border-radius: 6px;
+  font-size: 12px;
+  position: absolute;
+  z-index: 1;
+}
+
+.addAdress__btn:hover .tooltip {
+  visibility: visible;
+  background-color: $grey-xl;
+  color: #fff;
+  top: -5px;
+  left: 115%;
+}
+
+.modal__overlay {
+  display: none;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  background-color: rgba(41, 41, 41, 0.6);
+}
+
+.modal__address, .modal__password {
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #9f9f9f;
+  background-color: white;
+}
+
+.modal__changepassword {
+  &row {
+    display: flex;
+    position: relative;
+    margin-bottom: 35px;
+    justify-content: space-between;
+    align-items: center;
+
+    &--input {
+      display: block;
+      padding: 5px;
+      border: 2px solid $grey-xl;
+      border-radius: 5px;
+      margin-left: 15px;
+    }
+  
+    &--label {
+      display: block;
+      cursor: pointer;
+      width: 50%;
+    }
+  }
+
+  &--button {
+    position: absolute;
+    right: 5px;
+    cursor: pointer;
+
+    img {
+      display: flex;
+      width: 20px;
+      align-items: center;
+    }
+  }
+}
+
+.modal__address input {
+  margin-left: 10px;
+}
+
+.modal__address label {
+  margin-left: 10px;
+}
+
+.modal__buttons {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.modal__buttons input[type="button"] {
+  cursor: pointer;
+}
+
+.address-cell__delete:hover, .address-cell__edit:hover {
+  cursor: pointer;
+}
+
+.address-cell__delete:hover {
+  color: red;
+}
+
+.address-cell__edit:hover {
+  color: $primary;
+}
+
+.profile__password--link {
+  color: $primary;
+  margin-top: 60px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.modal__message {
+  height: 20px;
+  margin: 0 auto;
+  text-align: center;
 }
