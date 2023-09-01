@@ -91,7 +91,6 @@ export default class ProductView implements IPage {
 
   private renderAttribute(): HTMLDivElement | undefined {
     if (this.product?.attributes) {
-      console.log(this.product);
       const wrapperAttribute: HTMLDivElement = createElement('div', {
         class: 'product-attr__wrapper',
       });
@@ -105,13 +104,21 @@ export default class ProductView implements IPage {
         });
         attributeName.textContent = `${item.name}: `;
         attributeItem.append(attributeName);
-        item.value.forEach((itemValue: { key: string, label: string }): void => {
+        if (item.value.length > 1) {
+          item.value.forEach((itemValue: { key: string, label: string }): void => {
+            const attributeLabel = createElement<HTMLImageElement>('div', {
+              class: 'product-attr__label',
+            });
+            attributeLabel.textContent = itemValue.label ? itemValue.label : '';
+            attributeItem.append(attributeLabel);
+          });
+        } else {
           const attributeLabel = createElement<HTMLImageElement>('div', {
             class: 'product-attr__label',
           });
-          attributeLabel.textContent = itemValue.label;
+          attributeLabel.textContent = item.value.label ? item.value.label : '';
           attributeItem.append(attributeLabel);
-        });
+        }
         wrapperAttribute.append(attributeItem);
       });
       return wrapperAttribute;
