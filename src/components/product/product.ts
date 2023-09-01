@@ -3,6 +3,7 @@ import { IPage } from '../../types/interfaces/page';
 import getProductDetails from '../../controller/get-product';
 import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
+import { getProductDiscontById } from '../../services/ecommerce-api';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -56,9 +57,7 @@ export default class ProductView implements IPage {
       });
       wrapperPrices.append(price);
       this.initOldPrice();
-      if (this.oldPrice) {
-        wrapperPrices.append(this.oldPrice);
-      }
+      if (this.oldPrice) wrapperPrices.append(this.oldPrice);
       const description = createElement('div', {
         class: 'product-details__description',
       });
@@ -75,6 +74,8 @@ export default class ProductView implements IPage {
       } else wrapper.append(name, wrapperPrices, description);
 
       if (wrapperImg) {
+        const discount = this.getProductDiscount();
+        if (discount) wrapperImg.append(discount);
         this.container.append(wrapperImg, wrapper);
       } else this.container.append(wrapper);
     }
@@ -86,6 +87,31 @@ export default class ProductView implements IPage {
     }
     this.oldPrice = createElement('div', { class: 'product-details__old-price' });
     this.oldPrice.textContent = this.product.discount.value;
+  }
+
+  private getProductDiscount(): HTMLDivElement | undefined {
+    if (!this.product?.discount || !this.product?.discount.id) {
+      return undefined;
+    }
+    const discount: HTMLDivElement = createElement('div', { class: 'product-details__discount' });
+    getProductDiscontById(this.product.discount?.id).then((res) => {
+      const { type } = res.value;
+      switch (type) {
+        case 'relative': {
+          discount.textContent = `${res.value.permyriad / 100}%`;
+          break;
+        }
+        case 'absolute': {
+          discount.textContent = `${
+            (res.value.money.filter((item) => item.currencyCode === 'PLN')[0]
+              .centAmount / 100).toFixed(2)
+          }`;
+          break;
+        }
+        default:
+      }
+    });
+    return discount;
   }
 
   private renderAttribute(): HTMLDivElement | undefined {

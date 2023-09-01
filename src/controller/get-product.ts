@@ -3,6 +3,7 @@ import {
 } from '@commercetools/platform-sdk';
 import { getProductById } from '../services/ecommerce-api';
 import IProductDetails from '../types/interfaces/productDetails';
+import notFoundImg from '../assets/image/image-not-found.png';
 
 const getName = (data: ProductData): string => (data.name['pl-PL'] ? data.name['pl-PL'] : 'Bez nazwy');
 
@@ -15,17 +16,18 @@ const getDescription = (data: ProductData): string => {
 
 const getPictures = (data: ProductData | ProductVariant): string[] | undefined => {
   const ArrayOfImages: string[] = [];
+  console.log(data);
   if ('masterVariant' in data) {
-    if (data.masterVariant.images) {
+    if (data.masterVariant.images && data.masterVariant.images.length > 0) {
       data.masterVariant.images.forEach((item) => {
         ArrayOfImages.push(item.url);
       });
-    } else ArrayOfImages.push('../assets/image/image-not-found.png');
-  } else if (data.images) {
+    } else ArrayOfImages.push(notFoundImg);
+  } else if (data.images && data.images.length > 0) {
     data.images.forEach((item) => {
       ArrayOfImages.push(item.url);
     });
-  } else ArrayOfImages.push('../assets/image/image-not-found.png');
+  } else ArrayOfImages.push(notFoundImg);
   return ArrayOfImages;
 };
 
