@@ -91,7 +91,9 @@ export default class ProductView implements IPage {
 
   private renderAttribute(): HTMLDivElement | undefined {
     if (this.product?.attributes) {
-      const wrapperAttribute: HTMLDivElement = createElement('div', { class: 'product-attr__wrapper' });
+      const wrapperAttribute: HTMLDivElement = createElement('div', {
+        class: 'product-attr__wrapper',
+      });
       const attrHeader = createElement('h4', { class: 'product-attr__header' });
       attrHeader.textContent = 'Atrybuty produktu';
       wrapperAttribute.append(attrHeader);

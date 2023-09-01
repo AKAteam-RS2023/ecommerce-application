@@ -15,7 +15,9 @@ export default class UrlHandler {
 
   public urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
     // TODO (Alina): refactor for more flexible urls
-    const pathForFind = requestParams.resource === '' ? requestParams.path : `${requestParams.path}/${requestParams.resource}`;
+    const pathForFind = requestParams.resource === ''
+      ? requestParams.path
+      : `${requestParams.path}/${requestParams.resource}`;
     const route = routes.find((item) => item.path === pathForFind);
 
     if (!route) {

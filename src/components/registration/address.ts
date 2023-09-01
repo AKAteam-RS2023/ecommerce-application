@@ -1,4 +1,4 @@
-import { BaseAddress } from '@commercetools/platform-sdk';
+import { BaseAddress, Address as EcomAddress } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import { Country } from './country';
 import { ElementValidator } from './validation/validate';
@@ -97,6 +97,13 @@ export class Address {
     }
   };
 
+  public loadFrom(address: EcomAddress): void {
+    this.country.value = Country.getCountryName(address.country);
+    this.postcode.value = address.postalCode ?? '';
+    this.city.value = address.city ?? '';
+    this.street.value = address.streetName ?? '';
+  }
+
   public validate(): boolean {
     const validResults: boolean[] = [];
     validResults.push(this.streetValidator.validate());
@@ -118,9 +125,14 @@ export class Address {
       streetName: this.street.value,
       postalCode: this.postcode.value,
       city: this.city.value,
+      key: Address.uniqueID(),
     };
 
     return address;
+  }
+
+  private static uniqueID(): string {
+    return Math.floor(Math.random() * Date.now()).toString();
   }
 
   public disable(): void {
