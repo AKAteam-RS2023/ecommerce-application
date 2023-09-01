@@ -73,7 +73,7 @@ export default class Catalog {
     const div = createElement('div', { class: 'catalog__container' });
     const header = createElement('div', { class: 'catalog__categories-header' });
     header.append(this.filters.render(), categories.render());
-    div.append(this.breadcrumb.render(), header, this.container);
+    div.append(this.breadcrumb.render(), header, this.filters.renderMenu(), this.container);
     return div;
   }
 }
