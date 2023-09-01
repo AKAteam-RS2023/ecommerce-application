@@ -77,8 +77,7 @@ export default class ProductView implements IPage {
       if (wrapperSlider) {
         const discount = this.getProductDiscount();
         if (discount) wrapperSlider.append(discount);
-
-          this.container.append(wrapperSlider, wrapper);
+        this.container.append(wrapperSlider, wrapper);
       } else this.container.append(wrapper);
     }
   }
