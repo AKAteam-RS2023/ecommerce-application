@@ -83,18 +83,20 @@ const getDiscount = (
     }
   } else {
     const path = data.prices?.[0]?.discounted;
-    if (data.prices
-      && path?.discount
-      && path.discount.id
-      && path.value
-      && path.value.centAmount
-      && path.value.currencyCode) {
-      return {
-        id: path.discount.id,
-        value: `${(path.value.centAmount / 100).toFixed(2)} ${path.value.currencyCode}`,
-      };
+    if (path) {
+      if (data.prices
+        && path.discount
+        && path.discount.id
+        && path.value
+        && path.value.centAmount
+        && path.value.currencyCode) {
+        return {
+          id: path.discount.id,
+          value: `${(path.value.centAmount / 100).toFixed(2)} ${path.value.currencyCode}`,
+        };
+      }
+      return undefined;
     }
-    return undefined;
   }
   return undefined;
 };

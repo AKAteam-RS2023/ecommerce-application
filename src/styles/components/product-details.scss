@@ -42,8 +42,17 @@
 }
 
 .product-details__old-price {
-  text-decoration: line-through;
+  position: relative;
+  &:before {
+    content: '';
+    border-bottom: 2px solid $red-accents;
+    position: absolute;
+    width: 100%;
+    height: 45%;
+    transform: rotate(-10deg);
+  }
 }
+
 
 .product-details__description {
   font-size: 1.3rem;
