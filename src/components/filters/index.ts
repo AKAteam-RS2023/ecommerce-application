@@ -2,6 +2,7 @@ import createElement from '../../dom-helper/create-element';
 
 import priceFilter from '../price-filter';
 import colorFilter from '../color-filter';
+import madeinFilter from '../madein-filter';
 
 import filter from '../../assets/image/filter.png';
 
@@ -21,7 +22,7 @@ export default class Filters {
   }
 
   private init(): void {
-    this.menu.append(priceFilter.render(), colorFilter.render());
+    this.menu.append(priceFilter.render(), colorFilter.render(), madeinFilter.render());
     this.filtersIcon.onclick = (): void => {
       this.menu.classList.toggle('active');
     };

@@ -2,7 +2,7 @@ import { getProductTypesWithAttribute } from '../services/ecommerce-api';
 
 import IAttribute from '../types/attribute';
 
-const getAttribute = async (name: string): Promise<IAttribute[]> => {
+const getAttributes = async (name: string): Promise<IAttribute[]> => {
   const result: IAttribute[] = [];
   const res = await getProductTypesWithAttribute(name);
   const attributesArr = res.map((item) => item.attributes).flat();
@@ -32,4 +32,4 @@ const getAttribute = async (name: string): Promise<IAttribute[]> => {
   return result;
 };
 
-export default getAttribute;
+export default getAttributes;

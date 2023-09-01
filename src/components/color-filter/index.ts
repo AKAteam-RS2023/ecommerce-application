@@ -1,6 +1,6 @@
 import createElement from '../../dom-helper/create-element';
 
-import getAttribute from '../../controller/get-attributes';
+import getAttributes from '../../controller/get-attributes';
 
 import './color-filter.scss';
 
@@ -31,6 +31,9 @@ class ColorFilter {
       class: 'filter-color--element',
       style: `background-color: ${color}`,
     });
+    if (this.filtersSet.has(color)) {
+      colorElement.classList.add('active');
+    }
     label.append(colorElement);
     wrapper.append(checkBox, label);
     checkBox.onclick = (): void => {
@@ -46,7 +49,7 @@ class ColorFilter {
   }
 
   private init(): void {
-    getAttribute('color').then((res) => {
+    getAttributes('color').then((res) => {
       const colorsSet = new Set();
       res.forEach((item) => {
         item.values.forEach((value) => {

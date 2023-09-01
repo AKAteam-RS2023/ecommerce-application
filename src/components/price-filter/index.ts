@@ -8,14 +8,17 @@ const MIN_CHANGE = 1;
 class PriceFilter {
   private container = createElement('div', { class: 'filters__item' });
 
+  public startValue = MIN_PRICE;
+
+  public finishValue = MAX_PRICE;
+
   private startPrice = createElement<HTMLInputElement>('input', {
     type: 'number',
     class: 'filters__input--price',
     id: 'start-price',
     min: `${MIN_PRICE}`,
     max: `${MAX_PRICE - MIN_CHANGE}`,
-    value: `${MIN_PRICE}`,
-    placeHolder: `${MIN_PRICE}`,
+    value: `${this.startValue}`,
   });
 
   private finishPrice = createElement<HTMLInputElement>('input', {
@@ -24,8 +27,7 @@ class PriceFilter {
     id: 'start-price',
     min: `${MIN_PRICE + MIN_CHANGE}`,
     max: `${MAX_PRICE}`,
-    value: `${MAX_PRICE}`,
-    placeHolder: `${MAX_PRICE}`,
+    value: `${this.finishValue}`,
   });
 
   constructor() {
@@ -58,6 +60,7 @@ class PriceFilter {
       if (+this.startPrice.value >= MAX_PRICE) {
         this.startPrice.value = `${MAX_PRICE - MIN_CHANGE}`;
       }
+      this.startValue = +this.startPrice.value;
     };
     this.finishPrice.onchange = (): void => {
       if (
@@ -69,6 +72,7 @@ class PriceFilter {
       if (+this.finishPrice.value > MAX_PRICE) {
         this.finishPrice.value = `${MAX_PRICE}`;
       }
+      this.finishValue = +this.finishPrice.value;
     };
   }
 
