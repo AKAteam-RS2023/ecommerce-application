@@ -4,6 +4,7 @@ import getProductDetails from '../../controller/get-product';
 import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import { getProductDiscontById } from '../../services/ecommerce-api';
+import ProductSlider from '../product-slider/product-slider';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -17,6 +18,8 @@ export default class ProductView implements IPage {
   private oldPrice: HTMLElement | null = null;
 
   private router = Router.instance;
+
+  private slider = new ProductSlider();
 
   constructor() {
     this.productId = this.router.queryParams.productID;
@@ -43,7 +46,8 @@ export default class ProductView implements IPage {
 
   private renderProductDetails(): void {
     if (this.product) {
-      const wrapperImg: HTMLDivElement | undefined = this.renderImg();
+      const wrapperSlider: HTMLDivElement | undefined = this.slider.renderSlider(this.product);
+      this.slider.sliderInit();
       const name = createElement('div', {
         class: 'product-details__name',
       });
@@ -64,19 +68,17 @@ export default class ProductView implements IPage {
       description.innerHTML = this.product.description;
 
       const wrapperAttribute: HTMLDivElement | undefined = this.renderAttribute();
-
       const wrapper = createElement('div', {
         class: 'product-details__wrapper',
       });
-
       if (wrapperAttribute) {
         wrapper.append(name, wrapperPrices, description, wrapperAttribute);
       } else wrapper.append(name, wrapperPrices, description);
-
-      if (wrapperImg) {
+      if (wrapperSlider) {
         const discount = this.getProductDiscount();
-        if (discount) wrapperImg.append(discount);
-        this.container.append(wrapperImg, wrapper);
+        if (discount) wrapperSlider.append(discount);
+
+          this.container.append(wrapperSlider, wrapper);
       } else this.container.append(wrapper);
     }
   }
@@ -127,32 +129,26 @@ export default class ProductView implements IPage {
         const attributeName = createElement<HTMLImageElement>('div', {
           class: 'product-attr__name',
         });
-        attributeName.textContent = item.name;
-        const attributeLabel = createElement<HTMLImageElement>('div', {
-          class: 'product-attr__label',
-        });
-        attributeLabel.textContent = item.value.label;
-        attributeItem.append(attributeName, attributeLabel);
+        attributeName.textContent = `${item.name}: `;
+        attributeItem.append(attributeName);
+        if (item.value.length > 1) {
+          item.value.forEach((itemValue: { key: string, label: string }): void => {
+            const attributeLabel = createElement<HTMLImageElement>('div', {
+              class: 'product-attr__label',
+            });
+            attributeLabel.textContent = itemValue.label ? itemValue.label : '';
+            attributeItem.append(attributeLabel);
+          });
+        } else {
+          const attributeLabel = createElement<HTMLImageElement>('div', {
+            class: 'product-attr__label',
+          });
+          attributeLabel.textContent = item.value.label ? item.value.label : '';
+          attributeItem.append(attributeLabel);
+        }
         wrapperAttribute.append(attributeItem);
       });
       return wrapperAttribute;
-    }
-    return undefined;
-  }
-
-  private renderImg(): HTMLDivElement | undefined {
-    const wrapperImg: HTMLDivElement = createElement('div', {
-      class: 'product-details__img-wrapper',
-    });
-    if (this.product?.imagesUrl) {
-      this.product.imagesUrl.forEach((item) => {
-        const img = createElement<HTMLImageElement>('img', {
-          class: 'product-details__img',
-          src: item,
-        });
-        wrapperImg.append(img);
-      });
-      return wrapperImg;
     }
     return undefined;
   }

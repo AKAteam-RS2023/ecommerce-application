@@ -151,3 +151,25 @@ export const updateCustomer = async (
 
   return res;
 };
+
+export const changePasswordApi = async (
+  id: string,
+  currentPassword: string,
+  newPassword: string,
+  version: number,
+): Promise<ClientResponse<Customer>> => {
+  const res = apiRoot
+    .customers()
+    .password()
+    .post({
+      body: {
+        id,
+        currentPassword,
+        newPassword,
+        version,
+      },
+    })
+    .execute();
+
+  return res;
+};

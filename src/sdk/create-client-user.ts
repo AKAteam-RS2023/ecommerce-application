@@ -93,4 +93,14 @@ export const initClient = (email: string, password: string): void => {
     .build();
 };
 
+export const clearClient = (): void => {
+  localStorage.clear();
+  conf.client = null;
+  conf.tokenCache.set({
+    token: '',
+    expirationTime: 0,
+    refreshToken: '',
+  });
+};
+
 export default conf;

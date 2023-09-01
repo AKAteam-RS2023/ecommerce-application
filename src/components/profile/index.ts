@@ -7,7 +7,7 @@ import {
 } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
-import { getProfile, updateCustomer } from '../../services/ecommerce-api';
+import { changePasswordApi, getProfile, updateCustomer } from '../../services/ecommerce-api';
 import { IPage } from '../../types/interfaces/page';
 import Router from '../router/router';
 import './profile.scss';
@@ -18,6 +18,12 @@ import validateName from '../registration/validation/validate-name';
 import { renderEditableInput } from './render-editable-input';
 import { Address } from '../registration/address';
 import { renderInput } from '../registration/render-input';
+import validateEmail from '../registration/validation/validate-email';
+import { PasswordBtn } from './password-btn';
+import validatePassword from '../registration/validation/validate-password';
+import { ShowMessage } from './show-message';
+import { loginIfExist } from '../../controller/customers';
+import { clearClient } from '../../sdk/create-client-user';
 
 export class Profile implements IPage {
   private router = Router.instance;
@@ -53,7 +59,19 @@ export class Profile implements IPage {
     class: 'profile__birthdate--error',
   });
 
+  private email = createElement<HTMLInputElement>('input', {
+    class: 'profile__email--input',
+    type: 'text',
+    id: 'email',
+  });
+
+  private emailError = createElement<HTMLElement>('div', {
+    class: 'profile__email--error',
+  });
+
   private saveResult = createElement('div', { class: 'profile__saveresult' });
+
+  private messageBox = new ShowMessage(this.saveResult);
 
   private firstnameValidator: ElementValidator = new ElementValidator(
     this.firstname,
@@ -76,6 +94,14 @@ export class Profile implements IPage {
     this.birthdateError,
     validateBirthdate,
     () => this.birthdate.classList.contains('edit'),
+    'profile',
+  );
+
+  private emailValidator: ElementValidator = new ElementValidator(
+    this.email,
+    this.emailError,
+    validateEmail,
+    () => this.email.classList.contains('edit'),
     'profile',
   );
 
@@ -171,6 +197,11 @@ export class Profile implements IPage {
     this.saveChanges(actions);
   };
 
+  private saveEmail = (): void => {
+    const actions: CustomerUpdateAction[] = [{ action: 'changeEmail', email: this.email.value }];
+    this.saveChanges(actions);
+  };
+
   private saveChanges(action: CustomerUpdateAction[]): void {
     if (!this.customer) {
       return;
@@ -180,37 +211,30 @@ export class Profile implements IPage {
       version: this.customer.version,
       actions: action,
     })
-      .then((res) => this.handleResponse(res))
-      .catch((err) => this.handleError(err as ErrorResponse));
+      .then((res) => this.handleResponse(res, this.messageBox))
+      .catch((err) => this.handleError(this.messageBox, err as ErrorResponse));
   }
 
-  private handleResponse(resp: ClientResponse<Customer> | ErrorResponse): void {
+  private handleResponse(
+    resp: ClientResponse<Customer> | ErrorResponse,
+    messageBox: ShowMessage,
+  ): void {
     if (resp.statusCode !== 200) {
-      this.handleError(resp as ErrorResponse);
+      this.handleError(messageBox, resp as ErrorResponse);
     } else {
       this.loadProfile(resp as ClientResponse<Customer>);
-      this.showMessage('✓ Saved successfully', 'profile-success');
+      messageBox.showSuccess();
     }
   }
 
-  private handleError(err?: ErrorResponse): void {
+  private handleError(messageBox: ShowMessage, err?: ErrorResponse): void {
     const errMessage = `✕ ${err?.message ?? 'Something went wrong. Please try again'}`;
-    this.showMessage(errMessage, 'profile-error');
+    messageBox.showError(errMessage);
     const changedVersionCode1 = 429;
     const changedVersionCode2 = 409;
     if (err?.statusCode === changedVersionCode1 || err?.statusCode === changedVersionCode2) {
       this.reload();
     }
-  }
-
-  private showMessage(msg: string, cssClass: string): void {
-    this.saveResult.textContent = msg;
-    this.saveResult.classList.add(cssClass);
-    const timeout = cssClass === 'profile-error' ? 5000 : 1500;
-    setTimeout(() => {
-      this.saveResult.textContent = '';
-      this.saveResult.classList.remove(cssClass);
-    }, timeout);
   }
 
   private static createAddressCheckbox(type: string): HTMLInputElement {
@@ -297,6 +321,7 @@ export class Profile implements IPage {
     this.firstname.value = res?.body?.firstName ?? '';
     this.lastname.value = res?.body?.lastName ?? '';
     this.birthdate.value = res?.body?.dateOfBirth ?? '';
+    this.email.value = res?.body?.email ?? '';
 
     this.shippingList.loadAddresses(
       res.body.addresses,
@@ -311,41 +336,137 @@ export class Profile implements IPage {
     );
   };
 
+  private static createPasswordInput(
+    header: string,
+    id: string,
+  ): [HTMLElement, HTMLInputElement, ElementValidator] {
+    const password = createElement<HTMLInputElement>('input', {
+      class: 'modal__changepasswordrow--input',
+      type: 'text',
+      id,
+    });
+    const passwordError = createElement<HTMLElement>('div', {
+      class: 'modal__changepasswordrow--error',
+    });
+    const passwordBtn = new PasswordBtn(password);
+    const passwordElement = renderInput(
+      'password',
+      password,
+      passwordError,
+      passwordBtn.render(),
+      header,
+    );
+    const passwordValidator: ElementValidator = new ElementValidator(
+      password,
+      passwordError,
+      validatePassword,
+    );
+    return [passwordElement, password, passwordValidator];
+  }
+
+  private showSetNewPassword = (): void => {
+    const modal = createElement('div', { class: 'modal__overlay' });
+    const wrapper = createElement('div', {
+      class: 'modal__changepassword',
+    });
+    const [oldPasswordDiv, oldPassword, oldPasswordValidator] = Profile.createPasswordInput(
+      'Current password',
+      'oldpassword',
+    );
+    const [newPasswordDiv, newPassword, newPasswordValidator] = Profile.createPasswordInput(
+      'New password',
+      'newpassword',
+    );
+    wrapper.append(oldPasswordDiv, newPasswordDiv);
+    const buttons = createElement('div', { class: 'modal__buttons' });
+    const saveNewPasswordBtn = createElement('input', { type: 'button', value: 'CHANGE' });
+    const cancelBtn = createElement('input', { type: 'button', value: 'CANCEL' });
+    buttons.append(saveNewPasswordBtn, cancelBtn);
+    const container = createElement('div', {
+      class: 'modal__password',
+    });
+    const messageDiv = createElement('div', {
+      class: 'modal__message',
+    });
+    container.append(wrapper, buttons, messageDiv);
+    const changePasswordMessageBox = new ShowMessage(messageDiv, () => modal.remove());
+    modal.append(container);
+    modal.style.display = 'block';
+    document.body.appendChild(modal);
+    cancelBtn.addEventListener('click', () => modal.remove());
+    saveNewPasswordBtn.addEventListener('click', async () => {
+      if (oldPasswordValidator.validate() && newPasswordValidator.validate()) {
+        await this.changePassword(oldPassword.value, newPassword.value, changePasswordMessageBox);
+      }
+    });
+  };
+
+  private async changePassword(
+    currentPassword: string,
+    newPassword: string,
+    messageBox: ShowMessage,
+  ): Promise<void> {
+    try {
+      const res = await changePasswordApi(
+        this.customer?.id ?? '',
+        currentPassword,
+        newPassword,
+        this.customer?.version ?? 0,
+      );
+      this.handleResponse(res, messageBox);
+      clearClient();
+      await loginIfExist(this.email.value, newPassword);
+    } catch (err) {
+      if (!(err as ErrorResponse)) {
+        messageBox.showError('Something went wrong. Please try again.');
+        return;
+      }
+      this.handleError(messageBox, err as ErrorResponse);
+    }
+  }
+
   public render(): HTMLElement {
     const container = createElement('div', { class: 'profile' });
     const title = createElement('div', { class: 'profile__title' });
     title.textContent = 'My information';
+    const subtitle = createElement('div', { class: 'profile__subtitle' });
+    subtitle.textContent = 'Click on the field to edit it';
     const myAddresses = createElement<HTMLDivElement>('div', {
       class: 'profile__title title__addresses',
     });
     myAddresses.textContent = 'My addresses';
-    const addAdressBtn = createElement('div', {
-      class: 'addAdress__btn',
-    });
+    const addAdressBtn = createElement('div', { class: 'addAdress__btn' });
     addAdressBtn.textContent = '+';
-    const span = createElement('span', {
-      class: 'tooltip',
-    });
+    const span = createElement('span', { class: 'tooltip' });
     span.textContent = 'Add address';
     addAdressBtn.append(span);
     addAdressBtn.addEventListener('click', this.addAddress);
+    const setNewPassword = createElement('div', {
+      class: 'profile__password--link',
+    });
+    setNewPassword.textContent = 'Set new password';
+    setNewPassword.addEventListener('click', () => this.showSetNewPassword());
     const profileWrapper = createElement('div');
     profileWrapper.append(
       this.createFirstName(),
       this.createLastName(),
+      this.createEmail(),
       this.createBirthdate(),
+      setNewPassword,
       myAddresses,
       this.shippingList.render(),
       this.billingList.render(),
       addAdressBtn,
     );
-    container.append(title, profileWrapper, this.saveResult);
+    container.append(title, subtitle, profileWrapper, this.saveResult);
     this.reload();
     return container;
   }
 
   private reload(): void {
-    getProfile().then((res) => this.loadProfile(res));
+    getProfile()
+      .then((res) => this.loadProfile(res))
+      .catch(() => Router.instance.navigate('login'));
   }
 
   private createFirstName(): HTMLElement {
@@ -375,6 +496,16 @@ export class Profile implements IPage {
       this.saveBirthdate,
       this.birthdateError,
       this.birthdateValidator,
+    );
+  }
+
+  private createEmail(): HTMLElement {
+    return renderEditableInput(
+      'Email',
+      this.email,
+      this.saveEmail,
+      this.emailError,
+      this.emailValidator,
     );
   }
 }
