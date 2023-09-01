@@ -4,6 +4,7 @@ import priceFilter from '../price-filter';
 
 import filter from '../../assets/image/filter.png';
 import './filters.scss';
+import getAttributes from '../../controller/get-attributes';
 
 export default class Filters {
   private filtersIcon = createElement<HTMLImageElement>('img', {
@@ -19,6 +20,7 @@ export default class Filters {
   }
 
   private init(): void {
+    getAttributes('color').then(console.log);
     this.menu.append(priceFilter.render());
     this.filtersIcon.onclick = (): void => {
       this.menu.classList.toggle('active');

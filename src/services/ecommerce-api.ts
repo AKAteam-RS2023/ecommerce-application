@@ -7,6 +7,7 @@ import {
   createApiBuilderFromCtpClient,
   ClientResponse,
   CustomerUpdate,
+  ProductType,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -182,4 +183,16 @@ export const updateCustomer = async (
   const res = apiRootUser.customers().withId({ ID: id }).post({ body: update }).execute();
 
   return res;
+};
+
+export const getProductTypesWithAttribute = async (name: string): Promise<ProductType[]> => {
+  const res = await apiRoot
+    .productTypes()
+    .get({
+      queryArgs: {
+        where: `attributes is not empty and attributes(name="${name}")`,
+      },
+    })
+    .execute();
+  return res.body.results;
 };
