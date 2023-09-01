@@ -6,11 +6,11 @@ const MAX_PRICE = 10000;
 const MIN_CHANGE = 1;
 
 class PriceFilter {
-  private container = createElement('div', { class: 'price-filter' });
+  private container = createElement('div', { class: 'filters__item' });
 
   private startPrice = createElement<HTMLInputElement>('input', {
     type: 'number',
-    class: 'price-filter__input',
+    class: 'filters__input--price',
     id: 'start-price',
     min: `${MIN_PRICE}`,
     max: `${MAX_PRICE - MIN_CHANGE}`,
@@ -20,7 +20,7 @@ class PriceFilter {
 
   private finishPrice = createElement<HTMLInputElement>('input', {
     type: 'number',
-    class: 'price-filter__input',
+    class: 'filters__input--price',
     id: 'start-price',
     min: `${MIN_PRICE + MIN_CHANGE}`,
     max: `${MAX_PRICE}`,
@@ -33,9 +33,9 @@ class PriceFilter {
   }
 
   private static initInput(inputElement: HTMLInputElement, textContent: string): HTMLElement {
-    const wrapper = createElement('div', { class: 'price-filter__item' });
+    const wrapper = createElement('div', { class: 'filter__price' });
     const label = createElement<HTMLLabelElement>('label', {
-      class: 'price-filter__label',
+      class: 'filters__label--price',
       for: inputElement.id,
     });
     label.textContent = textContent;
@@ -44,7 +44,7 @@ class PriceFilter {
   }
 
   private init(): void {
-    const title = createElement('div', { class: 'price-filter__title' });
+    const title = createElement('div', { class: 'filters__title' });
     title.textContent = 'Cena:';
     this.container.append(
       title,

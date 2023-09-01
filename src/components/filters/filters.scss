@@ -3,13 +3,27 @@
 .filters {
   position: relative;
 
+
   &__icon {
     width: 20px;
     cursor: pointer;
   }
 
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__title {
+    margin-bottom: 5px;
+    color: $dark;
+  }
+
   &__menu {
-    // position: absolute;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
     z-index: 1;
     padding: 10px;
     width: 100%;
