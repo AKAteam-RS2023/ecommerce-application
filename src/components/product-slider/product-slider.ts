@@ -21,6 +21,8 @@ export default class ProductSlider {
 
   private allSlides: HTMLDivElement[] = [];
 
+  private indicators: HTMLLIElement[] = [];
+
   public renderSlider(product: IProductDetails): HTMLDivElement | undefined {
     this.buttonNext.textContent = '>';
     this.buttonPrev.textContent = '<';
@@ -56,7 +58,7 @@ export default class ProductSlider {
 
   public sliderInit(): void {
     this.sliderLength = this.allSlides.length;
-
+    if (this.sliderLength > 1) this.indicators = this.indicatorsRender();
     this.allSlides.forEach((item) => {
       const slide = item;
       slide.style.width = `${100 / this.sliderLength}%`;
@@ -70,6 +72,30 @@ export default class ProductSlider {
     this.buttonNext.addEventListener('click', () => {
       this.next();
     });
+
+    this.indicators.forEach((item) => {
+      item.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (event.target) {
+          const index = this.indicators.indexOf(event.target as HTMLLIElement);
+          if (index === this.index) return;
+          this.goto(index);
+        }
+      });
+    });
+  }
+
+  private indicatorsRender(): HTMLLIElement[] {
+    const ol: HTMLElement = createElement('ol', { class: 'product-slider__indicators' });
+    const children: HTMLLIElement[] = [];
+    for (let i = 0; i < this.sliderLength; i += 1) {
+      const li: HTMLLIElement = createElement('li', { class: 'indicators__item' });
+      if (i === 0) li.classList.add('active');
+      ol.append(li);
+      children.push(li);
+    }
+    this.productSlider.prepend(ol);
+    return children;
   }
 
   private next(): void {
@@ -95,5 +121,7 @@ export default class ProductSlider {
   private move(): void {
     const offset: number = (100 / this.sliderLength) * this.index;
     this.sliderItems.style.transform = `translateX(-${offset}%)`;
+    this.indicators.forEach((item) => item.classList.remove('active'));
+    this.indicators[this.index].classList.add('active');
   }
 }

@@ -11,6 +11,7 @@
   height: 500px;
   position: relative;
   overflow: hidden;
+  background: $light-xl;
 }
 
 .product-slider__items {
@@ -60,6 +61,33 @@
 
 .product-slider__button--next {
   right: 10px;
+}
+
+.product-slider__indicators {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  list-style: none;
+}
+
+.indicators__item {
+  flex: 0 1 auto;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+  background-color: $grey-l;
+  border: 2px solid $light-xl;
+  border-radius: 50%;
+  &.active {
+    background-color: $grey-xl;
+  }
 }
 
 @media screen and (max-width: $medium) {
