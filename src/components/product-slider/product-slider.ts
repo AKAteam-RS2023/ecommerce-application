@@ -39,7 +39,7 @@ export default class ProductSlider {
         this.sliderItems.append(sliderItem);
         this.productSliderWindow.append(this.sliderItems);
       });
-      if (this.sliderLength === 1) {
+      if (product.imagesUrl.length <= 1) {
         this.wrapperProductSlider.append(this.productSliderWindow);
       } else {
         this.wrapperProductSlider.append(

@@ -91,6 +91,7 @@ export default class ProductView implements IPage {
 
   private renderAttribute(): HTMLDivElement | undefined {
     if (this.product?.attributes) {
+      console.log(this.product);
       const wrapperAttribute: HTMLDivElement = createElement('div', {
         class: 'product-attr__wrapper',
       });
@@ -102,12 +103,15 @@ export default class ProductView implements IPage {
         const attributeName = createElement<HTMLImageElement>('div', {
           class: 'product-attr__name',
         });
-        attributeName.textContent = item.name;
-        const attributeLabel = createElement<HTMLImageElement>('div', {
-          class: 'product-attr__label',
+        attributeName.textContent = `${item.name}: `;
+        attributeItem.append(attributeName);
+        item.value.forEach((itemValue: { key: string, label: string }): void => {
+          const attributeLabel = createElement<HTMLImageElement>('div', {
+            class: 'product-attr__label',
+          });
+          attributeLabel.textContent = itemValue.label;
+          attributeItem.append(attributeLabel);
         });
-        attributeLabel.textContent = item.value.label;
-        attributeItem.append(attributeName, attributeLabel);
         wrapperAttribute.append(attributeItem);
       });
       return wrapperAttribute;
