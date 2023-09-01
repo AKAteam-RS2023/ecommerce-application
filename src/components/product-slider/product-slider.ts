@@ -5,15 +5,23 @@ import './product-slider.scss';
 export default class ProductSlider {
   public productSlider: HTMLDivElement = createElement('div', { class: 'product-slider' });
 
-  public wrapperProductSlider: HTMLDivElement = createElement('div', { class: 'product-slider__wrapper' });
+  public wrapperProductSlider: HTMLDivElement = createElement('div', {
+    class: 'product-slider__wrapper',
+  });
 
-  private productSliderWindow: HTMLDivElement = createElement('div', { class: 'product-slider__window' });
+  private productSliderWindow: HTMLDivElement = createElement('div', {
+    class: 'product-slider__window',
+  });
 
   private sliderItems: HTMLDivElement = createElement('div', { class: 'product-slider__items' });
 
-  private buttonNext: HTMLDivElement = createElement('div', { class: 'product-slider__button--next' });
+  private buttonNext: HTMLDivElement = createElement('div', {
+    class: 'product-slider__button--next',
+  });
 
-  private buttonPrev: HTMLDivElement = createElement('div', { class: 'product-slider__button--prev' });
+  private buttonPrev: HTMLDivElement = createElement('div', {
+    class: 'product-slider__button--prev',
+  });
 
   private index = 0;
 

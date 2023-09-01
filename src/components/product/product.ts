@@ -105,7 +105,7 @@ export default class ProductView implements IPage {
         attributeName.textContent = `${item.name}: `;
         attributeItem.append(attributeName);
         if (item.value.length > 1) {
-          item.value.forEach((itemValue: { key: string, label: string }): void => {
+          item.value.forEach((itemValue: { key: string; label: string }): void => {
             const attributeLabel = createElement<HTMLImageElement>('div', {
               class: 'product-attr__label',
             });
@@ -122,6 +122,23 @@ export default class ProductView implements IPage {
         wrapperAttribute.append(attributeItem);
       });
       return wrapperAttribute;
+    }
+    return undefined;
+  }
+
+  private renderImg(): HTMLDivElement | undefined {
+    const wrapperImg: HTMLDivElement = createElement('div', {
+      class: 'product-details__img-wrapper',
+    });
+    if (this.product?.imagesUrl) {
+      this.product.imagesUrl.forEach((item) => {
+        const img = createElement<HTMLImageElement>('img', {
+          class: 'product-details__img',
+          src: item,
+        });
+        wrapperImg.append(img);
+      });
+      return wrapperImg;
     }
     return undefined;
   }

@@ -4,9 +4,11 @@ import eventEmitter from '../../dom-helper/event-emitter';
 import ProductCard from '../product-card';
 import BreadCrumb from '../breadcrumb';
 import categories from '../categories';
+import sortSelect from '../sort-select';
 
-import getAllProducts from '../../controller/get-all-products';
-import getProductsbyCategory from '../../controller/get-products-by-category';
+import getIProducts from '../../controller/get-products';
+
+import { Sort } from '../../types/sort';
 
 import './catalog.scss';
 
@@ -19,47 +21,64 @@ export default class Catalog {
 
   private selectCategory: string | null = null;
 
+  private sort: Sort = sortSelect.value;
+
   constructor() {
     this.init();
     eventEmitter.subscribe('event: change-category', (data) => {
       if (!data || !('id' in data)) {
         return;
       }
-      this.initByCategory(data.id);
+      this.selectCategory = data.id;
+      this.init();
     });
     eventEmitter.subscribe('event: show-all-products', () => {
       if (!this.selectCategory) {
         return;
       }
+      this.selectCategory = null;
       this.init();
+    });
+    eventEmitter.subscribe('event: select-sort', (data) => {
+      if (!data || !('sort' in data)) {
+        return;
+      }
+      this.sort = data.sort as Sort;
+      this.init();
+    });
+  }
+
+  private sortByPriceAsc(): void {
+    this.products.sort((a, b) => {
+      const priceA = +a.product.price.replace(/\D/g, '');
+      const priceB = +b.product.price.replace(/\D/g, '');
+      return priceA - priceB;
+    });
+  }
+
+  private sortByPriceDesc(): void {
+    this.products.sort((a, b) => {
+      const priceA = +a.product.price.replace(/\D/g, '');
+      const priceB = +b.product.price.replace(/\D/g, '');
+      return priceB - priceA;
     });
   }
 
   private init(): void {
     this.container.innerHTML = '';
-    this.products = [];
-    this.selectCategory = null;
-    getAllProducts()
+    getIProducts({
+      sort: this.sort,
+      id: this.selectCategory ? this.selectCategory : undefined,
+    })
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
+        if (this.sort === Sort.priceAsc) {
+          this.sortByPriceAsc();
+        }
+        if (this.sort === Sort.priceDesc) {
+          this.sortByPriceDesc();
+        }
         this.products.forEach((product) => this.container.append(product.render()));
-      })
-      .catch((err) => {
-        this.container.textContent = err.message;
-      });
-  }
-
-  private initByCategory(id: string): void {
-    if (this.selectCategory && id === this.selectCategory) {
-      return;
-    }
-    this.container.innerHTML = '';
-    this.products = [];
-    getProductsbyCategory(id)
-      .then((productsResponse) => {
-        this.products = productsResponse.map((product) => new ProductCard(product));
-        this.products.forEach((product) => this.container.append(product.render()));
-        this.selectCategory = id;
       })
       .catch((err) => {
         this.container.textContent = err.message;
@@ -68,7 +87,9 @@ export default class Catalog {
 
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-    div.append(this.breadcrumb.render(), categories.render(), this.container);
+    const header = createElement('div', { class: 'catalog__header' });
+    header.append(this.breadcrumb.render(), sortSelect.render());
+    div.append(header, categories.render(), this.container);
     return div;
   }
 }

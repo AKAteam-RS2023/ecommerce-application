@@ -57,7 +57,7 @@ export default class BreadCrumb {
   };
 
   private initFirstCrumb(): void {
-    this.firstCrumb.textContent = 'All products> ';
+    this.firstCrumb.textContent = 'Towary> ';
     this.firstCrumb.onclick = (): void => {
       this.init();
       eventEmitter.emit('event: show-all-products', undefined);
