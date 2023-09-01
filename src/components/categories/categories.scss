@@ -4,8 +4,6 @@
   display: flex;
   justify-content: center;
   gap: 100px;
-  padding: 10px;
-  background-color: $light-l;
 
   @media screen and (max-width: $x-large) {
     gap: 80px;    
@@ -16,8 +14,7 @@
   }
 
   @media screen and (max-width: $medium) {
-    gap: 40px;
-    padding: 5px; 
+    gap: 30px;
   }
 
 }

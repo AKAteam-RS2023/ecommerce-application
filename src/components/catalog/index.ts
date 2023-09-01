@@ -9,6 +9,7 @@ import getAllProducts from '../../controller/get-all-products';
 import getProductsbyCategory from '../../controller/get-products-by-category';
 
 import './catalog.scss';
+import Filters from '../filters';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -16,6 +17,8 @@ export default class Catalog {
   private products: ProductCard[] = [];
 
   private breadcrumb = new BreadCrumb();
+
+  private filters = new Filters();
 
   private selectCategory: string | null = null;
 
@@ -68,7 +71,9 @@ export default class Catalog {
 
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-    div.append(this.breadcrumb.render(), categories.render(), this.container);
+    const header = createElement('div', { class: 'catalog__header' });
+    header.append(this.filters.render(), categories.render());
+    div.append(this.breadcrumb.render(), header, this.container);
     return div;
   }
 }

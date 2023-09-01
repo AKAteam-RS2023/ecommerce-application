@@ -16,6 +16,14 @@
     color: $dark;
   }
 
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: $light-l;
+  }
+
   @media screen and (max-width: $x-large){
     grid-template-columns: repeat(3, auto);
     column-gap: 30px;
