@@ -6,9 +6,10 @@ import {
 } from '@commercetools/platform-sdk';
 
 import IProduct from '../types/product';
-import { Sort } from '../types/sort';
+import Sort from '../types/sort';
 
 import { getProducts } from '../services/ecommerce-api';
+import IFilters from '../types/filters';
 
 const LANGUAGE = 'pl-PL';
 
@@ -85,7 +86,11 @@ function doProduct(product: Product | ProductProjection): IProduct[] {
   }
   return result;
 }
-export default async function getIProducts(data: { id?: string; sort: Sort }): Promise<IProduct[]> {
+export default async function getIProducts(data: {
+  categoryId?: string;
+  sort: Sort;
+  filters?: IFilters;
+}): Promise<IProduct[]> {
   const res = await getProducts(data);
   return res.map(doProduct).flat();
 }

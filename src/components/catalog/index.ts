@@ -10,7 +10,7 @@ import sortSelect from '../sort-select';
 
 import getIProducts from '../../controller/get-products';
 
-import { Sort } from '../../types/sort';
+import Sort from '../../types/sort';
 
 import './catalog.scss';
 
@@ -49,8 +49,8 @@ export default class Catalog {
       this.init();
     });
     eventEmitter.subscribe('event: change-products', () => {
-      console.log(filters.filters);
-      // this.init();
+      console.log('>>>>change', filters.filters);
+      this.init();
     });
   }
 
@@ -74,7 +74,8 @@ export default class Catalog {
     this.container.innerHTML = '';
     getIProducts({
       sort: this.sort,
-      id: this.selectCategory ? this.selectCategory : undefined,
+      categoryId: this.selectCategory ? this.selectCategory : undefined,
+      filters: filters.filters,
     })
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));

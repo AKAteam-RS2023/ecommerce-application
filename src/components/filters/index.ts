@@ -1,13 +1,15 @@
 import createElement from '../../dom-helper/create-element';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 import priceFilter from '../price-filter';
 import colorFilter from '../color-filter';
 import madeinFilter from '../madein-filter';
 
+import IFilters from '../../types/filters';
+
 import filter from '../../assets/image/filter.png';
 
 import './filters.scss';
-import eventEmitter from '../../dom-helper/event-emitter';
 
 class Filters {
   private filtersIcon = createElement<HTMLImageElement>('img', {
@@ -20,7 +22,7 @@ class Filters {
 
   private clearFiltersBtn = createElement<HTMLButtonElement>('button', { class: 'button--clear' });
 
-  public filters = {
+  public filters: IFilters = {
     startPrice: priceFilter.startValue,
     finishPrice: priceFilter.finishValue,
     colors: colorFilter.filtersSet,

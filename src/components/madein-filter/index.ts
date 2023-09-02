@@ -9,16 +9,16 @@ const ALL = 'Wszystkie';
 class MadeInFilter {
   private container = createElement('div', { class: 'filters__item' });
 
-  public filter = ALL;
+  public filter: string | undefined = undefined;
 
   constructor() {
     this.init();
     eventEmitter.subscribe('event: clear-filters', () => {
-      if (this.filter === ALL) {
+      if (!this.filter) {
         return;
       }
-      this.filter = ALL;
-      const input = this.container.querySelector<HTMLInputElement>(`[id="${this.filter}"]`);
+      this.filter = undefined;
+      const input = this.container.querySelector<HTMLInputElement>(`[id="${ALL}"]`);
       if (input) {
         input.checked = true;
       }
@@ -40,14 +40,14 @@ class MadeInFilter {
     });
     label.textContent = madein;
     wrapper.append(radio, label);
-    if (this.filter === madein) {
+    if (this.filter === madein || (this.filter === undefined && madein === ALL)) {
       radio.checked = true;
     }
     radio.onclick = (): void => {
       if (this.filter === radio.value) {
         return;
       }
-      this.filter = radio.value;
+      this.filter = radio.value === ALL ? undefined : radio.value;
       eventEmitter.emit('event: change-filter', undefined);
     };
     return wrapper;
@@ -67,7 +67,7 @@ class MadeInFilter {
     });
     const title = createElement('div', { class: 'filters__title' });
     title.textContent = 'Made in:';
-    const all = this.createRadio('Wszystkie');
+    const all = this.createRadio(ALL);
     this.container.append(title, all);
   }
 
