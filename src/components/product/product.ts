@@ -103,10 +103,9 @@ export default class ProductView implements IPage {
           break;
         }
         case 'absolute': {
-          discount.textContent = `${
-            (res.value.money.filter((item) => item.currencyCode === 'PLN')[0]
-              .centAmount / 100).toFixed(2)
-          }`;
+          discount.textContent = `${(
+            res.value.money.filter((item) => item.currencyCode === 'PLN')[0].centAmount / 100
+          ).toFixed(2)}`;
           break;
         }
         default:

@@ -85,7 +85,11 @@ function doProduct(product: Product | ProductProjection): IProduct[] {
   }
   return result;
 }
-export default async function getIProducts(data: { id?: string; sort: Sort }): Promise<IProduct[]> {
+export default async function getIProducts(data: {
+  id?: string;
+  sort: Sort;
+  searchQuery?: string;
+}): Promise<IProduct[]> {
   const res = await getProducts(data);
   return res.map(doProduct).flat();
 }

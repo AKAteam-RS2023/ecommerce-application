@@ -11,6 +11,7 @@ import getIProducts from '../../controller/get-products';
 import { Sort } from '../../types/sort';
 
 import './catalog.scss';
+import Search from '../search/search';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -22,6 +23,10 @@ export default class Catalog {
   private selectCategory: string | null = null;
 
   private sort: Sort = sortSelect.value;
+
+  private searchQuery?: string;
+
+  private search: Search = new Search();
 
   constructor() {
     this.init();
@@ -44,6 +49,13 @@ export default class Catalog {
         return;
       }
       this.sort = data.sort as Sort;
+      this.init();
+    });
+    eventEmitter.subscribe('event: search', (data) => {
+      if (!data || !('searchQuery' in data)) {
+        return;
+      }
+      this.searchQuery = data.searchQuery;
       this.init();
     });
   }
@@ -69,6 +81,7 @@ export default class Catalog {
     getIProducts({
       sort: this.sort,
       id: this.selectCategory ? this.selectCategory : undefined,
+      searchQuery: this.searchQuery,
     })
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));

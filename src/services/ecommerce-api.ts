@@ -61,6 +61,7 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
 export const getProducts = async (data: {
   id?: string;
   sort: Sort;
+  searchQuery?: string;
 }): Promise<ProductProjection[]> => {
   try {
     const filter: string[] = [];
@@ -74,6 +75,7 @@ export const getProducts = async (data: {
         queryArgs: {
           filter,
           sort: data.sort,
+          'text.pl-PL': data.searchQuery,
         },
       })
       .execute();

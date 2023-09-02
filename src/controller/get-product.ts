@@ -32,9 +32,11 @@ const getPictures = (data: ProductData | ProductVariant): string[] | undefined =
 
 const getPrice = (data: ProductData | ProductVariant): string => {
   if ('masterVariant' in data) {
-    if (data.masterVariant.prices
+    if (
+      data.masterVariant.prices
       && data.masterVariant.prices[0]?.value.centAmount
-      && data.masterVariant.prices[0]?.value.currencyCode) {
+      && data.masterVariant.prices[0]?.value.currencyCode
+    ) {
       return `${(data.masterVariant.prices[0].value.centAmount / 100).toFixed(2)} ${
         data.masterVariant.prices[0].value.currencyCode
       }`;
@@ -42,7 +44,9 @@ const getPrice = (data: ProductData | ProductVariant): string => {
     return 'brak danych';
   }
   if (data.prices && data.prices[0]?.value.centAmount && data.prices[0]?.value.currencyCode) {
-    return `${(data.prices[0].value.centAmount / 100).toFixed(2)} ${data.prices[0].value.currencyCode}`;
+    return `${(data.prices[0].value.centAmount / 100).toFixed(2)} ${
+      data.prices[0].value.currencyCode
+    }`;
   }
   return 'brak danych';
 };
@@ -69,11 +73,7 @@ const getDiscount = (
   if ('masterVariant' in data) {
     const path = data.masterVariant.prices?.[0]?.discounted;
     if (path) {
-      if (
-        path.discount
-        && path.discount.id
-        && path.value.centAmount
-        && path.value?.currencyCode) {
+      if (path.discount && path.discount.id && path.value.centAmount && path.value?.currencyCode) {
         return {
           id: path.discount.id,
           value: `${(path.value.centAmount / 100).toFixed(2)} ${path.value.currencyCode}`,
@@ -84,12 +84,14 @@ const getDiscount = (
   } else {
     const path = data.prices?.[0]?.discounted;
     if (path) {
-      if (data.prices
+      if (
+        data.prices
         && path.discount
         && path.discount.id
         && path.value
         && path.value.centAmount
-        && path.value.currencyCode) {
+        && path.value.currencyCode
+      ) {
         return {
           id: path.discount.id,
           value: `${(path.value.centAmount / 100).toFixed(2)} ${path.value.currencyCode}`,
