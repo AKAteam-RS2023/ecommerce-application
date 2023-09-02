@@ -5,6 +5,7 @@ export function renderInput(
   input: HTMLInputElement,
   inputError?: HTMLElement,
   passwordBtn?: HTMLElement,
+  labelHeader?: string,
 ): HTMLElement {
   const className = input.className.replace('--input', '');
   const wrapper = createElement('div', { class: `${className}` });
@@ -12,7 +13,7 @@ export function renderInput(
     class: `${className}--label`,
     for: input.id,
   });
-  label.textContent = type;
+  label.textContent = labelHeader ?? type;
   if (input.type === 'checkbox') {
     wrapper.append(input, label);
   } else {

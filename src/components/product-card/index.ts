@@ -5,6 +5,7 @@ import IProduct from '../../types/product';
 
 import Router from '../router/router';
 
+import imageNotFound from '../../assets/image/image-not-found.png';
 import './product-card.scss';
 
 export default class ProductCard {
@@ -65,7 +66,7 @@ export default class ProductCard {
   private init(): void {
     const img = createElement<HTMLImageElement>('img', {
       class: 'product__img',
-      src: this.product.imageUrl,
+      src: this.product.imageUrl || imageNotFound,
       alt: this.product.description,
     });
     const name = createElement('div', {

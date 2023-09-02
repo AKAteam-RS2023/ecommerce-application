@@ -13,6 +13,7 @@ import {
 import { ctpClient } from '../sdk/build-client';
 
 import conf, { initClient } from '../sdk/create-client-user';
+import { Sort } from '../types/sort';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -58,23 +59,22 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     });
 };
 
-export const getProducts = async (): Promise<Product[]> => {
+export const getProducts = async (data: {
+  id?: string;
+  sort: Sort;
+}): Promise<ProductProjection[]> => {
   try {
-    const res = await apiRoot.products().get().execute();
-    return res.body.results;
-  } catch {
-    throw Error('No products');
-  }
-};
-
-export const getProductsByCategoryId = async (id: string): Promise<ProductProjection[]> => {
-  try {
+    const filter: string[] = [];
+    if (data.id) {
+      filter.push(`categories.id:"${data.id}"`);
+    }
     const res = await apiRoot
       .productProjections()
       .search()
       .get({
         queryArgs: {
-          filter: `categories.id:"${id}"`,
+          filter,
+          sort: data.sort,
         },
       })
       .execute();
@@ -195,4 +195,26 @@ export const getProductTypesWithAttribute = async (name: string): Promise<Produc
     })
     .execute();
   return res.body.results;
+};
+
+export const changePasswordApi = async (
+  id: string,
+  currentPassword: string,
+  newPassword: string,
+  version: number,
+): Promise<ClientResponse<Customer>> => {
+  const res = apiRoot
+    .customers()
+    .password()
+    .post({
+      body: {
+        id,
+        currentPassword,
+        newPassword,
+        version,
+      },
+    })
+    .execute();
+
+  return res;
 };
