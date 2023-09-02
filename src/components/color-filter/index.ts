@@ -1,4 +1,5 @@
 import createElement from '../../dom-helper/create-element';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 import getAttributes from '../../controller/get-attributes';
 
@@ -13,6 +14,18 @@ class ColorFilter {
 
   constructor() {
     this.init();
+    eventEmitter.subscribe('event: clear-filters', () => {
+      if (this.filtersSet.size === 0) {
+        return;
+      }
+      this.filtersSet.clear();
+      this.container.querySelectorAll<HTMLInputElement>('[type="checkbox"]').forEach((item) => {
+        item.checked = false; // eslint-disable-line
+      });
+      this.container.querySelectorAll<HTMLElement>('.filter-color--element').forEach((item) => {
+        item.classList.remove('active');
+      });
+    });
   }
 
   private createCheckBox(color: string): HTMLElement {
@@ -38,11 +51,19 @@ class ColorFilter {
     wrapper.append(checkBox, label);
     checkBox.onclick = (): void => {
       if (checkBox.checked) {
+        if (this.filtersSet.has(color)) {
+          return;
+        }
         colorElement.classList.add('active');
         this.filtersSet.add(color);
+        eventEmitter.emit('event: change-filter', undefined);
       } else {
+        if (!this.filtersSet.has(color)) {
+          return;
+        }
         colorElement.classList.remove('active');
         this.filtersSet.delete(color);
+        eventEmitter.emit('event: change-filter', undefined);
       }
     };
     return wrapper;

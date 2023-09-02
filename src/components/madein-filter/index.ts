@@ -1,15 +1,28 @@
 import getAttributes from '../../controller/get-attributes';
 import createElement from '../../dom-helper/create-element';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 import './madein-filter.scss';
+
+const ALL = 'Wszystkie';
 
 class MadeInFilter {
   private container = createElement('div', { class: 'filters__item' });
 
-  public filter = 'Wszystkie';
+  public filter = ALL;
 
   constructor() {
     this.init();
+    eventEmitter.subscribe('event: clear-filters', () => {
+      if (this.filter === ALL) {
+        return;
+      }
+      this.filter = ALL;
+      const input = this.container.querySelector<HTMLInputElement>(`[id="${this.filter}"]`);
+      if (input) {
+        input.checked = true;
+      }
+    });
   }
 
   private createRadio(madein: string): HTMLElement {
@@ -31,7 +44,11 @@ class MadeInFilter {
       radio.checked = true;
     }
     radio.onclick = (): void => {
+      if (this.filter === radio.value) {
+        return;
+      }
       this.filter = radio.value;
+      eventEmitter.emit('event: change-filter', undefined);
     };
     return wrapper;
   }

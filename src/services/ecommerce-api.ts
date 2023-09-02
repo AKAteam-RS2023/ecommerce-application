@@ -190,7 +190,7 @@ export const getProductTypesWithAttribute = async (name: string): Promise<Produc
     .productTypes()
     .get({
       queryArgs: {
-        where: `attributes is not empty and attributes(name="${name}")`,
+        where: `attributes(name="${name}")`,
       },
     })
     .execute();

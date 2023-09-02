@@ -1,4 +1,6 @@
 import createElement from '../../dom-helper/create-element';
+import eventEmitter from '../../dom-helper/event-emitter';
+
 import './price-filter.scss';
 
 const MIN_PRICE = 0;
@@ -32,6 +34,15 @@ class PriceFilter {
 
   constructor() {
     this.init();
+    eventEmitter.subscribe('event: clear-filters', () => {
+      if (this.startValue === MIN_PRICE && this.finishValue === MAX_PRICE) {
+        return;
+      }
+      this.startValue = MIN_PRICE;
+      this.finishValue = MAX_PRICE;
+      this.startPrice.value = `${this.startValue}`;
+      this.finishPrice.value = `${this.finishValue}`;
+    });
   }
 
   private static initInput(inputElement: HTMLInputElement, textContent: string): HTMLElement {
@@ -54,6 +65,9 @@ class PriceFilter {
       PriceFilter.initInput(this.finishPrice, 'do:'),
     );
     this.startPrice.onchange = (): void => {
+      if (+this.startPrice.value === this.startValue) {
+        return;
+      }
       if (Number.isNaN(+this.startPrice.value) || +this.startPrice.value < MIN_PRICE) {
         this.startPrice.value = `${MIN_PRICE}`;
       }
@@ -61,8 +75,12 @@ class PriceFilter {
         this.startPrice.value = `${MAX_PRICE - MIN_CHANGE}`;
       }
       this.startValue = +this.startPrice.value;
+      eventEmitter.emit('event: change-filter', undefined);
     };
     this.finishPrice.onchange = (): void => {
+      if (+this.finishPrice.value === this.finishValue) {
+        return;
+      }
       if (
         Number.isNaN(+this.finishPrice.value)
         || +this.finishPrice.value <= +this.startPrice.value
@@ -73,6 +91,7 @@ class PriceFilter {
         this.finishPrice.value = `${MAX_PRICE}`;
       }
       this.finishValue = +this.finishPrice.value;
+      eventEmitter.emit('event: change-filter', undefined);
     };
   }
 

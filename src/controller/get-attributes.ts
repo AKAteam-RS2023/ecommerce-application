@@ -10,6 +10,9 @@ const getAttributes = async (name: string): Promise<IAttribute[]> => {
     if (!item || !item.type) {
       return;
     }
+    if (item.name !== name) {
+      return;
+    }
     if (item && item.type && 'elementType' in item.type && 'values' in item.type.elementType) {
       result.push({
         name: item.name,
@@ -25,7 +28,7 @@ const getAttributes = async (name: string): Promise<IAttribute[]> => {
       return;
     }
     result.push({
-      name: item.name,
+      name: item.name.trim().toLowerCase(),
       values: [],
     });
   });
