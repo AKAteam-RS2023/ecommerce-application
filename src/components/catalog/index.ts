@@ -101,7 +101,7 @@ export default class Catalog {
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
     const header = createElement('div', { class: 'catalog__header' });
-    header.append(this.breadcrumb.render(), sortSelect.render());
+    header.append(this.breadcrumb.render(), this.search.render(), sortSelect.render());
     div.append(header, categories.render(), this.container);
     return div;
   }

@@ -1,0 +1,22 @@
+@import '../../styles/constants/';
+
+.search {
+  position: relative;
+
+  &__label{
+    position: absolute;
+    top: -7px;
+    left: 4px;
+    background-color: $light-xl;
+    font-size: inherit;
+    line-height: 100%;
+    color: $dark;
+  }
+
+  &__input {
+    padding: 6px;
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid black;
+  }
+}
