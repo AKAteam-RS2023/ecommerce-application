@@ -34,6 +34,10 @@ export default class Catalog {
       }
       this.init();
     });
+    eventEmitter.subscribe('event: change-products', () => {
+      console.log(filters.filters);
+      // this.init();
+    });
   }
 
   private init(): void {

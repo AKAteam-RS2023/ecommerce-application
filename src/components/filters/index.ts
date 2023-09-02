@@ -35,13 +35,37 @@ class Filters {
     });
   }
 
+  private static equalSets(set1: Set<unknown>, set2: Set<unknown>): boolean {
+    if (set1.size !== set2.size) {
+      return false;
+    }
+    const commonSet = new Set([...set1, ...set2]);
+    return commonSet.size === set1.size;
+  }
+
+  private checkFilters(): boolean {
+    if (
+      this.filters.startPrice !== priceFilter.startValue
+      || this.filters.finishPrice !== priceFilter.finishValue
+      || Filters.equalSets(this.filters.colors, colorFilter.filtersSet)
+      || this.filters.madein !== madeinFilter.filter
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   private changeFilters(): void {
+    if (this.checkFilters()) {
+      return;
+    }
     this.filters = {
       startPrice: priceFilter.startValue,
       finishPrice: priceFilter.finishValue,
       colors: colorFilter.filtersSet,
       madein: madeinFilter.filter,
     };
+    eventEmitter.emit('event: change-products', undefined);
   }
 
   private init(): void {
