@@ -69,6 +69,9 @@ class Filters {
   }
 
   private init(): void {
+    const wrapper = createElement('div', { class: 'filters__menu--wrapper' });
+    wrapper.append(priceFilter.render(), colorFilter.render(), madeinFilter.render());
+    this.menu.append(wrapper, this.clearFiltersBtn);
     this.filtersIcon.onclick = (): void => {
       this.menu.classList.toggle('active');
     };
@@ -83,9 +86,6 @@ class Filters {
   }
 
   public renderMenu(): HTMLElement {
-    const wrapper = createElement('div', { class: 'filters__menu--wrapper' });
-    wrapper.append(priceFilter.render(), colorFilter.render(), madeinFilter.render());
-    this.menu.append(wrapper, this.clearFiltersBtn);
     return this.menu;
   }
 

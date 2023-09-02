@@ -80,6 +80,9 @@ export default class Catalog {
         if (this.sort === Sort.priceDesc) {
           this.sortByPriceDesc();
         }
+        if (this.products.length === 0) {
+          this.container.textContent = 'Brak towarów';
+        }
         this.products.forEach((product) => this.container.append(product.render()));
       })
       .catch((err) => {

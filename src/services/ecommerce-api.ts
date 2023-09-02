@@ -99,7 +99,7 @@ export const getProducts = async (data: {
       .execute();
     return res.body.results;
   } catch {
-    throw Error('No products');
+    throw Error('Brak towarów');
   }
 };
 

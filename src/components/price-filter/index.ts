@@ -71,8 +71,8 @@ class PriceFilter {
       if (Number.isNaN(+this.startPrice.value) || +this.startPrice.value < MIN_PRICE) {
         this.startPrice.value = `${MIN_PRICE}`;
       }
-      if (+this.startPrice.value >= MAX_PRICE) {
-        this.startPrice.value = `${MAX_PRICE - MIN_CHANGE}`;
+      if (+this.startPrice.value >= +this.finishPrice.value) {
+        this.startPrice.value = `${+this.finishPrice.value - MIN_CHANGE}`;
       }
       this.startValue = +this.startPrice.value;
       eventEmitter.emit('event: change-filter', undefined);
