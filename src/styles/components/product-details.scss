@@ -8,6 +8,7 @@
   flex-wrap: wrap;
   width: 45%;
   height: 100%;
+  position: relative;
 }
 
 .product-details__wrapper {
@@ -41,8 +42,17 @@
 }
 
 .product-details__old-price {
-  text-decoration: line-through;
+  position: relative;
+  &:before {
+    content: '';
+    border-bottom: 2px solid $red-accents;
+    position: absolute;
+    width: 100%;
+    height: 45%;
+    transform: rotate(-10deg);
+  }
 }
+
 
 .product-details__description {
   font-size: 1.3rem;
@@ -68,6 +78,17 @@
   flex-direction: row;
   gap: 20px;
   padding: 20px 0;
+}
+
+.product-details__discount {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: max-content;
+  padding: 5px;
+  border-radius: 20px;
+  background-color: $red-accents;
+  color: $light-xl;
 }
 
 @media screen and (max-width: $medium) {
