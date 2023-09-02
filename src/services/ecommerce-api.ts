@@ -70,8 +70,8 @@ export const getProducts = async (data: {
     if (data.categoryId) {
       filter.push(`categories.id:"${data.categoryId}"`);
     }
-    if (data.filters && data.filters.madein) {
-      filter.push(`variants.attributes.made-in.key:"${data.filters.madein}"`);
+    if (data.filters && data.filters.madein && data.filters.madein.size > 0) {
+      // filter.push(`variants.attributes.made-in.key:"${data.filters.madein}"`);
     }
     const res = await apiRoot
       .productProjections()
@@ -83,7 +83,6 @@ export const getProducts = async (data: {
         },
       })
       .execute();
-    console.log(res);
     return res.body.results;
   } catch {
     throw Error('No products');

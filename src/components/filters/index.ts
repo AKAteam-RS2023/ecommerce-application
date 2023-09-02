@@ -5,8 +5,6 @@ import priceFilter from '../price-filter';
 import colorFilter from '../color-filter';
 import madeinFilter from '../madein-filter';
 
-import IFilters from '../../types/filters';
-
 import filter from '../../assets/image/filter.png';
 
 import './filters.scss';
@@ -22,11 +20,11 @@ class Filters {
 
   private clearFiltersBtn = createElement<HTMLButtonElement>('button', { class: 'button--clear' });
 
-  public filters: IFilters = {
+  public filters = {
     startPrice: priceFilter.startValue,
     finishPrice: priceFilter.finishValue,
     colors: colorFilter.filtersSet,
-    madein: madeinFilter.filter,
+    madein: madeinFilter.filtersSet,
   };
 
   constructor() {
@@ -50,7 +48,7 @@ class Filters {
       this.filters.startPrice !== priceFilter.startValue
       || this.filters.finishPrice !== priceFilter.finishValue
       || Filters.equalSets(this.filters.colors, colorFilter.filtersSet)
-      || this.filters.madein !== madeinFilter.filter
+      || Filters.equalSets(this.filters.madein, madeinFilter.filtersSet)
     ) {
       return false;
     }
@@ -65,7 +63,7 @@ class Filters {
       startPrice: priceFilter.startValue,
       finishPrice: priceFilter.finishValue,
       colors: colorFilter.filtersSet,
-      madein: madeinFilter.filter,
+      madein: madeinFilter.filtersSet,
     };
     eventEmitter.emit('event: change-products', undefined);
   }

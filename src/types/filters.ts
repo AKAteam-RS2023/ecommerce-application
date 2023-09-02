@@ -1,6 +1,6 @@
 export default interface IFilters {
   startPrice: number;
   finishPrice: number;
-  colors: Set<unknown>;
-  madein?: string;
+  colors?: Set<unknown>;
+  madein?: Set<unknown>;
 }

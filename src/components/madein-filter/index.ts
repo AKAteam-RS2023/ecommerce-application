@@ -4,54 +4,79 @@ import eventEmitter from '../../dom-helper/event-emitter';
 
 import './madein-filter.scss';
 
-const ALL = 'Wszystkie';
-
 class MadeInFilter {
   private container = createElement('div', { class: 'filters__item' });
 
-  public filter: string | undefined = undefined;
+  public filtersSet = new Set();
 
   constructor() {
     this.init();
     eventEmitter.subscribe('event: clear-filters', () => {
-      if (!this.filter) {
+      if (this.filtersSet.size === 0) {
         return;
       }
-      this.filter = undefined;
-      const input = this.container.querySelector<HTMLInputElement>(`[id="${ALL}"]`);
-      if (input) {
-        input.checked = true;
-      }
+      this.filtersSet.clear();
+      this.container.querySelectorAll<HTMLInputElement>('[type="checkbox"]').forEach((item) => {
+        item.checked = false; // eslint-disable-line
+      });
+      this.container.querySelectorAll<HTMLElement>('.filter-madein--element').forEach((item) => {
+        item.classList.remove('active');
+      });
     });
   }
 
-  private createRadio(madein: string): HTMLElement {
+  private createCheckBox(madein: string): HTMLElement {
     const wrapper = createElement('div', { class: 'filter-madein' });
-    const radio = createElement<HTMLInputElement>('input', {
-      type: 'radio',
-      class: 'filter-madein--radio',
+    const checkBox = createElement<HTMLInputElement>('input', {
+      type: 'checkbox',
+      class: 'filter-madein-checkbox',
       name: 'madein',
       id: madein,
-      value: madein,
     });
     const label = createElement<HTMLLabelElement>('label', {
-      class: 'filter-color--label',
+      class: 'filter-madein--label',
       for: madein,
     });
     label.textContent = madein;
-    wrapper.append(radio, label);
-    if (this.filter === madein || (this.filter === undefined && madein === ALL)) {
-      radio.checked = true;
-    }
-    radio.onclick = (): void => {
-      if (this.filter === radio.value) {
-        return;
+    wrapper.append(checkBox, label);
+    checkBox.onclick = (): void => {
+      if (checkBox.checked) {
+        this.filtersSet.add(madein);
+      } else {
+        this.filtersSet.delete(madein);
       }
-      this.filter = radio.value === ALL ? undefined : radio.value;
       eventEmitter.emit('event: change-filter', undefined);
     };
     return wrapper;
   }
+
+  // private createRadio(madein: string): HTMLElement {
+  //   const wrapper = createElement('div', { class: 'filter-madein' });
+  //   const radio = createElement<HTMLInputElement>('input', {
+  //     type: 'radio',
+  //     class: 'filter-madein--radio',
+  //     name: 'madein',
+  //     id: madein,
+  //     value: madein,
+  //   });
+  //   const label = createElement<HTMLLabelElement>('label', {
+  //     class: 'filter-color--label',
+  //     for: madein,
+  //   });
+  //   label.textContent = madein;
+  //   wrapper.append(radio, label);
+  //   if (this.filter === madein || (this.filter === undefined && madein === ALL)) {
+  //     radio.checked = true;
+  //   }
+  //   radio.onclick = (): void => {
+  //     if (this.filter === radio.value) {
+  //       return;
+  //     }
+  //     this.filter = radio.value === ALL ? undefined : radio.value;
+  //     eventEmitter.emit('event: change-filter', undefined);
+  //   };
+  //   return wrapper;
+  // }
 
   private init(): void {
     getAttributes('made-in').then((res) => {
@@ -62,13 +87,12 @@ class MadeInFilter {
         });
       });
       madeinSet.forEach((value) => {
-        this.container.append(this.createRadio(value as string));
+        this.container.append(this.createCheckBox(value as string));
       });
     });
     const title = createElement('div', { class: 'filters__title' });
     title.textContent = 'Made in:';
-    const all = this.createRadio(ALL);
-    this.container.append(title, all);
+    this.container.append(title);
   }
 
   public render(): HTMLElement {
