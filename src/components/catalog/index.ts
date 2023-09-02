@@ -2,7 +2,7 @@ import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
 import ProductCard from '../product-card';
-import BreadCrumb from '../breadcrumb';
+import breadCrumb from '../breadcrumb';
 import categories from '../categories';
 
 import filters from '../filters';
@@ -19,10 +19,6 @@ export default class Catalog {
 
   private products: ProductCard[] = [];
 
-  private breadcrumb = new BreadCrumb();
-
-  private selectCategory: string | null = null;
-
   private sort: Sort = sortSelect.value;
 
   constructor() {
@@ -31,14 +27,14 @@ export default class Catalog {
       if (!data || !('id' in data)) {
         return;
       }
-      this.selectCategory = data.id;
+      categories.selectCategory = data.id;
       this.init();
     });
     eventEmitter.subscribe('event: show-all-products', () => {
-      if (!this.selectCategory) {
+      if (!categories.selectCategory) {
         return;
       }
-      this.selectCategory = null;
+      categories.selectCategory = null;
       this.init();
     });
     eventEmitter.subscribe('event: select-sort', (data) => {
@@ -49,7 +45,6 @@ export default class Catalog {
       this.init();
     });
     eventEmitter.subscribe('event: change-products', () => {
-      console.log('>>>>change', filters.filters);
       this.init();
     });
   }
@@ -74,7 +69,7 @@ export default class Catalog {
     this.container.innerHTML = '';
     getIProducts({
       sort: this.sort,
-      categoryId: this.selectCategory ? this.selectCategory : undefined,
+      categoryId: categories.selectCategory ? categories.selectCategory : undefined,
       filters: filters.filters,
     })
       .then((productsResponse) => {
@@ -98,7 +93,7 @@ export default class Catalog {
     const categoriesHeader = createElement('div', { class: 'catalog__categories-header' });
     categoriesHeader.append(filters.render(), categories.render());
     const header = createElement('div', { class: 'catalog__header' });
-    header.append(this.breadcrumb.render(), sortSelect.render());
+    header.append(breadCrumb.render(), sortSelect.render());
     div.append(header, categoriesHeader, filters.renderMenu(), this.container);
     return div;
   }

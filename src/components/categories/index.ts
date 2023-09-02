@@ -9,6 +9,8 @@ class Categories {
 
   private categories: Category[] = [];
 
+  public selectCategory: string | null = null;
+
   constructor() {
     this.init();
   }

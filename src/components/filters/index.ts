@@ -78,6 +78,7 @@ class Filters {
     this.clearFiltersBtn.textContent = 'Usuń wybrane filtry';
     this.clearFiltersBtn.onclick = (): void => {
       eventEmitter.emit('event: clear-filters', undefined);
+      eventEmitter.emit('event: change-products', undefined);
     };
   }
 

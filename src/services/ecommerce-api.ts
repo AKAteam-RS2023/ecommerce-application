@@ -60,6 +60,8 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     });
 };
 
+const toStringForFilter = (set: Set<unknown>): string => [...set].map((item) => `"${item}"`).join(',');
+
 export const getProducts = async (data: {
   categoryId?: string;
   sort: Sort;
@@ -70,8 +72,20 @@ export const getProducts = async (data: {
     if (data.categoryId) {
       filter.push(`categories.id:"${data.categoryId}"`);
     }
-    if (data.filters && data.filters.madein && data.filters.madein.size > 0) {
-      // filter.push(`variants.attributes.made-in.key:"${data.filters.madein}"`);
+    if (data.filters) {
+      if (data.filters.madein && data.filters.madein.size > 0) {
+        filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
+      }
+      if (data.filters.colors && data.filters.colors.size > 0) {
+        filter.push(`variants.attributes.color.key:${toStringForFilter(data.filters.colors)}`);
+      }
+      if (!Number.isNaN(data.filters.startPrice) && !Number.isNaN(data.filters.finishPrice)) {
+        filter.push(
+          `variants.price.centAmount:range(${data.filters.startPrice * 100} to ${
+            data.filters.finishPrice * 100
+          })`,
+        );
+      }
     }
     const res = await apiRoot
       .productProjections()
