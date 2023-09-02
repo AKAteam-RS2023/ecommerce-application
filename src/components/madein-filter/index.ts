@@ -50,34 +50,6 @@ class MadeInFilter {
     return wrapper;
   }
 
-  // private createRadio(madein: string): HTMLElement {
-  //   const wrapper = createElement('div', { class: 'filter-madein' });
-  //   const radio = createElement<HTMLInputElement>('input', {
-  //     type: 'radio',
-  //     class: 'filter-madein--radio',
-  //     name: 'madein',
-  //     id: madein,
-  //     value: madein,
-  //   });
-  //   const label = createElement<HTMLLabelElement>('label', {
-  //     class: 'filter-color--label',
-  //     for: madein,
-  //   });
-  //   label.textContent = madein;
-  //   wrapper.append(radio, label);
-  //   if (this.filter === madein || (this.filter === undefined && madein === ALL)) {
-  //     radio.checked = true;
-  //   }
-  //   radio.onclick = (): void => {
-  //     if (this.filter === radio.value) {
-  //       return;
-  //     }
-  //     this.filter = radio.value === ALL ? undefined : radio.value;
-  //     eventEmitter.emit('event: change-filter', undefined);
-  //   };
-  //   return wrapper;
-  // }
-
   private init(): void {
     getAttributes('made-in').then((res) => {
       const madeinSet = new Set();
@@ -91,7 +63,7 @@ class MadeInFilter {
       });
     });
     const title = createElement('div', { class: 'filters__title' });
-    title.textContent = 'Made in:';
+    title.textContent = 'Zrobiono w:';
     this.container.append(title);
   }
 
