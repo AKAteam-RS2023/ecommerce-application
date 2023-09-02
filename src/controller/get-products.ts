@@ -60,28 +60,78 @@ const getDiscount = (
     : undefined;
 };
 
-function doProduct(product: Product | ProductProjection): IProduct[] {
+const getProductAttributes = (
+  data: ProductData | ProductVariant | ProductProjection,
+): Record<string, string[]> | undefined => {
+  const newData = 'masterVariant' in data ? data.masterVariant : data;
+  const result: Record<string, string[]> = {};
+  if (
+    !newData.attributes
+    || !Array.isArray(newData.attributes)
+    || newData.attributes.length === 0
+  ) {
+    return undefined;
+  }
+  newData.attributes.forEach((item) => {
+    if (Array.isArray(item.value)) {
+      result[item.name] = [...item.value.map((attr) => attr.key)];
+      return;
+    }
+    result[item.name] = [];
+    result[item.name].push(item.value.key);
+  });
+  return result;
+};
+
+const checkSetAttributes = (
+  set: Set<unknown> | undefined,
+  productAttr: Record<string, string[]> | undefined,
+  attr: string,
+): boolean => {
+  if (!set || set.size === 0) {
+    return true;
+  }
+  if (!productAttr || !(attr in productAttr) || productAttr[attr].length === 0) {
+    return false;
+  }
+  return productAttr[attr].some((item) => set.has(item));
+};
+
+const checkAttributes = (
+  product: ProductData | ProductProjection | ProductVariant,
+  filters?: IFilters,
+): boolean => !filters
+  || (checkSetAttributes(filters.colors, getProductAttributes(product), 'color')
+    && checkSetAttributes(filters.madein, getProductAttributes(product), 'made-in')
+    && +getPrice(product).replace(/\D/g, '') / 100 >= filters.startPrice
+    && +getPrice(product).replace(/\D/g, '') / 100 <= filters.finishPrice);
+
+function doProduct(product: Product | ProductProjection, filters?: IFilters): IProduct[] {
   const item = 'masterData' in product ? product.masterData.current : product;
   const result: IProduct[] = [];
-  result.push({
-    id: product.id,
-    name: getName(item),
-    description: getDescription(item),
-    imageUrl: getUrl(item),
-    price: getPrice(item),
-    discount: getDiscount(item),
-  });
+  if (checkAttributes(item, filters)) {
+    result.push({
+      id: product.id,
+      name: getName(item),
+      description: getDescription(item),
+      imageUrl: getUrl(item),
+      price: getPrice(item),
+      discount: getDiscount(item),
+    });
+  }
   if (item.variants && item.variants.length > 0) {
     item.variants.forEach((variant) => {
-      result.push({
-        id: product.id,
-        name: getName(item),
-        description: variant.key ? variant.key : 'No description',
-        imageUrl: getUrl(variant),
-        price: getPrice(variant),
-        discount: getDiscount(variant),
-        variantId: variant.id,
-      });
+      if (checkAttributes(variant, filters)) {
+        result.push({
+          id: product.id,
+          name: getName(item),
+          description: variant.key ? variant.key : 'No description',
+          imageUrl: getUrl(variant),
+          price: getPrice(variant),
+          discount: getDiscount(variant),
+          variantId: variant.id,
+        });
+      }
     });
   }
   return result;
@@ -92,5 +142,5 @@ export default async function getIProducts(data: {
   filters?: IFilters;
 }): Promise<IProduct[]> {
   const res = await getProducts(data);
-  return res.map(doProduct).flat();
+  return res.map((item) => doProduct(item, data.filters)).flat();
 }
