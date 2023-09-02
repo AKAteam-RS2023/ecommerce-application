@@ -116,6 +116,7 @@ export default class ProductView implements IPage {
   }
 
   private renderAttribute(): HTMLDivElement | undefined {
+    console.log(this.product);
     if (this.product?.attributes) {
       const wrapperAttribute: HTMLDivElement = createElement('div', {
         class: 'product-attr__wrapper',
@@ -130,7 +131,7 @@ export default class ProductView implements IPage {
         });
         attributeName.textContent = `${item.name}: `;
         attributeItem.append(attributeName);
-        if (item.value.length > 1) {
+        if (item.value.length > 0) {
           item.value.forEach((itemValue: { key: string; label: string }): void => {
             const attributeLabel = createElement<HTMLImageElement>('div', {
               class: 'product-attr__label',
