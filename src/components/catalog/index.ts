@@ -55,6 +55,9 @@ export default class Catalog {
       if (!data || !('searchQuery' in data)) {
         return;
       }
+      if (this.searchQuery === data.searchQuery) {
+        return;
+      }
       this.searchQuery = data.searchQuery;
       this.init();
     });
