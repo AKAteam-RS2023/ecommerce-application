@@ -1,7 +1,7 @@
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { getSubCategories } from '../../controller/get-subcategories';
+import { getISubCategories } from '../../controller/get-subcategories';
 
 import SubCategory from '../subcategory';
 
@@ -83,7 +83,7 @@ export default class Category {
       this.toggleShowingSubCategories();
     });
     this.container.append(this.renderTitle());
-    getSubCategories(this.id).then((res) => {
+    getISubCategories(this.id).then((res) => {
       res.forEach((item) => this.categories.push(new SubCategory(item)));
       this.categories.forEach((item) => {
         this.wrapperSubCategries.append(item.render());

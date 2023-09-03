@@ -1,4 +1,4 @@
-import { getCategories } from '../../controller/get-categories';
+import { getICategories } from '../../controller/get-categories';
 import createElement from '../../dom-helper/create-element';
 import Category from '../category';
 
@@ -9,12 +9,14 @@ class Categories {
 
   private categories: Category[] = [];
 
+  public selectCategory: string | null = null;
+
   constructor() {
     this.init();
   }
 
   private init(): void {
-    getCategories()
+    getICategories()
       .then((res) => {
         res.forEach((item) => {
           this.categories.push(new Category(item.id, item.name));

@@ -1,11 +1,9 @@
-import { getAllCategories } from '../services/ecommerce-api';
+import { getSubCategories } from '../services/ecommerce-api';
 import { ISubCategory } from '../types/category';
 
 const LANGUAGE = 'pl-PL';
 
-export const getSubCategories = async (id: string): Promise<ISubCategory[]> => {
-  const res = await getAllCategories();
-  return res
-    .filter((item) => item.parent?.id === id)
-    .map((item) => ({ id: item.id, name: item.name[LANGUAGE], parent: id }));
+export const getISubCategories = async (id: string): Promise<ISubCategory[]> => {
+  const res = await getSubCategories(id);
+  return res.map((item) => ({ id: item.id, name: item.name[LANGUAGE], parent: id }));
 };

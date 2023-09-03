@@ -1,0 +1,65 @@
+@import '../../styles/constants/';
+
+.filters {
+  position: relative;
+
+
+  &__icon {
+    width: 20px;
+    cursor: pointer;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__title {
+    margin-bottom: 5px;
+    color: $dark;
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 1;
+    padding: 10px;
+    width: 100%;
+    height: 0;
+    background-color: $light;
+    transform: scaleY(0);
+    transform-origin: 0 0;
+    transition: .3s;
+
+    &.active {
+      // position: relative;
+      height: auto;
+      transform: scaleY(1);
+    }
+
+    &--wrapper {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      gap: 10px;
+      width: 100%;
+    }
+
+    @media screen and (max-width: $medium) {
+      font-size: 1.3rem;
+    }
+  }
+}
+
+.button--clear {
+  padding: 5px;
+  border: 2px solid #b88e2f;
+  background-color: transparent;
+  color: #b88e2f;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}

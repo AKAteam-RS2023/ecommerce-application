@@ -9,7 +9,7 @@ import './breadcrumb.scss';
 
 const LANGUAGE = 'pl-PL';
 
-export default class BreadCrumb {
+class BreadCrumb {
   private container = createElement('div', { class: 'breadcrumb' });
 
   private firstCrumb = createElement('div', { class: 'crumb' });
@@ -74,3 +74,5 @@ export default class BreadCrumb {
     return this.container;
   }
 }
+
+export default new BreadCrumb();
