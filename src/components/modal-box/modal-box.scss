@@ -13,16 +13,25 @@
 }
 
 .modal-box {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 80%;
-  margin: 10% auto;
+  position: fixed;
+  left: 10%;
+  right: 10%;
+  top: 10%;
+  bottom: 10%;
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
+  &--small {
+    width: 40%;
+  }
+  &--medium {
+    width: 60%;
+  }
+  &--large {
+    width: 80%;
+  }
 }
 
 .modal-box__close-btn {
@@ -38,6 +47,14 @@
   text-align: center;
   line-height: 150%;
   cursor: pointer;
+}
+
+.modal-box__content {
+  padding-top: 10px;
+}
+
+.modal-box__content .product-slider {
+  height: auto;
 }
 
 .modal-box--show .backdrop,

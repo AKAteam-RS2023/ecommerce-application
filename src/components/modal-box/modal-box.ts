@@ -1,6 +1,6 @@
 import createElement from '../../dom-helper/create-element';
-import { IModalOptions } from '../../types/interfaces/i-modal-options';
 import './modal-box.scss';
+import { IPage } from '../../types/interfaces/page';
 
 export default class ModalBox {
   private modalWrapper: HTMLDivElement;
@@ -13,31 +13,27 @@ export default class ModalBox {
 
   private boxCloseBtn: HTMLSpanElement;
 
-  constructor(content: HTMLDivElement, options?: IModalOptions) {
+  constructor(component: IPage, config: string) {
     this.modalWrapper = createElement('div', { class: 'modal-box__wrapper' });
     this.backDrop = createElement('div', { class: 'backdrop' });
-    this.modalBox = createElement('div', { class: 'modal-box' });
+    this.modalBox = createElement('div', { class: `modal-box modal-box--${config}` });
     this.boxContent = createElement('div', { class: 'modal-box__content' });
     this.boxCloseBtn = createElement('span', { class: 'modal-box__close-btn' });
     this.boxCloseBtn.textContent = 'x';
-    this.boxContent.innerHTML = content.outerHTML;
-    // this.boxContent.append();
+    // this.boxContent.innerHTML = content.outerHTML;
+    this.boxContent.append(component.render());
     this.modalBox.append(this.boxContent, this.boxCloseBtn);
     this.backDrop.append(this.modalBox);
     this.modalWrapper.append(this.backDrop);
     this.modalWrapper.addEventListener('click', this.handlerCloseModal.bind(this));
-    if (options?.width) {
-      this.modalBox.style.width = `${options.width}px`;
-    }
-    if (options?.height) {
-      this.modalBox.style.height = `${options.height}px`;
-    }
     document.body.append(this.modalWrapper);
   }
 
-  private handlerCloseModal(e: any): void {
-    if (e.target.closest('.modal-box__close-btn') || e.target.classList.contains('backdrop')) {
-      this.hide();
+  private handlerCloseModal(e: MouseEvent): void {
+    if (e.target instanceof Element) {
+      if (e.target?.closest('.modal-box__close-btn') || e.target?.classList.contains('backdrop')) {
+        this.hide();
+      }
     }
   }
 
