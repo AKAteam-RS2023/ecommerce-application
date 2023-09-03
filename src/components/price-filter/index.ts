@@ -26,7 +26,7 @@ class PriceFilter {
   private finishPrice = createElement<HTMLInputElement>('input', {
     type: 'number',
     class: 'filters__input--price',
-    id: 'start-price',
+    id: 'finish-price',
     min: `${MIN_PRICE + MIN_CHANGE}`,
     max: `${MAX_PRICE}`,
     value: `${this.finishValue}`,
