@@ -10,13 +10,11 @@ export default class Search {
   });
 
   constructor() {
-    this.input.addEventListener('keypress', (e) => this.keyPress(e));
+    this.input.addEventListener('change', () => this.onchange());
   }
 
-  private keyPress = (e: KeyboardEvent): void => {
-    if (e.key === 'Enter') {
-      eventEmitter.emit('event: search', { searchQuery: this.input.value });
-    }
+  private onchange = (): void => {
+    eventEmitter.emit('event: search', { searchQuery: this.input.value });
   };
 
   public render(): HTMLElement {
