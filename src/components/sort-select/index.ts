@@ -1,7 +1,7 @@
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { Sort } from '../../types/sort';
+import Sort from '../../types/sort';
 
 import './sort-select.scss';
 

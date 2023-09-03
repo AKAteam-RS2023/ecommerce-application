@@ -7,12 +7,14 @@ import {
   createApiBuilderFromCtpClient,
   ClientResponse,
   CustomerUpdate,
+  ProductType,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
 
 import conf, { initClient } from '../sdk/create-client-user';
-import { Sort } from '../types/sort';
+import Sort from '../types/sort';
+import IFilters from '../types/filters';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -58,14 +60,32 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     });
 };
 
+const toStringForFilter = (set: Set<unknown>): string => [...set].map((item) => `"${item}"`).join(',');
+
 export const getProducts = async (data: {
-  id?: string;
+  categoryId?: string;
   sort: Sort;
+  filters?: IFilters;
 }): Promise<ProductProjection[]> => {
   try {
     const filter: string[] = [];
-    if (data.id) {
-      filter.push(`categories.id:"${data.id}"`);
+    if (data.categoryId) {
+      filter.push(`categories.id:"${data.categoryId}"`);
+    }
+    if (data.filters) {
+      if (data.filters.madein && data.filters.madein.size > 0) {
+        filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
+      }
+      if (data.filters.colors && data.filters.colors.size > 0) {
+        filter.push(`variants.attributes.color.key:${toStringForFilter(data.filters.colors)}`);
+      }
+      if (!Number.isNaN(data.filters.startPrice) && !Number.isNaN(data.filters.finishPrice)) {
+        filter.push(
+          `variants.price.centAmount:range(${data.filters.startPrice * 100} to ${
+            data.filters.finishPrice * 100
+          })`,
+        );
+      }
     }
     const res = await apiRoot
       .productProjections()
@@ -79,7 +99,7 @@ export const getProducts = async (data: {
       .execute();
     return res.body.results;
   } catch {
-    throw Error('No products');
+    throw Error('Brak towarów');
   }
 };
 
@@ -98,6 +118,38 @@ export const getProductDiscontById = async (id: string): Promise<ProductDiscount
 export const getAllCategories = async (): Promise<Category[]> => {
   try {
     const res = await apiRoot.categories().get().execute();
+    return res.body.results;
+  } catch {
+    throw Error('No categories');
+  }
+};
+
+export const getCategories = async (): Promise<Category[]> => {
+  try {
+    const res = await apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: 'parent is not defined',
+        },
+      })
+      .execute();
+    return res.body.results;
+  } catch {
+    throw Error('No categories');
+  }
+};
+
+export const getSubCategories = async (parentId: string): Promise<Category[]> => {
+  try {
+    const res = await apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: `parent(id="${parentId}")`,
+        },
+      })
+      .execute();
     return res.body.results;
   } catch {
     throw Error('No categories');
@@ -150,6 +202,18 @@ export const updateCustomer = async (
   const res = apiRootUser.customers().withId({ ID: id }).post({ body: update }).execute();
 
   return res;
+};
+
+export const getProductTypesWithAttribute = async (name: string): Promise<ProductType[]> => {
+  const res = await apiRoot
+    .productTypes()
+    .get({
+      queryArgs: {
+        where: `attributes(name="${name}")`,
+      },
+    })
+    .execute();
+  return res.body.results;
 };
 
 export const changePasswordApi = async (
