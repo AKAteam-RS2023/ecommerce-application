@@ -5,6 +5,7 @@ import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import { getProductDiscontById } from '../../services/ecommerce-api';
 import ProductSlider from '../product-slider/product-slider';
+import ModalBox from '../modal-box/modal-box';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -18,6 +19,8 @@ export default class ProductView implements IPage {
   private oldPrice: HTMLElement | null = null;
 
   private router = Router.instance;
+
+  private modalBox?: ModalBox;
 
   private slider = new ProductSlider();
 
@@ -48,6 +51,10 @@ export default class ProductView implements IPage {
     if (this.product) {
       const wrapperSlider: HTMLDivElement | undefined = this.slider.renderSlider(this.product);
       this.slider.sliderInit();
+      if (wrapperSlider) {
+        this.modalBox = new ModalBox(wrapperSlider);
+        this.modalBox.show();
+      }
       const name = createElement('div', {
         class: 'product-details__name',
       });
@@ -66,7 +73,6 @@ export default class ProductView implements IPage {
         class: 'product-details__description',
       });
       description.innerHTML = this.product.description;
-
       const wrapperAttribute: HTMLDivElement | undefined = this.renderAttribute();
       const wrapper = createElement('div', {
         class: 'product-details__wrapper',
@@ -116,7 +122,6 @@ export default class ProductView implements IPage {
   }
 
   private renderAttribute(): HTMLDivElement | undefined {
-    console.log(this.product);
     if (this.product?.attributes) {
       const wrapperAttribute: HTMLDivElement = createElement('div', {
         class: 'product-attr__wrapper',
