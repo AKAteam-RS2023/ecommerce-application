@@ -39,9 +39,11 @@ export default class ModalBox {
 
   public show(): void {
     this.modalWrapper.classList.add('modal-box--show');
+    document.getElementsByTagName('html')[0].classList.add('overflow-hidden');
   }
 
   public hide(): void {
     this.modalWrapper.classList.remove('modal-box--show');
+    document.getElementsByTagName('html')[0].classList.remove('overflow-hidden');
   }
 }
