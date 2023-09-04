@@ -1,8 +1,9 @@
 import createElement from '../../dom-helper/create-element';
 import IProductDetails from '../../types/interfaces/productDetails';
 import './product-slider.scss';
+import { IPage } from '../../types/interfaces/page';
 
-export default class ProductSlider {
+export default class ProductSlider implements IPage {
   public productSlider: HTMLDivElement = createElement('div', { class: 'product-slider' });
 
   public wrapperProductSlider: HTMLDivElement = createElement('div', {
@@ -27,29 +28,32 @@ export default class ProductSlider {
 
   private sliderLength = 0;
 
-  private allSlides: HTMLDivElement[] = [];
+  public allSlides: HTMLDivElement[] = [];
 
   private indicators: HTMLLIElement[] = [];
 
-  public renderSlider(product: IProductDetails): HTMLDivElement | undefined {
+  constructor(private product: IProductDetails) {
+  }
+
+  public render(): HTMLDivElement {
     this.buttonNext.textContent = '>';
     this.buttonPrev.textContent = '<';
-    if (product?.imagesUrl) {
-      product.imagesUrl.forEach((item, index) => {
+    if (this.product?.imagesUrl) {
+      this.product.imagesUrl.forEach((item, index) => {
         const sliderItem = createElement<HTMLImageElement>('div', {
           class: 'product-slider__item',
         });
         const img = createElement<HTMLImageElement>('img', {
           class: 'product-details__img',
           src: item,
-          alt: `${product?.name} image ${index + 1}`,
+          alt: `${this.product?.name} image ${index + 1}`,
         });
         sliderItem.append(img);
         this.allSlides.push(sliderItem);
         this.sliderItems.append(sliderItem);
         this.productSliderWindow.append(this.sliderItems);
       });
-      if (product.imagesUrl.length <= 1) {
+      if (this.product.imagesUrl.length <= 1) {
         this.wrapperProductSlider.append(this.productSliderWindow);
       } else {
         this.wrapperProductSlider.append(
@@ -59,12 +63,12 @@ export default class ProductSlider {
         );
       }
       this.productSlider.append(this.wrapperProductSlider);
-      return this.productSlider;
     }
-    return undefined;
+    this.sliderInit();
+    return this.productSlider;
   }
 
-  public sliderInit(): void {
+  private sliderInit(): void {
     this.sliderLength = this.allSlides.length;
     if (this.sliderLength > 1) this.indicators = this.indicatorsRender();
     this.allSlides.forEach((item) => {
@@ -102,7 +106,7 @@ export default class ProductSlider {
       ol.append(li);
       children.push(li);
     }
-    this.productSlider.prepend(ol);
+    this.productSlider.append(ol);
     return children;
   }
 
@@ -114,8 +118,7 @@ export default class ProductSlider {
     this.goto(this.index - 1);
   }
 
-  private goto(i: number): void {
-    // изменить текущий индекс...
+  public goto(i: number): void {
     if (i > this.sliderLength - 1) {
       this.index = 0;
     } else if (i < 0) {
@@ -130,6 +133,6 @@ export default class ProductSlider {
     const offset: number = (100 / this.sliderLength) * this.index;
     this.sliderItems.style.transform = `translateX(-${offset}%)`;
     this.indicators.forEach((item) => item.classList.remove('active'));
-    this.indicators[this.index].classList.add('active');
+    this.indicators[this.index]?.classList.add('active');
   }
 }
