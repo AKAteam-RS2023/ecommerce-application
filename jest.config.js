@@ -2,6 +2,9 @@
 const path = require('path');
 
 module.exports = {
+  setupFiles: [
+    'dotenv/config'
+  ],
   preset: 'ts-jest',
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
