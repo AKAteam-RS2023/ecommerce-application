@@ -10,10 +10,12 @@
   margin: auto;
 
   &__breadcrumb {
+    width:max-content;
     font-size: 20px;
     line-height: 120%;
     font-weight: bold;
     color: $dark;
+    
   }
 
   &__categories-header {
@@ -29,13 +31,14 @@
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-
+    gap: 10px;
     @media screen and (max-width: $large) {
       font-size: 12px;
     }
     
     @media screen and (max-width: $medium) {
       font-size: 9.7px;
+      flex-wrap: wrap;
     }
 
   }

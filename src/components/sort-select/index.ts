@@ -37,7 +37,7 @@ class SortSelect {
       class: 'sort__label',
       for: 'sort-select',
     });
-    label.textContent = 'Sortovanie:';
+    label.textContent = 'Sortowanie:';
     this.selectElement.append(
       this.createOption('alfabetyczne', Sort.nameAsc),
       this.createOption('cena: od najniższej', Sort.priceAsc),
