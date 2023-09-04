@@ -54,7 +54,10 @@ module.exports = {
   plugins: [
     new Dotenv(),
     new ESLintPlugin({ extensions: 'ts' }),
-    new HtmlWebpackPlugin({ template: './index.html' }),
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      favicon: './assets/image/favicon.ico',
+    }),
     new MiniCssExtractPlugin({ filename: './style.css' }), 
   ],
 };
