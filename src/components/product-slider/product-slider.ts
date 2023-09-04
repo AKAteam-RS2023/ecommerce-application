@@ -106,7 +106,7 @@ export default class ProductSlider implements IPage {
       ol.append(li);
       children.push(li);
     }
-    this.productSlider.prepend(ol);
+    this.productSlider.append(ol);
     return children;
   }
 
