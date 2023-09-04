@@ -28,7 +28,7 @@ export default class UrlHandler {
       return;
     }
 
-    if (!(route.path in this.instances) || route.path === 'catalog/product') {
+    if (!(route.path in this.instances) || !route.isSingle) {
       this.instances[route.path] = new route.component();
     }
 
