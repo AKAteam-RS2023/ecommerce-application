@@ -65,6 +65,7 @@ const toStringForFilter = (set: Set<unknown>): string => [...set].map((item) => 
 export const getProducts = async (data: {
   categoryId?: string;
   sort: Sort;
+  searchQuery?: string;
   filters?: IFilters;
 }): Promise<ProductProjection[]> => {
   try {
@@ -91,10 +92,7 @@ export const getProducts = async (data: {
       .productProjections()
       .search()
       .get({
-        queryArgs: {
-          filter,
-          sort: data.sort,
-        },
+        queryArgs: { filter, sort: data.sort, 'text.pl-PL': data.searchQuery },
       })
       .execute();
     return res.body.results;

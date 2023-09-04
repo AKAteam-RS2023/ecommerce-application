@@ -13,6 +13,7 @@ import getIProducts from '../../controller/get-products';
 import Sort from '../../types/sort';
 
 import './catalog.scss';
+import Search from '../search/search';
 
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
@@ -20,6 +21,10 @@ export default class Catalog {
   private products: ProductCard[] = [];
 
   private sort: Sort = sortSelect.value;
+
+  private searchQuery?: string;
+
+  private search: Search = new Search();
 
   constructor() {
     this.init();
@@ -47,6 +52,16 @@ export default class Catalog {
     eventEmitter.subscribe('event: change-products', () => {
       this.init();
     });
+    eventEmitter.subscribe('event: search', (data) => {
+      if (!data || !('searchQuery' in data)) {
+        return;
+      }
+      if (this.searchQuery === data.searchQuery) {
+        return;
+      }
+      this.searchQuery = data.searchQuery;
+      this.init();
+    });
   }
 
   private sortByPriceAsc(): void {
@@ -71,6 +86,7 @@ export default class Catalog {
       sort: this.sort,
       categoryId: categories.selectCategory ? categories.selectCategory : undefined,
       filters: filters.filters,
+      searchQuery: this.searchQuery,
     })
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
@@ -96,7 +112,7 @@ export default class Catalog {
     const categoriesHeader = createElement('div', { class: 'catalog__categories-header' });
     categoriesHeader.append(filters.render(), categories.render());
     const header = createElement('div', { class: 'catalog__header' });
-    header.append(breadCrumb.render(), sortSelect.render());
+    header.append(breadCrumb.render(), this.search.render(), sortSelect.render());
     div.append(header, categoriesHeader, filters.renderMenu(), this.container);
     return div;
   }
