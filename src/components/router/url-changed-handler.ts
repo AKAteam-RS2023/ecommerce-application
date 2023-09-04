@@ -1,3 +1,4 @@
+import { IPage } from '../../types/interfaces/page';
 import { Footer } from '../view/footer';
 import { Header } from '../view/header';
 import { MainSection } from '../view/main';
@@ -13,6 +14,8 @@ export default class UrlHandler {
 
   private header?: Header;
 
+  private instances: Record<string, IPage> = {};
+
   public urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
     // TODO (Alina): refactor for more flexible urls
     const pathForFind = requestParams.resource === ''
@@ -25,13 +28,17 @@ export default class UrlHandler {
       return;
     }
 
+    if (!(route.path in this.instances)) {
+      this.instances[route.path] = new route.component();
+    }
+
     document.body.innerHTML = '';
     this.header = new Header();
     this.footer = new Footer();
     this.header.toggleActive();
-    const component = new route.component();
+    // const component = new route.component();
     const mainSection = this.main.render();
-    this.main.mainWrapper?.append(component.render());
+    this.main.mainWrapper?.append(this.instances[route.path].render());
     document.body.append(this.header?.render(), mainSection, this.footer?.render());
   }
 
