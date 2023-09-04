@@ -7,6 +7,8 @@ export default class Router {
 
   public static instance: Router;
 
+  public queryParams: { [key: string]: string } = {};
+
   constructor() {
     if (Router.instance) {
       throw new Error('Second instance');
@@ -44,6 +46,8 @@ export default class Router {
     const result: { path?: string; resource?: string } = {};
     const path = urlString.split('/');
     [result.path = '', result.resource = ''] = path;
+
+    this.queryParams = Object.fromEntries(new URLSearchParams(window.location.search.slice(1)));
 
     this.hasUser = !!localStorage.getItem('userToken');
     if ((result.path === 'login' || result.path === 'registration') && this.hasUser) {

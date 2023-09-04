@@ -27,6 +27,16 @@ export class Header {
     href: '/login',
   });
 
+  private catalogLink = createElement('a', {
+    class: 'links__item link--login',
+    href: '/catalog',
+  });
+
+  private profileLink = createElement('a', {
+    class: 'links__item link--login',
+    href: this.hasUser ? '/profile' : '/',
+  });
+
   public toggleActive(): void {
     const url = window.location.href.split('/').pop();
     this.homeLink.classList.remove('active');
@@ -43,6 +53,14 @@ export class Header {
       }
       case 'registration': {
         this.registrationLink.classList.add('active');
+        break;
+      }
+      case 'catalog': {
+        this.catalogLink.classList.add('active');
+        break;
+      }
+      case 'profile': {
+        this.profileLink.classList.add('active');
         break;
       }
       default:
@@ -96,6 +114,10 @@ export class Header {
 
     this.loginLink.innerText = 'Login';
 
+    this.catalogLink.innerText = 'Catalog';
+
+    this.profileLink.innerText = 'My profile';
+
     const logoutLink = createElement('a', {
       class: 'links__item link--login',
       href: '/login',
@@ -113,11 +135,12 @@ export class Header {
 
     this.registrationLink.innerText = 'Registration';
 
-    this.linksWrapper.append(this.homeLink, this.registrationLink);
+    this.linksWrapper.append(this.homeLink, this.catalogLink);
     if (this.hasUser) {
+      this.linksWrapper.append(this.profileLink);
       this.linksWrapper.append(logoutLink);
     } else {
-      this.linksWrapper.append(this.loginLink);
+      this.linksWrapper.append(this.registrationLink, this.loginLink);
     }
   }
 }

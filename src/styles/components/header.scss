@@ -41,7 +41,15 @@
   }
 }
 
-@media (max-width: $medium) {
+@media screen and (max-width: $large) {
+  .header {
+    &__wrapper {
+      padding: 20px 40px;
+    }
+  }
+}
+
+@media screen and (max-width: $medium) {
   .header {
     &__wrapper {
       padding: 20px;
@@ -50,5 +58,6 @@
 
   .links__wrapper {
     flex-direction: column;
+    align-items: end;
   }
 }

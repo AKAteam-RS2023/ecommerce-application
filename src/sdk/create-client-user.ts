@@ -38,11 +38,28 @@ type PasswordAuthMiddlewareOptions = {
 
 const tokenCache = new UserTokenCache();
 
+type ExistingTokenMiddlewareOptions = {
+  force?: boolean;
+};
+
+const authorization = `Bearer ${tokenCache.userCaсhe.token}`;
+
+const options: ExistingTokenMiddlewareOptions = {
+  force: true,
+};
+
 const conf: {
   client: Client | null;
   tokenCache: UserTokenCache;
 } = {
-  client: null,
+  client:
+    tokenCache.userCaсhe.token === ''
+      ? null
+      : new ClientBuilder()
+        .withExistingTokenFlow(authorization, options)
+        .withHttpMiddleware(httpMiddlewareOptions)
+      // .withLoggerMiddleware()
+        .build(),
   tokenCache,
 };
 
@@ -72,8 +89,18 @@ export const initClient = (email: string, password: string): void => {
   conf.client = new ClientBuilder()
     .withPasswordFlow(initPasswordAuthOptions(email, password))
     .withHttpMiddleware(httpMiddlewareOptions)
-    .withLoggerMiddleware() // Include middleware for logging
+    // .withLoggerMiddleware() // Include middleware for logging
     .build();
+};
+
+export const clearClient = (): void => {
+  localStorage.clear();
+  conf.client = null;
+  conf.tokenCache.set({
+    token: '',
+    expirationTime: 0,
+    refreshToken: '',
+  });
 };
 
 export default conf;

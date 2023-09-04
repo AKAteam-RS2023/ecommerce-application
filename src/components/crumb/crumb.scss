@@ -1,0 +1,17 @@
+@import '../../styles/constants/';
+
+.crumb {
+  position: relative;
+  font-size: 1.2em;
+  line-height: 100%;
+  color: $dark-l;
+  cursor: pointer;
+
+  &:hover::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 95%;
+    border-top: 2px solid $dark-l;
+  }
+}

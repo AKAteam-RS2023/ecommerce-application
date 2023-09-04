@@ -29,14 +29,24 @@ body {
   color: $grey-xl;
   overflow: auto;
   &__wrapper {
-    padding: 40px 100px;
+    margin: auto;
+    padding: 20px;
+    max-width: 1440px;;
   }
 }
 
-@media (max-width: $medium) {
+@media screen and (max-width: $large) {
   .main {
     &__wrapper {
-      padding: 20px;
+      padding: 10px;
+    }
+  }
+}
+
+@media screen and (max-width: $medium) {
+  .main {
+    &__wrapper {
+      padding: 5px;
     }
   }
 }
