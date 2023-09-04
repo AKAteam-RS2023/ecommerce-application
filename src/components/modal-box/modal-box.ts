@@ -29,6 +29,12 @@ export default class ModalBox {
     document.body.append(this.modalWrapper);
   }
 
+  private addListenerESC = (e: KeyboardEvent): void => {
+    if (e.code === 'Escape' && this.modalWrapper?.classList.contains('modal-box--show')) {
+      this.hide();
+    }
+  };
+
   private handlerCloseModal(e: MouseEvent): void {
     if (e.target instanceof Element) {
       if (e.target?.closest('.modal-box__close-btn') || e.target?.classList.contains('backdrop')) {
@@ -40,10 +46,12 @@ export default class ModalBox {
   public show(): void {
     this.modalWrapper.classList.add('modal-box--show');
     document.getElementsByTagName('html')[0].classList.add('overflow-hidden');
+    document.addEventListener('keydown', this.addListenerESC);
   }
 
   public hide(): void {
     this.modalWrapper.classList.remove('modal-box--show');
     document.getElementsByTagName('html')[0].classList.remove('overflow-hidden');
+    document.removeEventListener('keydown', this.addListenerESC);
   }
 }
