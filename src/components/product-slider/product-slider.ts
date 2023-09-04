@@ -32,8 +32,7 @@ export default class ProductSlider implements IPage {
 
   private indicators: HTMLLIElement[] = [];
 
-  constructor(private product: IProductDetails) {
-  }
+  constructor(private product: IProductDetails) {}
 
   public render(): HTMLDivElement {
     this.buttonNext.textContent = '>';
