@@ -3,15 +3,15 @@ import './modal-box.scss';
 import { IPage } from '../../types/interfaces/page';
 
 export default class ModalBox {
-  private modalWrapper: HTMLDivElement;
+  public modalWrapper: HTMLDivElement;
 
-  private backDrop: HTMLDivElement;
+  public backDrop: HTMLDivElement;
 
   private modalBox: HTMLDivElement;
 
   private boxContent: HTMLElement;
 
-  private boxCloseBtn: HTMLSpanElement;
+  public boxCloseBtn: HTMLSpanElement;
 
   constructor(component: IPage, config: string) {
     this.modalWrapper = createElement('div', { class: 'modal-box__wrapper' });
@@ -20,7 +20,7 @@ export default class ModalBox {
     this.boxContent = createElement('div', { class: 'modal-box__content' });
     this.boxCloseBtn = createElement('span', { class: 'modal-box__close-btn' });
     this.boxCloseBtn.textContent = 'x';
-    // this.boxContent.innerHTML = content.outerHTML;
+
     this.boxContent.append(component.render());
     this.modalBox.append(this.boxContent, this.boxCloseBtn);
     this.backDrop.append(this.modalBox);
@@ -29,13 +29,13 @@ export default class ModalBox {
     document.body.append(this.modalWrapper);
   }
 
-  private addListenerESC = (e: KeyboardEvent): void => {
+  public addListenerESC = (e: KeyboardEvent): void => {
     if (e.code === 'Escape' && this.modalWrapper?.classList.contains('modal-box--show')) {
       this.hide();
     }
   };
 
-  private handlerCloseModal(e: MouseEvent): void {
+  public handlerCloseModal(e: MouseEvent): void {
     if (e.target instanceof Element) {
       if (e.target?.closest('.modal-box__close-btn') || e.target?.classList.contains('backdrop')) {
         this.hide();
