@@ -35,7 +35,7 @@ export default class ProductCard {
       return;
     }
     this.oldPrice = createElement('div', { class: 'product__old-price' });
-    this.oldPrice.textContent = this.product.discount.value;
+    this.oldPrice.textContent = this.product.price;
   }
 
   private initDiscount(): void {
@@ -47,11 +47,11 @@ export default class ProductCard {
       const { type } = res.value;
       switch (type) {
         case 'relative': {
-          discount.textContent = `${res.value.permyriad / 100}%`;
+          discount.textContent = `-${res.value.permyriad / 100}%`;
           break;
         }
         case 'absolute': {
-          discount.textContent = `${
+          discount.textContent = `-${
             res.value.money.filter((item) => item.currencyCode === this.currencyCode)[0]
               .centAmount / 100
           } ${this.currencyCode}`;
@@ -81,7 +81,9 @@ export default class ProductCard {
     const price = createElement('div', {
       class: 'product__price',
     });
-    price.textContent = this.product.price;
+    price.textContent = this.product.discount && this.product.discount.value
+      ? this.product.discount.value
+      : this.product.price;
     const wrapperPrices = createElement('div', { class: 'product__wrapper-prices' });
     wrapperPrices.append(price);
     this.initOldPrice();
