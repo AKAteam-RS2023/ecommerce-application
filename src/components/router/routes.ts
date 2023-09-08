@@ -32,7 +32,6 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'profile',
     component: Profile,
-    isSingle: true,
   },
   {
     path: 'catalog/product',
