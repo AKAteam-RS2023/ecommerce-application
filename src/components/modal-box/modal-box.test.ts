@@ -20,14 +20,18 @@ describe('ModalBox', (): void => {
     modal.show();
     expect(document.body.contains(modal.modalWrapper)).toBe(true);
     expect(modal.modalWrapper.classList.contains('modal-box--show')).toBe(true);
-    expect(document.getElementsByTagName('html')[0].classList.contains('overflow-hidden')).toBe(true);
+    expect(document.getElementsByTagName('html')[0].classList.contains('overflow-hidden')).toBe(
+      true,
+    );
   });
 
   it('should hide the modal', () => {
     modal.show();
     modal.hide();
     expect(modal.modalWrapper.classList.contains('modal-box--show')).toBe(false);
-    expect(document.getElementsByTagName('html')[0].classList.contains('overflow-hidden')).toBe(false);
+    expect(document.getElementsByTagName('html')[0].classList.contains('overflow-hidden')).toBe(
+      false,
+    );
   });
 
   it('should handle ESC key press', () => {
@@ -35,6 +39,8 @@ describe('ModalBox', (): void => {
     modal.show();
     modal.addListenerESC(event); // You may need to cast the event type
     expect(modal.modalWrapper.classList.contains('modal-box--show')).toBe(false);
-    expect(document.getElementsByTagName('html')[0].classList.contains('overflow-hidden')).toBe(false);
+    expect(document.getElementsByTagName('html')[0].classList.contains('overflow-hidden')).toBe(
+      false,
+    );
   });
 });

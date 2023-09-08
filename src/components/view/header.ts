@@ -28,13 +28,18 @@ export class Header {
   });
 
   private catalogLink = createElement('a', {
-    class: 'links__item link--login',
+    class: 'links__item link--catalog',
     href: '/catalog',
   });
 
   private profileLink = createElement('a', {
     class: 'links__item link--login',
     href: this.hasUser ? '/profile' : '/',
+  });
+
+  private basket = createElement('a', {
+    class: 'links__item link--basket',
+    href: '/basket',
   });
 
   public toggleActive(): void {
@@ -61,6 +66,10 @@ export class Header {
       }
       case 'profile': {
         this.profileLink.classList.add('active');
+        break;
+      }
+      case 'basket': {
+        this.basket.classList.add('active');
         break;
       }
       default:
@@ -118,6 +127,8 @@ export class Header {
 
     this.profileLink.innerText = 'My profile';
 
+    this.basket.innerText = 'Basket';
+
     const logoutLink = createElement('a', {
       class: 'links__item link--login',
       href: '/login',
@@ -132,7 +143,6 @@ export class Header {
         refreshToken: '',
       });
     };
-
     this.registrationLink.innerText = 'Registration';
 
     this.linksWrapper.append(this.homeLink, this.catalogLink);
@@ -142,5 +152,6 @@ export class Header {
     } else {
       this.linksWrapper.append(this.registrationLink, this.loginLink);
     }
+    this.linksWrapper.append(this.basket);
   }
 }
