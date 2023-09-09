@@ -319,6 +319,31 @@ export const addProduct = async (
   })
   .execute();
 
+export const removeProduct = async (
+  cartId: string,
+  lineItemId: string,
+): Promise<ClientResponse<Cart>> => apiRootUser
+  .me()
+  .carts()
+  .withId({ ID: cartId })
+  .post({
+    body: {
+      version: getVersion(),
+      actions: [
+        {
+          action: 'setCountry',
+          country: 'PL',
+        },
+        {
+          action: 'removeLineItem',
+          lineItemId,
+          quantity: 1,
+        },
+      ],
+    },
+  })
+  .execute();
+
 export const getCartById = async (cartId: string): Promise<Cart> => {
   const res = await apiRootUser.me().carts().withId({ ID: cartId }).get()
     .execute();
