@@ -61,6 +61,14 @@ export class Header {
     const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
     use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#cart');
     img.append(use);
+    img.onclick = (e): void => {
+      e.preventDefault();
+      const target = e.target as Element;
+      const anchor = target.closest('a');
+      if (anchor) {
+        anchor.click();
+      }
+    };
     this.basket.append(img);
   }
 
