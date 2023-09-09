@@ -27,13 +27,20 @@ let apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey(
   projectKey: 'ecom-app-akateam',
 });
 
-localStorage.removeItem('cartId');
-
 export const upadteApiRootUser = (): void => {
-  apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
-    projectKey: 'ecom-app-akateam',
-  });
+  if (conf.client) {
+    apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+      projectKey: 'ecom-app-akateam',
+    });
+  } else {
+    apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+      projectKey: 'ecom-app-akateam',
+    });
+  }
 };
+
+upadteApiRootUser();
+localStorage.removeItem('cartId');
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
@@ -67,6 +74,7 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
         'userExpirationTime',
         `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
       );
+      upadteApiRootUser();
       return true;
     })
     .catch(() => {
@@ -251,19 +259,6 @@ export const changePasswordApi = async (
 
   return res;
 };
-
-// const returnClient = (): ByProjectKeyRequestBuilder => {
-//   if (conf.client) {
-//     const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-//       projectKey: process.env.CTP_PROJECT_KEY as string,
-//     });
-//     return apiRootUser;
-//   }
-//   const apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
-//     projectKey: process.env.CTP_PROJECT_KEY as string,
-//   });
-//   return apiRootUser;
-// };
 
 export const createCart = async (): Promise<string> => {
   try {
