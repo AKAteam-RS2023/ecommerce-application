@@ -10,6 +10,7 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
+  Cart,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -18,6 +19,7 @@ import conf, { initClient } from '../sdk/create-client-user';
 import Sort from '../types/sort';
 import IFilters from '../types/filters';
 import { anonymousClient } from '../sdk/anonymous-client';
+import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -260,6 +262,7 @@ export const createCart = async (): Promise<string> => {
       .post({
         body: {
           currency: 'PLN',
+          country: 'PL',
         },
       })
       .execute();
@@ -268,4 +271,45 @@ export const createCart = async (): Promise<string> => {
   } catch {
     throw Error("You can't order something");
   }
+};
+
+const getVersion = (): number => {
+  const version = localStorage.getItem('cartVersion');
+  if (version === null || Number.isNaN(version)) {
+    return 1;
+  }
+  return +version;
+};
+
+export const addProduct = async (
+  cartId: string,
+  product: IProduct,
+): Promise<ClientResponse<Cart>> => returnClient()
+  .me()
+  .carts()
+  .withId({ ID: cartId })
+  .post({
+    body: {
+      version: getVersion(),
+      actions: [
+        {
+          action: 'setCountry',
+          country: 'PL',
+        },
+        {
+          action: 'addLineItem',
+          productId: product.id,
+          variantId: product.variantId ? product.variantId : undefined,
+          quantity: 1,
+        },
+      ],
+    },
+  })
+  .execute();
+
+export const getCartById = async (cartId: string): Promise<Cart> => {
+  const res = await returnClient().me().carts().withId({ ID: cartId })
+    .get()
+    .execute();
+  return res.body;
 };

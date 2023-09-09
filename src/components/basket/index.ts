@@ -1,5 +1,5 @@
 import createElement from '../../dom-helper/create-element';
-import { createCart } from '../../services/ecommerce-api';
+import { getCartById } from '../../services/ecommerce-api';
 
 import './basket.scss';
 
@@ -11,16 +11,12 @@ export default class Basket {
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
     if (!this.cartId || this.cartId === null) {
-      createCart()
-        .then(() => {
-          this.cartId = localStorage.getItem('cartId');
-          this.container.textContent = `created cart ${this.cartId}`;
-        })
-        .catch((err) => {
-          this.container.textContent = err.message;
-        });
+      this.container.textContent = 'Ooops';
     } else {
-      this.container.textContent = `created cart ${this.cartId}`;
+      getCartById(this.cartId).then((res) => {
+        console.log(res);
+        this.container.textContent = res.cartState;
+      });
     }
   }
 
