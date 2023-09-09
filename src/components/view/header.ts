@@ -1,6 +1,8 @@
 import createElement from '../../dom-helper/create-element';
 import conf from '../../sdk/create-client-user';
 
+import '../../assets/image/cart.svg';
+
 export class Header {
   private hasUser = !!localStorage.getItem('userToken');
 
@@ -42,11 +44,22 @@ export class Header {
     href: '/basket',
   });
 
+  private initBasket(): void {
+    const img = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    img.classList.add('link--basket-img');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#cart');
+    img.append(use);
+    this.basket.append(img);
+  }
+
   public toggleActive(): void {
     const url = window.location.href.split('/').pop();
     this.homeLink.classList.remove('active');
     this.loginLink.classList.remove('active');
     this.registrationLink.classList.remove('active');
+    this.catalogLink.classList.remove('active');
+    this.basket.classList.remove('active');
     switch (url) {
       case '': {
         this.homeLink.classList.add('active');
@@ -127,7 +140,7 @@ export class Header {
 
     this.profileLink.innerText = 'My profile';
 
-    this.basket.innerText = 'Basket';
+    this.initBasket();
 
     const logoutLink = createElement('a', {
       class: 'links__item link--login',
@@ -147,8 +160,7 @@ export class Header {
 
     this.linksWrapper.append(this.homeLink, this.catalogLink);
     if (this.hasUser) {
-      this.linksWrapper.append(this.profileLink);
-      this.linksWrapper.append(logoutLink);
+      this.linksWrapper.append(this.profileLink, logoutLink);
     } else {
       this.linksWrapper.append(this.registrationLink, this.loginLink);
     }
