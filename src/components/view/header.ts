@@ -2,6 +2,7 @@ import createElement from '../../dom-helper/create-element';
 import conf from '../../sdk/create-client-user';
 
 import '../../assets/image/cart.svg';
+import { upadteApiRootUser } from '../../services/ecommerce-api';
 
 export class Header {
   private header?: HTMLElement;
@@ -169,6 +170,7 @@ export class Header {
         expirationTime: 0,
         refreshToken: '',
       });
+      upadteApiRootUser();
     };
     this.registrationLink.innerText = 'Registration';
   }

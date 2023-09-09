@@ -10,12 +10,11 @@ export default class Basket {
 
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
-    if (!this.cartId || this.cartId === null) {
+    if (!this.cartId) {
       this.container.textContent = 'Ooops';
     } else {
       getCartById(this.cartId).then((res) => {
-        console.log(res);
-        this.container.textContent = res.cartState;
+        this.container.textContent = JSON.stringify(res.lineItems);
       });
     }
   }

@@ -1,5 +1,3 @@
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
-
 import {
   Category,
   Customer,
@@ -25,6 +23,18 @@ const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
 });
 
+let apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+  projectKey: 'ecom-app-akateam',
+});
+
+localStorage.removeItem('cartId');
+
+export const upadteApiRootUser = (): void => {
+  apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+    projectKey: 'ecom-app-akateam',
+  });
+};
+
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
   .get({
@@ -42,10 +52,9 @@ export const getCustomer = async (email: string): Promise<Customer | string> => 
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => {
   initClient(email, password);
-  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+  apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
     projectKey: process.env.CTP_PROJECT_KEY as string,
   });
-
   return apiRootUser
     .me()
     .get()
@@ -62,6 +71,7 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     })
     .catch(() => {
       conf.client = null;
+      upadteApiRootUser();
       return false;
     });
 };
@@ -177,9 +187,9 @@ export const getCategoryById = async (id: string): Promise<Category> => {
 };
 
 export const getProfile = async (): Promise<ClientResponse<Customer>> => {
-  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
+  // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+  //   projectKey: process.env.CTP_PROJECT_KEY as string,
+  // });
 
   const res = await apiRootUser.me().get().execute();
 
@@ -199,9 +209,9 @@ export const updateCustomer = async (
   id: string,
   update: CustomerUpdate,
 ): Promise<ClientResponse<Customer>> => {
-  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
+  // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+  //   projectKey: process.env.CTP_PROJECT_KEY as string,
+  // });
 
   const res = apiRootUser.customers().withId({ ID: id }).post({ body: update }).execute();
 
@@ -242,20 +252,21 @@ export const changePasswordApi = async (
   return res;
 };
 
-const returnClient = (): ByProjectKeyRequestBuilder => {
-  if (conf.client) {
-    return createApiBuilderFromCtpClient(conf.client).withProjectKey({
-      projectKey: process.env.CTP_PROJECT_KEY as string,
-    });
-  }
-  return createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
-};
+// const returnClient = (): ByProjectKeyRequestBuilder => {
+//   if (conf.client) {
+//     const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+//       projectKey: process.env.CTP_PROJECT_KEY as string,
+//     });
+//     return apiRootUser;
+//   }
+//   const apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+//     projectKey: process.env.CTP_PROJECT_KEY as string,
+//   });
+//   return apiRootUser;
+// };
 
 export const createCart = async (): Promise<string> => {
   try {
-    const apiRootUser = returnClient();
     const res = await apiRootUser
       .me()
       .carts()
@@ -267,6 +278,7 @@ export const createCart = async (): Promise<string> => {
       })
       .execute();
     localStorage.setItem('cartId', res.body.id);
+    localStorage.setItem('cartVersion', '1');
     return res.body.id;
   } catch {
     throw Error("You can't order something");
@@ -284,7 +296,7 @@ const getVersion = (): number => {
 export const addProduct = async (
   cartId: string,
   product: IProduct,
-): Promise<ClientResponse<Cart>> => returnClient()
+): Promise<ClientResponse<Cart>> => apiRootUser
   .me()
   .carts()
   .withId({ ID: cartId })
@@ -308,8 +320,7 @@ export const addProduct = async (
   .execute();
 
 export const getCartById = async (cartId: string): Promise<Cart> => {
-  const res = await returnClient().me().carts().withId({ ID: cartId })
-    .get()
+  const res = await apiRootUser.me().carts().withId({ ID: cartId }).get()
     .execute();
   return res.body;
 };

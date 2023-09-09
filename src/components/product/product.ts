@@ -51,7 +51,8 @@ export default class ProductView implements IPage {
       if (!this.product) {
         return;
       }
-      if (!this.cartId) {
+      this.cartId = localStorage.getItem('cartId');
+      if (this.cartId === null) {
         this.cartId = await createCart();
       }
       const res = await addProduct(this.cartId, this.product);
