@@ -47,6 +47,16 @@ export default class ProductView implements IPage {
     return this.container;
   }
 
+  private static createPrice(product: IProductDetails): HTMLElement {
+    const price = createElement('div', { class: 'product-details__price' });
+    if (product.discount && product.discount.value) {
+      price.textContent = product.discount.value;
+    } else {
+      price.textContent = product.price;
+    }
+    return price;
+  }
+
   private renderProductDetails(): void {
     if (this.product) {
       this.slider = new ProductSlider(this.product);
@@ -61,8 +71,7 @@ export default class ProductView implements IPage {
       });
       const name = createElement('div', { class: 'product-details__name' });
       name.textContent = this.product.name;
-      const price = createElement('div', { class: 'product-details__price' });
-      price.textContent = this.product.price;
+      const price = ProductView.createPrice(this.product);
       const wrapperPrices = createElement('div', {
         class: 'product-details__wrapper-prices',
       });
@@ -93,7 +102,7 @@ export default class ProductView implements IPage {
       return;
     }
     this.oldPrice = createElement('div', { class: 'product-details__old-price' });
-    this.oldPrice.textContent = this.product.discount.value;
+    this.oldPrice.textContent = this.product.price;
   }
 
   private getProductDiscount(): HTMLDivElement | undefined {
@@ -105,11 +114,11 @@ export default class ProductView implements IPage {
       const { type } = res.value;
       switch (type) {
         case 'relative': {
-          discount.textContent = `${res.value.permyriad / 100}%`;
+          discount.textContent = `-${res.value.permyriad / 100}%`;
           break;
         }
         case 'absolute': {
-          discount.textContent = `${(
+          discount.textContent = `-${(
             res.value.money.filter((item) => item.currencyCode === 'PLN')[0].centAmount / 100
           ).toFixed(2)}`;
           break;
