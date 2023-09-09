@@ -36,11 +36,11 @@ export const upadteApiRootUser = (): void => {
     apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
       projectKey: 'ecom-app-akateam',
     });
+    localStorage.removeItem('cartId');
   }
 };
 
 upadteApiRootUser();
-localStorage.removeItem('cartId');
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
@@ -58,23 +58,33 @@ export const getCustomer = async (email: string): Promise<Customer | string> => 
   });
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => {
+  const res = await apiRoot
+    .me()
+    .login()
+    .post({
+      body: {
+        password,
+        email,
+        activeCartSignInMode: 'MergeWithExistingCustomerCart',
+      },
+    })
+    .execute();
+  if (res.body.cart) {
+    localStorage.setItem('cartId', res.body.cart.id);
+  }
   initClient(email, password);
-  apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
+  upadteApiRootUser();
   return apiRootUser
     .me()
     .get()
     .execute()
     .then(() => {
-      localStorage.removeItem('cartId');
       localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
       localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
       localStorage.setItem(
         'userExpirationTime',
         `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
       );
-      upadteApiRootUser();
       return true;
     })
     .catch(() => {
