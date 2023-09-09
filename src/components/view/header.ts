@@ -4,15 +4,17 @@ import conf from '../../sdk/create-client-user';
 import '../../assets/image/cart.svg';
 
 export class Header {
-  private hasUser = !!localStorage.getItem('userToken');
-
   private header?: HTMLElement;
 
   private headerWrapper?: HTMLDivElement;
 
   private headerLogo?: HTMLDivElement;
 
-  private linksWrapper?: HTMLDivElement;
+  private hasUser = !!localStorage.getItem('userToken');
+
+  private linksWrapper = createElement('div', {
+    class: 'links__wrapper',
+  });
 
   private homeLink = createElement('a', {
     class: 'links__item link--home active',
@@ -21,10 +23,15 @@ export class Header {
 
   private registrationLink = createElement('a', {
     class: 'links__item link--registration',
-    href: this.hasUser ? '/' : '/registration',
+    href: '/registration',
   });
 
   private loginLink = createElement('a', {
+    class: 'links__item link--login',
+    href: '/login',
+  });
+
+  private logoutLink = createElement('a', {
     class: 'links__item link--login',
     href: '/login',
   });
@@ -36,13 +43,17 @@ export class Header {
 
   private profileLink = createElement('a', {
     class: 'links__item link--login',
-    href: this.hasUser ? '/profile' : '/',
+    href: '/profile',
   });
 
   private basket = createElement('a', {
     class: 'links__item link--basket',
     href: '/basket',
   });
+
+  constructor() {
+    this.initLinks();
+  }
 
   private initBasket(): void {
     const img = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -60,6 +71,7 @@ export class Header {
     this.registrationLink.classList.remove('active');
     this.catalogLink.classList.remove('active');
     this.basket.classList.remove('active');
+    this.profileLink.classList.remove('active');
     switch (url) {
       case '': {
         this.homeLink.classList.add('active');
@@ -87,6 +99,7 @@ export class Header {
       }
       default:
     }
+    this.renderLinks();
   }
 
   public render(): HTMLElement {
@@ -127,11 +140,7 @@ export class Header {
     this.headerLogo.append(headerLogoLink);
   }
 
-  private renderLinks(): void {
-    this.linksWrapper = createElement('div', {
-      class: 'links__wrapper',
-    });
-
+  private initLinks(): void {
     this.homeLink.innerText = 'Home';
 
     this.loginLink.innerText = 'Login';
@@ -142,13 +151,10 @@ export class Header {
 
     this.initBasket();
 
-    const logoutLink = createElement('a', {
-      class: 'links__item link--login',
-      href: '/login',
-    });
-    logoutLink.innerText = 'Logout';
-    logoutLink.onclick = (): void => {
+    this.logoutLink.innerText = 'Logout';
+    this.logoutLink.onclick = (): void => {
       localStorage.clear();
+      this.hasUser = false;
       conf.client = null;
       conf.tokenCache.set({
         token: '',
@@ -157,10 +163,14 @@ export class Header {
       });
     };
     this.registrationLink.innerText = 'Registration';
+  }
 
+  private renderLinks(): void {
+    this.hasUser = !!localStorage.getItem('userToken');
+    this.linksWrapper.innerHTML = '';
     this.linksWrapper.append(this.homeLink, this.catalogLink);
     if (this.hasUser) {
-      this.linksWrapper.append(this.profileLink, logoutLink);
+      this.linksWrapper.append(this.profileLink, this.logoutLink);
     } else {
       this.linksWrapper.append(this.registrationLink, this.loginLink);
     }

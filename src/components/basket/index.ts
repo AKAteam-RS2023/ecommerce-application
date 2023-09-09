@@ -1,4 +1,5 @@
 import createElement from '../../dom-helper/create-element';
+import { createCart } from '../../services/ecommerce-api';
 
 import './basket.scss';
 
@@ -10,7 +11,13 @@ export default class Basket {
   }
 
   private init(): void {
-    this.container.textContent = 'Basket';
+    createCart()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        this.container.textContent = err.message;
+      });
   }
 
   public render(): HTMLElement {

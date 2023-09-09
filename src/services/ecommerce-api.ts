@@ -8,6 +8,8 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
+  CartPagedQueryResponse,
+  Cart,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -234,4 +236,25 @@ export const changePasswordApi = async (
     .execute();
 
   return res;
+};
+
+export const createCart = async (): Promise<ClientResponse<Cart>> => {
+  try {
+    const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+      projectKey: process.env.CTP_PROJECT_KEY as string,
+    });
+    const res = await apiRootUser
+      .me()
+      .carts()
+      .post({
+        body: {
+          currency: 'PLN',
+          country: 'PL',
+        },
+      })
+      .execute();
+    return res;
+  } catch {
+    throw Error("You can't order something");
+  }
 };
