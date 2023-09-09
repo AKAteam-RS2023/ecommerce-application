@@ -13,7 +13,7 @@ export default class Basket {
   private init(): void {
     createCart()
       .then((res) => {
-        console.log(res);
+        this.container.textContent = `created cart ${res.body.id}`;
       })
       .catch((err) => {
         this.container.textContent = err.message;

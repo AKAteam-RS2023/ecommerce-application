@@ -1,3 +1,5 @@
+import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
+
 import {
   Category,
   Customer,
@@ -8,7 +10,6 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
-  CartPagedQueryResponse,
   Cart,
 } from '@commercetools/platform-sdk';
 
@@ -17,6 +18,7 @@ import { ctpClient } from '../sdk/build-client';
 import conf, { initClient } from '../sdk/create-client-user';
 import Sort from '../types/sort';
 import IFilters from '../types/filters';
+import { anonymousClient } from '../sdk/anonymous-client';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
@@ -238,18 +240,27 @@ export const changePasswordApi = async (
   return res;
 };
 
-export const createCart = async (): Promise<ClientResponse<Cart>> => {
-  try {
-    const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+const returnClient = (): ByProjectKeyRequestBuilder => {
+  if (conf.client) {
+    return createApiBuilderFromCtpClient(conf.client).withProjectKey({
       projectKey: process.env.CTP_PROJECT_KEY as string,
     });
+  }
+  return createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+  });
+};
+
+export const createCart = async (): Promise<ClientResponse<Cart>> => {
+  try {
+    const apiRootUser = returnClient();
+
     const res = await apiRootUser
       .me()
       .carts()
       .post({
         body: {
           currency: 'PLN',
-          country: 'PL',
         },
       })
       .execute();
