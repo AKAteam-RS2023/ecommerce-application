@@ -4,23 +4,28 @@ import { createCart } from '../../services/ecommerce-api';
 import './basket.scss';
 
 export default class Basket {
+  private cartId?: string | null;
+
   private container = createElement('div', { class: 'basket' });
 
-  constructor() {
-    this.init();
-  }
-
   private init(): void {
-    createCart()
-      .then((res) => {
-        this.container.textContent = `created cart ${res.body.id}`;
-      })
-      .catch((err) => {
-        this.container.textContent = err.message;
-      });
+    this.cartId = localStorage.getItem('cartId');
+    if (!this.cartId || this.cartId === null) {
+      createCart()
+        .then(() => {
+          this.cartId = localStorage.getItem('cartId');
+          this.container.textContent = `created cart ${this.cartId}`;
+        })
+        .catch((err) => {
+          this.container.textContent = err.message;
+        });
+    } else {
+      this.container.textContent = `created cart ${this.cartId}`;
+    }
   }
 
   public render(): HTMLElement {
+    this.init();
     return this.container;
   }
 }

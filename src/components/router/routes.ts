@@ -17,12 +17,10 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'login',
     component: Login,
-    isSingle: true,
   },
   {
     path: 'registration',
     component: Registration,
-    isSingle: true,
   },
   {
     path: 'catalog',

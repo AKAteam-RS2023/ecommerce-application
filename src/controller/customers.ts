@@ -1,4 +1,4 @@
-import { getCustomer, loginCustomer } from '../services/ecommerce-api';
+import { createCart, getCustomer, loginCustomer } from '../services/ecommerce-api';
 
 export const loginIfExist = async (email: string, password: string): Promise<void> => {
   await getCustomer(email);
@@ -6,4 +6,5 @@ export const loginIfExist = async (email: string, password: string): Promise<voi
   if (!flag) {
     throw Error('Password mismatch');
   }
+  await createCart();
 };

@@ -10,7 +10,6 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
-  Cart,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -50,6 +49,7 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     .get()
     .execute()
     .then(() => {
+      localStorage.removeItem('cartId');
       localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
       localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
       localStorage.setItem(
@@ -251,10 +251,9 @@ const returnClient = (): ByProjectKeyRequestBuilder => {
   });
 };
 
-export const createCart = async (): Promise<ClientResponse<Cart>> => {
+export const createCart = async (): Promise<string> => {
   try {
     const apiRootUser = returnClient();
-
     const res = await apiRootUser
       .me()
       .carts()
@@ -264,7 +263,8 @@ export const createCart = async (): Promise<ClientResponse<Cart>> => {
         },
       })
       .execute();
-    return res;
+    localStorage.setItem('cartId', res.body.id);
+    return res.body.id;
   } catch {
     throw Error("You can't order something");
   }
