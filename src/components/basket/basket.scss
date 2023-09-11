@@ -1,0 +1,17 @@
+@import '../../styles/constants/';
+
+.basket {
+
+  &__header {
+    display: grid;
+    grid-template-columns: 3fr 1fr 2fr;
+    align-items: center;
+    justify-items: center;
+    padding: 15px;
+    background-color: $light-l;
+    color: $dark-xl;
+    font-size: 16px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
