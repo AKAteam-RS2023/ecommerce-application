@@ -1,6 +1,8 @@
-import { LineItem } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
-import { getCartById } from '../../services/ecommerce-api';
+
+import { getProductsFromCart } from '../../controller/get-products-from-cart';
+
+import BasketItem from '../basket-item';
 
 import './basket.scss';
 
@@ -13,7 +15,7 @@ export default class Basket {
 
   private header = createElement('div', { class: 'basket__header' });
 
-  private items: LineItem[] = [];
+  private items: BasketItem[] = [];
 
   constructor() {
     this.initHeader();
@@ -33,14 +35,16 @@ export default class Basket {
 
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
+    this.wrapper.innerHTML = '';
+    this.items = [];
     if (!this.cartId) {
       this.wrapper.textContent = 'There are no items in your cart.';
       this.container.append(this.wrapper);
     } else {
-      getCartById(this.cartId).then((res) => {
-        this.items = res.lineItems;
-        this.items.forEach((item) => console.log(item));
+      getProductsFromCart(this.cartId).then((res) => {
+        this.items = res.map((item) => new BasketItem(item));
         if (this.items.length > 0) {
+          this.items.forEach((item) => this.wrapper.append(item.render()));
           this.container.append(this.header, this.wrapper);
         }
       });
