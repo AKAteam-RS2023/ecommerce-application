@@ -82,6 +82,7 @@ export default class ProductView implements IPage {
     this.cartId = localStorage.getItem('cartId');
     if (this.cartId) {
       getCartById(this.cartId).then((res) => {
+        localStorage.setItem('cartVersion', `${res.version}`);
         const lineItems = res.lineItems.filter((item) => item.productId === this.product?.id);
         if (lineItems.length === 0) {
           return;
