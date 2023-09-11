@@ -23,7 +23,9 @@ export default class BasketItem {
     const name = createElement('div', { class: 'basket__item--name' });
     name.textContent = this.product.name;
     const price = createElement('div', { class: 'basket__item--price' });
-    price.textContent = this.product.price;
+    price.textContent = this.product.discountedPrice
+      ? this.product.discountedPrice
+      : this.product.price;
     const quantity = createElement('div', { class: 'basket__item--quantity' });
     quantity.textContent = `${this.product.quantity}`;
     const totalPrice = createElement('div', { class: 'basket__item--total-price' });

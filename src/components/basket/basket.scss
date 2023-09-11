@@ -1,6 +1,8 @@
 @import '../../styles/constants/';
 
 .basket {
+  font-size: 18px;
+  font-weight: 500;
 
   &__header {
     display: grid;
@@ -10,8 +12,15 @@
     padding: 15px;
     background-color: $light-l;
     color: $dark-xl;
+  }
+
+  @media screen and (max-width: $large) {
     font-size: 16px;
-    font-size: 16px;
-    font-weight: 500;
+    font-weight: 400;
+  }
+
+  @media screen and (max-width: $medium) {
+    font-size: 14px;
+    font-weight: 400;
   }
 }

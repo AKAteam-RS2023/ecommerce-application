@@ -36,6 +36,25 @@ const getPrice = (data: LineItem): string => {
     : 'no prices';
 };
 
+const getDiscountedPrice = (data: LineItem): string | undefined => {
+  if (
+    !data.variant.prices
+    || !Array.isArray(data.variant.prices)
+    || data.variant.prices.length === 0
+  ) {
+    return undefined;
+  }
+  if (!data.variant.prices[0].discounted) {
+    return undefined;
+  }
+  return data.variant.prices[0].discounted.value.centAmount
+    && data.variant.prices[0].discounted.value.currencyCode
+    ? `${(data.variant.prices[0].discounted.value.centAmount / 100).toFixed(2)} ${
+      data.variant.prices[0].discounted.value.currencyCode
+    }`
+    : undefined;
+};
+
 export const getProductsFromCart = async (cartId: string): Promise<ICartsProduct[]> => {
   const result: ICartsProduct[] = [];
   const res = await getCartById(cartId);
@@ -44,6 +63,7 @@ export const getProductsFromCart = async (cartId: string): Promise<ICartsProduct
       name: getName(item),
       url: getUrl(item),
       price: getPrice(item),
+      discountedPrice: getDiscountedPrice(item),
       totalPrice: getTotalPrice(item),
       quantity: getQuantity(item),
     });
