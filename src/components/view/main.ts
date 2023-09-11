@@ -1,17 +1,15 @@
 import createElement from '../../dom-helper/create-element';
 
 export class MainSection {
-  private main?: HTMLElement;
+  private main = createElement('main', {
+    class: 'main',
+  });
 
-  public mainWrapper?: HTMLDivElement;
+  public mainWrapper = createElement('div', {
+    class: 'main__wrapper',
+  });
 
   public render(): HTMLElement {
-    this.main = createElement('main', {
-      class: 'main',
-    });
-    this.mainWrapper = createElement('div', {
-      class: 'main__wrapper',
-    });
     this.main.append(this.mainWrapper);
     return this.main;
   }

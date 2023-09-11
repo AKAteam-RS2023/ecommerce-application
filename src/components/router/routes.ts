@@ -7,6 +7,7 @@ import Registration from '../registration';
 import { Home } from '../view/home';
 import ProductView from '../product/product';
 import { AboutUs } from '../aboutus/about';
+import Basket from '../basket';
 
 export const routes: IRoute<IPage>[] = [
   {
@@ -17,12 +18,10 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'login',
     component: Login,
-    isSingle: true,
   },
   {
     path: 'registration',
     component: Registration,
-    isSingle: true,
   },
   {
     path: 'catalog',
@@ -32,7 +31,6 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'profile',
     component: Profile,
-    isSingle: true,
   },
   {
     path: 'catalog/product',
@@ -43,5 +41,10 @@ export const routes: IRoute<IPage>[] = [
     path: 'about',
     component: AboutUs,
     isSingle: false,
+  },
+  {
+    path: 'basket',
+    component: Basket,
+    isSingle: true,
   },
 ];
