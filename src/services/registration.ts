@@ -5,7 +5,7 @@ import {
   CustomerDraft,
 } from '@commercetools/platform-sdk';
 
-import { ctpClient } from './build-client';
+import { ctpClient } from '../sdk/build-client';
 
 // Create apiRoot from the imported ClientBuilder and include your Project key
 export const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
