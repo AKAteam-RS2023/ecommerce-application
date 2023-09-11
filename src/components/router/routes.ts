@@ -6,6 +6,7 @@ import { Profile } from '../profile';
 import Registration from '../registration';
 import { Home } from '../view/home';
 import ProductView from '../product/product';
+import { AboutUs } from '../aboutus/about';
 
 export const routes: IRoute<IPage>[] = [
   {
@@ -36,6 +37,11 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'catalog/product',
     component: ProductView,
+    isSingle: false,
+  },
+  {
+    path: 'about',
+    component: AboutUs,
     isSingle: false,
   },
 ];

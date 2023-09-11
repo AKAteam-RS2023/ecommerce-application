@@ -37,6 +37,11 @@ export class Header {
     href: this.hasUser ? '/profile' : '/',
   });
 
+  private aboutUsLink = createElement('a', {
+    class: 'links__item link--login',
+    href: '/about',
+  });
+
   public toggleActive(): void {
     const url = window.location.href.split('/').pop();
     this.homeLink.classList.remove('active');
@@ -61,6 +66,10 @@ export class Header {
       }
       case 'profile': {
         this.profileLink.classList.add('active');
+        break;
+      }
+      case 'about': {
+        this.aboutUsLink.classList.add('active');
         break;
       }
       default:
@@ -111,12 +120,10 @@ export class Header {
     });
 
     this.homeLink.innerText = 'Home';
-
     this.loginLink.innerText = 'Login';
-
     this.catalogLink.innerText = 'Catalog';
-
     this.profileLink.innerText = 'My profile';
+    this.aboutUsLink.innerText = 'About us';
 
     const logoutLink = createElement('a', {
       class: 'links__item link--login',
@@ -142,5 +149,6 @@ export class Header {
     } else {
       this.linksWrapper.append(this.registrationLink, this.loginLink);
     }
+    this.linksWrapper.append(this.aboutUsLink);
   }
 }
