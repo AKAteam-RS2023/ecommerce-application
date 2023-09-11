@@ -8,6 +8,7 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
+  Cart,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -15,10 +16,31 @@ import { ctpClient } from '../sdk/build-client';
 import conf, { initClient } from '../sdk/create-client-user';
 import Sort from '../types/sort';
 import IFilters from '../types/filters';
+import { anonymousClient } from '../sdk/anonymous-client';
+import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
 });
+
+let apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+  projectKey: 'ecom-app-akateam',
+});
+
+export const upadteApiRootUser = (): void => {
+  if (conf.client) {
+    apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+      projectKey: 'ecom-app-akateam',
+    });
+  } else {
+    apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
+      projectKey: 'ecom-app-akateam',
+    });
+    localStorage.removeItem('cartId');
+  }
+};
+
+upadteApiRootUser();
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
@@ -36,11 +58,22 @@ export const getCustomer = async (email: string): Promise<Customer | string> => 
   });
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => {
+  const res = await apiRoot
+    .me()
+    .login()
+    .post({
+      body: {
+        password,
+        email,
+        activeCartSignInMode: 'MergeWithExistingCustomerCart',
+      },
+    })
+    .execute();
+  if (res.body.cart) {
+    localStorage.setItem('cartId', res.body.cart.id);
+  }
   initClient(email, password);
-  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
-
+  upadteApiRootUser();
   return apiRootUser
     .me()
     .get()
@@ -56,6 +89,7 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     })
     .catch(() => {
       conf.client = null;
+      upadteApiRootUser();
       return false;
     });
 };
@@ -171,9 +205,9 @@ export const getCategoryById = async (id: string): Promise<Category> => {
 };
 
 export const getProfile = async (): Promise<ClientResponse<Customer>> => {
-  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
+  // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+  //   projectKey: process.env.CTP_PROJECT_KEY as string,
+  // });
 
   const res = await apiRootUser.me().get().execute();
 
@@ -193,9 +227,9 @@ export const updateCustomer = async (
   id: string,
   update: CustomerUpdate,
 ): Promise<ClientResponse<Customer>> => {
-  const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-    projectKey: process.env.CTP_PROJECT_KEY as string,
-  });
+  // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+  //   projectKey: process.env.CTP_PROJECT_KEY as string,
+  // });
 
   const res = apiRootUser.customers().withId({ ID: id }).post({ body: update }).execute();
 
@@ -234,4 +268,89 @@ export const changePasswordApi = async (
     .execute();
 
   return res;
+};
+
+export const createCart = async (): Promise<string> => {
+  try {
+    const res = await apiRootUser
+      .me()
+      .carts()
+      .post({
+        body: {
+          currency: 'PLN',
+          country: 'PL',
+        },
+      })
+      .execute();
+    localStorage.setItem('cartId', res.body.id);
+    localStorage.setItem('cartVersion', '1');
+    return res.body.id;
+  } catch {
+    throw Error("You can't order something");
+  }
+};
+
+const getVersion = (): number => {
+  const version = localStorage.getItem('cartVersion');
+  if (version === null || Number.isNaN(version)) {
+    return 1;
+  }
+  return +version;
+};
+
+export const addProduct = async (
+  cartId: string,
+  product: IProduct,
+): Promise<ClientResponse<Cart>> => apiRootUser
+  .me()
+  .carts()
+  .withId({ ID: cartId })
+  .post({
+    body: {
+      version: getVersion(),
+      actions: [
+        {
+          action: 'setCountry',
+          country: 'PL',
+        },
+        {
+          action: 'addLineItem',
+          productId: product.id,
+          variantId: product.variantId ? product.variantId : undefined,
+          quantity: 1,
+        },
+      ],
+    },
+  })
+  .execute();
+
+export const removeProduct = async (
+  cartId: string,
+  lineItemId: string,
+): Promise<ClientResponse<Cart>> => apiRootUser
+  .me()
+  .carts()
+  .withId({ ID: cartId })
+  .post({
+    body: {
+      version: getVersion(),
+      actions: [
+        {
+          action: 'setCountry',
+          country: 'PL',
+        },
+        {
+          action: 'removeLineItem',
+          lineItemId,
+          quantity: 1,
+        },
+      ],
+    },
+  })
+  .execute();
+
+export const getCartById = async (cartId: string): Promise<Cart> => {
+  const res = await apiRootUser.me().carts().withId({ ID: cartId }).get()
+    .execute();
+  return res.body;
 };

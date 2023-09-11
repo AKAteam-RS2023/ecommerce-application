@@ -3,7 +3,13 @@ import { IPage } from '../../types/interfaces/page';
 import getProductDetails from '../../controller/get-product';
 import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
-import { getProductDiscontById } from '../../services/ecommerce-api';
+import {
+  addProduct,
+  createCart,
+  getCartById,
+  getProductDiscontById,
+  removeProduct,
+} from '../../services/ecommerce-api';
 import ProductSlider from '../product-slider/product-slider';
 import ModalBox from '../modal-box/modal-box';
 
@@ -24,6 +30,10 @@ export default class ProductView implements IPage {
 
   private slider?: ProductSlider;
 
+  private cartBtn = createElement('button', { class: 'product-view__button' });
+
+  private cartId = localStorage.getItem('cartId');
+
   constructor() {
     this.productId = this.router.queryParams.productID;
     this.variantId = +this.router.queryParams.variantID;
@@ -39,6 +49,47 @@ export default class ProductView implements IPage {
         this.container.textContent = err.message;
         this.router.navigate('not-found');
       });
+  }
+
+  private onAddProduct = async (): Promise<void> => {
+    if (!this.product) {
+      return;
+    }
+    if (this.cartId === null) {
+      this.cartId = await createCart();
+    }
+    const res = await addProduct(this.cartId, this.product);
+    localStorage.setItem('cartVersion', `${res.body.version}`);
+
+    this.initCartBtn();
+  };
+
+  private onRemoveProduct = async (lineItemsId: string): Promise<void> => {
+    if (!this.cartId) {
+      return;
+    }
+    const responce = await removeProduct(this.cartId, lineItemsId);
+    localStorage.setItem('cartVersion', `${responce.body.version}`);
+    this.initCartBtn();
+  };
+
+  private initCartBtn(): void {
+    if (!this.product) {
+      return;
+    }
+    this.cartBtn.textContent = 'Add to cart';
+    this.cartBtn.onclick = async (): Promise<void> => this.onAddProduct();
+    this.cartId = localStorage.getItem('cartId');
+    if (this.cartId) {
+      getCartById(this.cartId).then((res) => {
+        const lineItems = res.lineItems.filter((item) => item.productId === this.product?.id);
+        if (lineItems.length === 0) {
+          return;
+        }
+        this.cartBtn.textContent = 'Remove from cart';
+        this.cartBtn.onclick = async (): Promise<void> => this.onRemoveProduct(lineItems[0].id);
+      });
+    }
   }
 
   public render(): HTMLElement {
@@ -59,6 +110,7 @@ export default class ProductView implements IPage {
 
   private renderProductDetails(): void {
     if (this.product) {
+      this.initCartBtn();
       this.slider = new ProductSlider(this.product);
       const wrapperSlider: HTMLDivElement | undefined = this.slider.render();
       const modalSlider: ProductSlider = new ProductSlider(this.product);
@@ -87,7 +139,7 @@ export default class ProductView implements IPage {
         class: 'product-details__wrapper',
       });
       if (wrapperAttribute) {
-        wrapper.append(name, wrapperPrices, description, wrapperAttribute);
+        wrapper.append(name, wrapperPrices, description, this.cartBtn, wrapperAttribute);
       } else wrapper.append(name, wrapperPrices, description);
       if (wrapperSlider) {
         const discount = this.getProductDiscount();
