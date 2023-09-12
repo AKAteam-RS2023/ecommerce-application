@@ -30,13 +30,13 @@ export default class Catalog {
 
   private search: Search = new Search();
 
-  private limitOnPage = 3;
+  private limitOnPage = 5;
 
   private offset = 0;
 
   private isCleaning = true;
 
-  private isShowNext = false;
+  private total?: number;
 
   constructor() {
     this.AllWasShow.textContent = 'To są wszystkie towary';
@@ -78,7 +78,6 @@ export default class Catalog {
   }
 
   private updateProductsContainer(): void {
-    this.isShowNext = false;
     this.isCleaning = true;
     this.offset = 0;
     this.init();
@@ -102,7 +101,6 @@ export default class Catalog {
 
   private init(): void {
     if (this.isCleaning) {
-      this.offset = 0;
       this.container.innerHTML = '';
     }
     getIProducts({
@@ -114,7 +112,8 @@ export default class Catalog {
       searchQuery: this.searchQuery,
     })
       .then((productsResponse) => {
-        this.products = productsResponse.map((product) => new ProductCard(product));
+        this.products = productsResponse.results.map((product) => new ProductCard(product));
+        this.total = productsResponse.total;
         this.catalogRender();
       })
       .catch((err) => {
@@ -129,18 +128,16 @@ export default class Catalog {
     if (this.sort === Sort.priceDesc) {
       this.sortByPriceDesc();
     }
-    if (this.products.length === 0 && !this.isShowNext) this.container.textContent = 'Brak towarów';
-    if (this.products.length === 0 && this.isShowNext) this.container.append(this.AllWasShow);
+    if (this.total === 0) this.container.textContent = 'Brak towarów';
     this.products.forEach((product) => this.container.append(product.render()));
     this.offset += this.limitOnPage;
-    if (this.limitOnPage <= this.products.length) {
+    if (this.total && this.offset < this.total) {
       this.showMoreContainer = createElement('div', { class: 'show-more__container product' });
       this.showMoreContainer.textContent = 'Pokazać więcej towarów';
       this.container.append(this.showMoreContainer);
       this.showMoreContainer.addEventListener('click', () => {
         this.showMoreContainer?.remove();
         this.isCleaning = false;
-        this.isShowNext = true;
         this.init();
       });
     } else this.container.append(this.AllWasShow);

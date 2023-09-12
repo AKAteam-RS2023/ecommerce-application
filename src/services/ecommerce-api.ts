@@ -103,7 +103,7 @@ export const getProducts = async (data: {
   filters?: IFilters;
   limit: number;
   offset: number;
-}): Promise<ProductProjection[]> => {
+}): Promise<{ results: ProductProjection[], total?: number }> => {
   try {
     const filter: string[] = [];
     if (data.categoryId) filter.push(`categories.id:"${data.categoryId}"`);
@@ -131,10 +131,8 @@ export const getProducts = async (data: {
         },
       })
       .execute();
-    return res.body.results;
-  } catch {
-    throw Error('Brak towarów');
-  }
+    return { results: res.body.results, total: res.body.total };
+  } catch { throw Error('Brak towarów'); }
 };
 
 export const getProductDiscontById = async (id: string): Promise<ProductDiscount> => {
