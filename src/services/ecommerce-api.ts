@@ -79,11 +79,11 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     .get()
     .execute()
     .then(() => {
-      localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
-      localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
+      localStorage.setItem('userToken', conf.tokenCache.userCache.token);
+      localStorage.setItem('userRefreshToken', conf.tokenCache.userCache.refreshToken || '');
       localStorage.setItem(
         'userExpirationTime',
-        `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
+        `${conf.tokenCache.userCache.expirationTime || 0}`,
       );
       return true;
     })
@@ -101,12 +101,12 @@ export const getProducts = async (data: {
   sort: Sort;
   searchQuery?: string;
   filters?: IFilters;
+  limit: number;
+  offset: number;
 }): Promise<ProductProjection[]> => {
   try {
     const filter: string[] = [];
-    if (data.categoryId) {
-      filter.push(`categories.id:"${data.categoryId}"`);
-    }
+    if (data.categoryId) filter.push(`categories.id:"${data.categoryId}"`);
     if (data.filters) {
       if (data.filters.madein && data.filters.madein.size > 0) {
         filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
@@ -126,7 +126,9 @@ export const getProducts = async (data: {
       .productProjections()
       .search()
       .get({
-        queryArgs: { filter, sort: data.sort, 'text.pl-PL': data.searchQuery },
+        queryArgs: {
+          filter, sort: data.sort, 'text.pl-PL': data.searchQuery, limit: data.limit, offset: data.offset,
+        },
       })
       .execute();
     return res.body.results;

@@ -149,6 +149,8 @@ export default async function getIProducts(data: {
   sort: Sort;
   filters?: IFilters;
   searchQuery?: string;
+  limit: number;
+  offset: number;
 }): Promise<IProduct[]> {
   const res = await getProducts(data);
   return res.map((item) => doProduct(item, data.filters)).flat();

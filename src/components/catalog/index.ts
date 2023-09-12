@@ -18,6 +18,8 @@ import Search from '../search/search';
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
 
+  private showMoreContainer = createElement('div', { class: 'show-more__container product' });
+
   private products: ProductCard[] = [];
 
   private sort: Sort = sortSelect.value;
@@ -25,6 +27,12 @@ export default class Catalog {
   private searchQuery?: string;
 
   private search: Search = new Search();
+
+  private limitOnPage = 9;
+
+  private offset = 0;
+
+  private isLimit = false;
 
   constructor() {
     this.init();
@@ -81,8 +89,10 @@ export default class Catalog {
   }
 
   private init(): void {
-    this.container.innerHTML = '';
+    // this.container.innerHTML = '';
     getIProducts({
+      limit: this.limitOnPage,
+      offset: this.offset,
       sort: this.sort,
       categoryId: categories.selectCategory ? categories.selectCategory : undefined,
       filters: filters.filters,
@@ -100,6 +110,9 @@ export default class Catalog {
           this.container.textContent = 'Brak towarów';
         }
         this.products.forEach((product) => this.container.append(product.render()));
+        this.container.append(this.showMoreContainer);
+        this.offset += this.limitOnPage;
+        this.showMoreContainer.addEventListener('click', () => this.init());
       })
       .catch((err) => {
         this.container.textContent = err.message;
