@@ -1,0 +1,30 @@
+@import '../../styles/constants/';
+
+.basket__item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 2fr;
+  align-items: center;
+  justify-items: center;
+  padding: 15px;
+  font-size: .9em;
+  font-weight: normal;
+
+  &--img {
+    display: block;
+    width: 80px;
+    object-fit: contain;
+
+    @media screen and (max-width: $medium) {
+      width: 60px;
+    }
+  }
+
+  &--quantity,
+  &--total-price {
+    color: $dark-xl;
+  }
+
+  @media screen and (max-width: $medium) {
+    font-size: .8em;
+  }
+}
