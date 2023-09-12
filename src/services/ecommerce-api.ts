@@ -79,11 +79,11 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
     .get()
     .execute()
     .then(() => {
-      localStorage.setItem('userToken', conf.tokenCache.userCaсhe.token);
-      localStorage.setItem('userRefreshToken', conf.tokenCache.userCaсhe.refreshToken || '');
+      localStorage.setItem('userToken', conf.tokenCache.userCache.token);
+      localStorage.setItem('userRefreshToken', conf.tokenCache.userCache.refreshToken || '');
       localStorage.setItem(
         'userExpirationTime',
-        `${conf.tokenCache.userCaсhe.expirationTime || 0}`,
+        `${conf.tokenCache.userCache.expirationTime || 0}`,
       );
       return true;
     })
