@@ -18,7 +18,9 @@ import Search from '../search/search';
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
 
-  private showMoreContainer = createElement('div', { class: 'show-more__container product' });
+  private AllWasShow = createElement('div', { class: 'all-products-show' });
+
+  private showMoreContainer?: HTMLDivElement;
 
   private products: ProductCard[] = [];
 
@@ -28,37 +30,40 @@ export default class Catalog {
 
   private search: Search = new Search();
 
-  private limitOnPage = 9;
+  private limitOnPage = 3;
 
   private offset = 0;
 
-  private isLimit = false;
+  private isCleaning = true;
+
+  private isShowNext = false;
 
   constructor() {
-    this.init();
+    this.AllWasShow.textContent = 'To są wszystkie towary';
+    this.updateProductsContainer();
     eventEmitter.subscribe('event: change-category', (data) => {
       if (!data || !('id' in data)) {
         return;
       }
       categories.selectCategory = data.id;
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: show-all-products', () => {
       if (!categories.selectCategory) {
         return;
       }
       categories.selectCategory = null;
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: select-sort', (data) => {
       if (!data || !('sort' in data)) {
         return;
       }
       this.sort = data.sort as Sort;
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: change-products', () => {
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: search', (data) => {
       if (!data || !('searchQuery' in data)) {
@@ -68,8 +73,15 @@ export default class Catalog {
         return;
       }
       this.searchQuery = data.searchQuery;
-      this.init();
+      this.updateProductsContainer();
     });
+  }
+
+  private updateProductsContainer(): void {
+    this.isShowNext = false;
+    this.isCleaning = true;
+    this.offset = 0;
+    this.init();
   }
 
   private sortByPriceAsc(): void {
@@ -89,7 +101,10 @@ export default class Catalog {
   }
 
   private init(): void {
-    // this.container.innerHTML = '';
+    if (this.isCleaning) {
+      this.offset = 0;
+      this.container.innerHTML = '';
+    }
     getIProducts({
       limit: this.limitOnPage,
       offset: this.offset,
@@ -100,28 +115,39 @@ export default class Catalog {
     })
       .then((productsResponse) => {
         this.products = productsResponse.map((product) => new ProductCard(product));
-        if (this.sort === Sort.priceAsc) {
-          this.sortByPriceAsc();
-        }
-        if (this.sort === Sort.priceDesc) {
-          this.sortByPriceDesc();
-        }
-        if (this.products.length === 0) {
-          this.container.textContent = 'Brak towarów';
-        }
-        this.products.forEach((product) => this.container.append(product.render()));
-        this.container.append(this.showMoreContainer);
-        this.offset += this.limitOnPage;
-        this.showMoreContainer.addEventListener('click', () => this.init());
+        this.catalogRender();
       })
       .catch((err) => {
         this.container.textContent = err.message;
       });
   }
 
+  private catalogRender():void {
+    if (this.sort === Sort.priceAsc) {
+      this.sortByPriceAsc();
+    }
+    if (this.sort === Sort.priceDesc) {
+      this.sortByPriceDesc();
+    }
+    if (this.products.length === 0 && !this.isShowNext) this.container.textContent = 'Brak towarów';
+    if (this.products.length === 0 && this.isShowNext) this.container.append(this.AllWasShow);
+    this.products.forEach((product) => this.container.append(product.render()));
+    this.offset += this.limitOnPage;
+    if (this.limitOnPage <= this.products.length) {
+      this.showMoreContainer = createElement('div', { class: 'show-more__container product' });
+      this.showMoreContainer.textContent = 'Pokazać więcej towarów';
+      this.container.append(this.showMoreContainer);
+      this.showMoreContainer.addEventListener('click', () => {
+        this.showMoreContainer?.remove();
+        this.isCleaning = false;
+        this.isShowNext = true;
+        this.init();
+      });
+    } else this.container.append(this.AllWasShow);
+  }
+
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-
     const categoriesHeader = createElement('div', { class: 'catalog__categories-header' });
     categoriesHeader.append(filters.render(), categories.render());
     const header = createElement('div', { class: 'catalog__header' });
