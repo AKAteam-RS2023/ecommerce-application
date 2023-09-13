@@ -99,25 +99,38 @@ export default class TeamMember {
   }
 
   private static createKatyaRole(): HTMLElement {
-    const list = createElement<HTMLUListElement>('ul');
-    return TeamMember.createBaseRole(list);
+    const list = createElement<HTMLUListElement>('ul', { class: 'role__list' });
+    const li1 = createElement<HTMLLIElement>('li');
+    li1.textContent = 'user registration form';
+    const li2 = createElement<HTMLLIElement>('li');
+    li2.textContent = 'user profile page';
+    const li3 = createElement<HTMLLIElement>('li');
+    li3.textContent = 'products search';
+    const li4 = createElement<HTMLLIElement>('li');
+    li4.textContent = 'about us page';
+    const li5 = createElement<HTMLLIElement>('li');
+    li5.textContent = 'tried to be positive in any situation';
+    list.append(li1, li2, li3, li4, li5);
+    return TeamMember.createBaseRole(list, 'Katya');
   }
 
   private static createAlinaRole(): HTMLElement {
     const list = createElement<HTMLUListElement>('ul');
-    return TeamMember.createBaseRole(list);
+    return TeamMember.createBaseRole(list, 'Alina');
   }
 
   private static createAlenaRole(): HTMLElement {
     const list = createElement<HTMLUListElement>('ul');
-    return TeamMember.createBaseRole(list);
+    return TeamMember.createBaseRole(list, 'Alena');
   }
 
-  private static createBaseRole(list: HTMLUListElement): HTMLElement {
+  private static createBaseRole(list: HTMLUListElement, name: string): HTMLElement {
     const role = createElement('div', { class: 'teammember__list' });
+    const header = createElement('div', { class: 'teammember__list-header' });
+    header.innerHTML = `<span>${name}</span> implemented the following features`;
     const a = createElement<HTMLAnchorElement>('a', { class: 'teammember__link' });
     a.textContent = 'BACK';
-    role.append(list, a);
+    role.append(header, list, a);
     return role;
   }
 
