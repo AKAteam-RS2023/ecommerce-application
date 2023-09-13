@@ -135,7 +135,6 @@ export default class Catalog {
     if (this.sort === Sort.priceDesc) {
       this.sortByPriceDesc();
     }
-    if (this.total === 0) this.container.textContent = 'Brak towarów';
     this.products.forEach((product) => this.container.append(product.render()));
     this.offset += this.limitOnPage;
     if (this.total && this.offset < this.total) {
@@ -155,6 +154,9 @@ export default class Catalog {
         this.isCleaning = false;
         this.init();
       });
+    } else if (this.total === 0) {
+      this.AllWasShow.remove();
+      this.container.textContent = 'Brak towarów';
     } else this.container.append(this.AllWasShow);
   }
 
