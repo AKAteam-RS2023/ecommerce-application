@@ -11,16 +11,105 @@
 
   &__header {
     display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 10px;
     background-color: $light-l;
     font-size: 18px;
     line-height: 120%;
     font-weight: bold;
     color: $dark;
+    
     margin-bottom: 20px;
 
+  }
+
+  &__akateam {
+    font-size: 18px;
+    color: $dark;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    &--furniro {
+      font-weight: bold;
+    }
+    &--aka {
+      color: $primary;
+      font-weight: bold;
+    }
+    &--collaboration {
+      
+      border-radius: 5px;
+      padding: 0 3px;
+      background-color: rgba(184, 142, 47,0.4);
+      cursor: pointer;
+    }
+    &--collaboration:hover {
+      background-color: #d9d9d9;
+    }
+  }
+
+  &__modal {
+    display: none;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    background-color: rgba(41, 41, 41, 0.6);
+    overflow-y: auto;
+    max-height: 100%;
+
+    &--content {
+      padding: 20px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 75%;
+      transform: translate(-50%, -50%);
+      color: #9f9f9f;
+      background-color: white;
+    }
+  }
+
+  &__collaboration {
+    &--header {
+      text-align: center;
+      font-size: 20px;
+      color: $dark;
+      font-weight: bold;
+      margin-bottom: 20px;
+      @media screen and (max-width: $medium){
+        font-size: 14px;
+      }
+    }
+    &--items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: space-around;
+      align-items: center;
+      @media screen and (max-width: $medium){
+        gap: 30px;
+      }
+    }
+    &--item {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100px;
+      justify-content: center;
+      align-items:center;
+      text-align: center;
+
+      @media screen and (max-width: $medium){
+        width: 70px;
+      }
+    }
+    &--image {
+      width: 100%;
+      object-fit: contain;
+    }
+
+    @media screen and (max-width: $medium){
+      font-size: 12px;
+    }
   }
 
   @media screen and (max-width: $x-large){
@@ -65,6 +154,9 @@
         font-weight: bold;
         color: $dark;
     }
+    &--name::first-letter {
+      color: $primary;
+    }
   }
 
   &__bio {
@@ -78,5 +170,10 @@
   a {
     text-decoration: none;
     color: $dark;
+    transition: 0.3s;
+  }
+
+  a:hover {
+    color: $primary;
   }
 }

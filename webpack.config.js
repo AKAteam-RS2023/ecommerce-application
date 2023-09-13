@@ -19,7 +19,7 @@ module.exports = {
   },
   devServer: {
     open: true,
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 4200,
     hot: true,
     static: path.resolve(__dirname, './dist'),
@@ -46,7 +46,7 @@ module.exports = {
         use: 'svg-sprite-loader',
       },
       {
-        test: /\.(png|jpg|jpeg|gif)$/i,
+        test: /\.(png|jpg|jpeg|gif|webp)$/i,
         type: 'asset/resource',
       },
       {

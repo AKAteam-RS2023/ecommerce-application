@@ -66,10 +66,10 @@ export default class TeamMember {
       'https://github.com/alenzija',
     );
 
-    return [alina, alena, katya];
+    return [alina, katya, alena];
   }
 
-  private static katyaBio = `Katya is a creative and self-starting Front-End Developer building websites and apps, highly skilled in HTML/CSS/JavaScript/TypeScript 
+  private static katyaBio = `Katya is a creative and self-starting Front-End Developer from Bialystok (Poland) building websites and apps, highly skilled in HTML/CSS/JS/TS 
 seeking an entry-level position to use her skills in frontend.`;
 
   private static alinaBio = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
