@@ -58,40 +58,41 @@ export const getCustomer = async (email: string): Promise<Customer | string> => 
   });
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => {
-  const res = await apiRoot
-    .me()
-    .login()
-    .post({
-      body: {
-        password,
-        email,
-        activeCartSignInMode: 'MergeWithExistingCustomerCart',
-      },
-    })
-    .execute();
-  if (res.body.cart) {
-    localStorage.setItem('cartId', res.body.cart.id);
+  try {
+    const res = await apiRoot
+      .me()
+      .login()
+      .post({
+        body: {
+          password,
+          email,
+          activeCartSignInMode: 'MergeWithExistingCustomerCart',
+        },
+      })
+      .execute();
+    if (res.body.cart) {
+      localStorage.setItem('cartId', res.body.cart.id);
+    }
+    initClient(email, password);
+    upadteApiRootUser();
+    return await apiRootUser
+      .me()
+      .get()
+      .execute()
+      .then(() => {
+        localStorage.setItem('userToken', conf.tokenCache.userCache.token);
+        localStorage.setItem('userRefreshToken', conf.tokenCache.userCache.refreshToken || '');
+        localStorage.setItem(
+          'userExpirationTime',
+          `${conf.tokenCache.userCache.expirationTime || 0}`,
+        );
+        return true;
+      });
+  } catch {
+    conf.client = null;
+    upadteApiRootUser();
+    return false;
   }
-  initClient(email, password);
-  upadteApiRootUser();
-  return apiRootUser
-    .me()
-    .get()
-    .execute()
-    .then(() => {
-      localStorage.setItem('userToken', conf.tokenCache.userCache.token);
-      localStorage.setItem('userRefreshToken', conf.tokenCache.userCache.refreshToken || '');
-      localStorage.setItem(
-        'userExpirationTime',
-        `${conf.tokenCache.userCache.expirationTime || 0}`,
-      );
-      return true;
-    })
-    .catch(() => {
-      conf.client = null;
-      upadteApiRootUser();
-      return false;
-    });
 };
 
 const toStringForFilter = (set: Set<unknown>): string => [...set].map((item) => `"${item}"`).join(',');
