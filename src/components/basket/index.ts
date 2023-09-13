@@ -21,8 +21,11 @@ export default class Basket {
 
   private items: BasketItem[] = [];
 
+  private errorMessage = createElement('div', { class: 'error-message' });
+
   constructor() {
     this.initHeader();
+    this.initError();
     eventEmitter.subscribe('event: change-quantity', (data) => {
       if (!this.cartId) {
         return;
@@ -30,7 +33,16 @@ export default class Basket {
       if (!data || (!('lineItemId' in data) && !('quantity' in data))) {
         return;
       }
-      changeQuantityProducts(this.cartId, data.lineItemId, +data.quantity).then((res) => {
+      this.onChangeQuantity(data);
+    });
+  }
+
+  private onChangeQuantity = (data: Record<string, string>): void => {
+    if (!this.cartId) {
+      return;
+    }
+    changeQuantityProducts(this.cartId, data.lineItemId, +data.quantity)
+      .then((res) => {
         const newItemQuantity = Basket.getItemsQuantity(res, data.lineItemId);
         if (newItemQuantity) {
           eventEmitter.emit('event: change-item-quantity', {
@@ -45,8 +57,23 @@ export default class Basket {
             price: newTotalItemPrice,
           });
         }
+      })
+      .catch(() => {
+        this.showError();
+        this.init();
       });
-    });
+  };
+
+  private initError(): void {
+    this.errorMessage.textContent = 'Something went wrong. Try again';
+    document.body.append(this.errorMessage);
+  }
+
+  private showError(): void {
+    this.errorMessage.classList.add('show');
+    setTimeout(() => {
+      this.errorMessage.classList.remove('show');
+    }, 2000);
   }
 
   private static getItemsTotalPrice = (cart: Cart, lineItemId: string): string | undefined => {
@@ -86,13 +113,18 @@ export default class Basket {
       this.wrapper.textContent = 'There are no items in your cart.';
       this.container.append(this.wrapper);
     } else {
-      getProductsFromCart(this.cartId).then((res) => {
-        this.items = res.map((item) => new BasketItem(item));
-        if (this.items.length > 0) {
-          this.items.forEach((item) => this.wrapper.append(item.render()));
-          this.container.append(this.header, this.wrapper);
-        }
-      });
+      getProductsFromCart(this.cartId)
+        .then((res) => {
+          this.items = res.map((item) => new BasketItem(item));
+          if (this.items.length > 0) {
+            this.items.forEach((item) => this.wrapper.append(item.render()));
+            this.container.append(this.header, this.wrapper);
+          }
+        })
+        .catch(() => {
+          this.wrapper.textContent = 'There are no items in your cart.';
+          this.container.append(this.wrapper);
+        });
     }
   }
 

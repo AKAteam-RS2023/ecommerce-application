@@ -34,9 +34,14 @@ export default class ProductView implements IPage {
 
   private cartId = localStorage.getItem('cartId');
 
+  private errorMessage = createElement('div', {
+    class: 'error-message',
+  });
+
   constructor() {
     this.productId = this.router.queryParams.productID;
     this.variantId = +this.router.queryParams.variantID;
+    this.initError();
   }
 
   private init(): void {
@@ -58,8 +63,11 @@ export default class ProductView implements IPage {
     if (this.cartId === null) {
       this.cartId = await createCart();
     }
-    await addProduct(this.cartId, this.product);
-
+    try {
+      await addProduct(this.cartId, this.product);
+    } catch {
+      this.showError();
+    }
     this.initCartBtn();
   };
 
@@ -67,7 +75,11 @@ export default class ProductView implements IPage {
     if (!this.cartId) {
       return;
     }
-    await removeProduct(this.cartId, lineItemsId, quantity);
+    try {
+      await removeProduct(this.cartId, lineItemsId, quantity);
+    } catch {
+      this.showError();
+    }
     this.initCartBtn();
   };
 
@@ -79,17 +91,31 @@ export default class ProductView implements IPage {
     this.cartBtn.onclick = async (): Promise<void> => this.onAddProduct();
     this.cartId = localStorage.getItem('cartId');
     if (this.cartId) {
-      getCartById(this.cartId).then((res) => {
-        const lineItems = res.lineItems.find((item) => item.productId === this.product?.id);
-        if (!lineItems) {
-          return;
-        }
-        this.cartBtn.textContent = 'Remove from cart';
-        this.cartBtn.onclick = async (): Promise<void> => {
-          this.onRemoveProduct(lineItems.id, lineItems.quantity);
-        };
-      });
+      getCartById(this.cartId)
+        .then((res) => {
+          const lineItems = res.lineItems.find((item) => item.productId === this.product?.id);
+          if (!lineItems) {
+            return;
+          }
+          this.cartBtn.textContent = 'Remove from cart';
+          this.cartBtn.onclick = async (): Promise<void> => {
+            this.onRemoveProduct(lineItems.id, lineItems.quantity);
+          };
+        })
+        .catch(() => this.showError());
     }
+  }
+
+  private initError(): void {
+    this.errorMessage.textContent = 'Something went wrong. Try again';
+    document.body.append(this.errorMessage);
+  }
+
+  private showError(): void {
+    this.errorMessage.classList.add('show');
+    setTimeout(() => {
+      this.errorMessage.classList.remove('show');
+    }, 2000);
   }
 
   public render(): HTMLElement {
