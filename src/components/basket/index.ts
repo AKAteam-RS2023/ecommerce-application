@@ -1,5 +1,9 @@
-import createElement from '../../dom-helper/create-element';
+import { Cart } from '@commercetools/platform-sdk';
 
+import createElement from '../../dom-helper/create-element';
+import eventEmitter from '../../dom-helper/event-emitter';
+
+import { changeQuantityProducts } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
@@ -17,9 +21,77 @@ export default class Basket {
 
   private items: BasketItem[] = [];
 
+  private errorMessage = createElement('div', { class: 'error-message' });
+
   constructor() {
     this.initHeader();
+    this.initError();
+    eventEmitter.subscribe('event: change-quantity', (data) => {
+      if (!this.cartId) {
+        return;
+      }
+      if (!data || (!('lineItemId' in data) && !('quantity' in data))) {
+        return;
+      }
+      this.onChangeQuantity(data);
+    });
   }
+
+  private onChangeQuantity = (data: Record<string, string>): void => {
+    if (!this.cartId) {
+      return;
+    }
+    changeQuantityProducts(this.cartId, data.lineItemId, +data.quantity)
+      .then((res) => {
+        const newItemQuantity = Basket.getItemsQuantity(res, data.lineItemId);
+        if (newItemQuantity) {
+          eventEmitter.emit('event: change-item-quantity', {
+            lineItemId: data.lineItemId,
+            quantity: newItemQuantity,
+          });
+        }
+        const newTotalItemPrice = Basket.getItemsTotalPrice(res, data.lineItemId);
+        if (newTotalItemPrice) {
+          eventEmitter.emit('event: change-item-total-price', {
+            lineItemId: data.lineItemId,
+            price: newTotalItemPrice,
+          });
+        }
+      })
+      .catch(() => {
+        this.showError();
+        this.init();
+      });
+  };
+
+  private initError(): void {
+    this.errorMessage.textContent = 'Something went wrong. Try again';
+    document.body.append(this.errorMessage);
+  }
+
+  private showError(): void {
+    this.errorMessage.classList.add('show');
+    setTimeout(() => {
+      this.errorMessage.classList.remove('show');
+    }, 2000);
+  }
+
+  private static getItemsTotalPrice = (cart: Cart, lineItemId: string): string | undefined => {
+    const listItem = cart.lineItems.find((item) => item.id === lineItemId);
+    if (!listItem) {
+      return undefined;
+    }
+    return `${(listItem.totalPrice.centAmount / 100).toFixed(2)} ${listItem?.totalPrice
+      .currencyCode}`;
+  };
+
+  private static getItemsQuantity = (cart: Cart, lineItemId: string): string | undefined => {
+    const listItem = cart.lineItems.find((item) => item.id === lineItemId);
+    if (!listItem) {
+      return undefined;
+    }
+    return `${listItem.quantity}`;
+  };
 
   private initHeader(): void {
     const product = createElement('div', { class: 'basket__header--name' });
@@ -52,15 +124,20 @@ export default class Basket {
       this.main.textContent = 'There are no items in your cart.';
       this.container.append(this.main);
     } else {
-      getProductsFromCart(this.cartId).then((res) => {
-        this.items = res.products.map((item) => new BasketItem(item));
-        if (this.items.length > 0) {
-          this.items.forEach((item) => this.main.append(item.render()));
-          const wrapper = createElement('div', { class: 'basket__wrapper' });
-          wrapper.append(this.header, this.main);
-          this.container.append(wrapper, Basket.renderTotalPrice(res.totalPrice));
-        }
-      });
+      getProductsFromCart(this.cartId)
+        .then((res) => {
+          this.items = res.products.map((item) => new BasketItem(item));
+          if (this.items.length > 0) {
+            this.items.forEach((item) => this.main.append(item.render()));
+            const wrapper = createElement('div', { class: 'basket__wrapper' });
+            wrapper.append(this.header, this.main);
+            this.container.append(wrapper, Basket.renderTotalPrice(res.totalPrice));
+          }
+        })
+        .catch(() => {
+          this.main.textContent = 'There are no items in your cart.';
+          this.container.append(this.main);
+        });
     }
   }
 

@@ -68,6 +68,7 @@ export const getProductsFromCart = async (
       discountedPrice: getDiscountedPrice(item),
       totalPrice: getTotalPrice(item),
       quantity: getQuantity(item),
+      lineItemId: item.id,
     });
   });
   const totalPrice = `${(res.totalPrice.centAmount / 100).toFixed(2)} ${

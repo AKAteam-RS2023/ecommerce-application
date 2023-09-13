@@ -45,5 +45,6 @@ export const routes: IRoute<IPage>[] = [
   {
     path: 'basket',
     component: Basket,
+    isSingle: true,
   },
 ];

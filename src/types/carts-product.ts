@@ -5,4 +5,5 @@ export default interface ICartsProduct {
   discountedPrice?: string;
   totalPrice: string;
   quantity: number;
+  lineItemId: string;
 }
