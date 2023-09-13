@@ -50,7 +50,7 @@ export default class BasketItem {
       return;
     }
     if (+this.quantityInput.value < MIN_VALUE) {
-      this.quantityInput.value = `${MIN_VALUE + 1}`;
+      this.quantityInput.value = `${MIN_VALUE}`;
     }
     if (+this.quantityInput.value > MAX_VALUE) {
       this.quantityInput.value = `${MAX_VALUE}`;
