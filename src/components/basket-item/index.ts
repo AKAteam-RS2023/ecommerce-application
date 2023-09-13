@@ -7,36 +7,46 @@ import notImage from '../../assets/image/image-not-found.png';
 
 import './basket-item.scss';
 
-const MIN_VALUE = 0;
+const MIN_VALUE = 1;
 
 const MAX_VALUE = 100;
 
 export default class BasketItem {
   private container = createElement('div', { class: 'basket__item' });
 
-  private quatityValue = 1;
-
   private quantityInput = createElement<HTMLInputElement>('input', {
     id: 'quatity',
     type: 'number',
-    value: `${this.quatityValue}`,
+    value: `${this.product.quantity}`,
     min: `${MIN_VALUE}`,
     max: `${MAX_VALUE}`,
     class: 'basket__item--quantity',
   });
 
-  constructor(
-    public product: ICartsProduct,
-    public lineItemId: string,
-  ) {
+  private totalPrice = createElement('div', { class: 'basket__item--total-price' });
+
+  constructor(public product: ICartsProduct) {
     this.product = product;
-    this.lineItemId = lineItemId;
     this.initQuantity();
     this.init();
+    eventEmitter.subscribe('event: change-item-quantity', (data) => {
+      if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
+        return;
+      }
+      this.product.quantity = +data.quantity;
+      this.quantityInput.value = data.quantity;
+    });
+    eventEmitter.subscribe('event: change-item-total-price', (data) => {
+      if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
+        return;
+      }
+      this.product.totalPrice = data.price;
+      this.totalPrice.textContent = data.price;
+    });
   }
 
   private onChange = (): void => {
-    if (+this.quantityInput.value === this.quatityValue) {
+    if (+this.quantityInput.value === this.product.quantity) {
       return;
     }
     if (+this.quantityInput.value < MIN_VALUE) {
@@ -45,10 +55,9 @@ export default class BasketItem {
     if (+this.quantityInput.value > MAX_VALUE) {
       this.quantityInput.value = `${MAX_VALUE}`;
     }
-    this.quatityValue = +this.quantityInput.value;
     eventEmitter.emit('event: change-quantity', {
-      quantity: `${this.quatityValue}`,
-      lineItemId: this.lineItemId,
+      quantity: this.quantityInput.value,
+      lineItemId: this.product.lineItemId,
     });
   };
 
@@ -68,11 +77,9 @@ export default class BasketItem {
     price.textContent = this.product.discountedPrice
       ? this.product.discountedPrice
       : this.product.price;
-    // const quantity = createElement('div', { class: 'basket__item--quantity' });
-    // quantity.textContent = `${this.product.quantity}`;
-    const totalPrice = createElement('div', { class: 'basket__item--total-price' });
-    totalPrice.textContent = this.product.totalPrice;
-    this.container.append(img, name, price, this.quantityInput, totalPrice);
+    // const totalPrice = createElement('div', { class: 'basket__item--total-price' });
+    this.totalPrice.textContent = this.product.totalPrice;
+    this.container.append(img, name, price, this.quantityInput, this.totalPrice);
   }
 
   public render(): HTMLElement {

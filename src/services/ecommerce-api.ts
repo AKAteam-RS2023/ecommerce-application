@@ -284,7 +284,7 @@ export const createCart = async (): Promise<string> => {
       })
       .execute();
     localStorage.setItem('cartId', res.body.id);
-    localStorage.setItem('cartVersion', '1');
+    localStorage.setItem('cartVersion', `${res.body.version}`);
     return res.body.id;
   } catch {
     throw Error("You can't order something");
@@ -299,60 +299,63 @@ const getVersion = (): number => {
   return +version;
 };
 
-export const addProduct = async (
-  cartId: string,
-  product: IProduct,
-): Promise<ClientResponse<Cart>> => apiRootUser
-  .me()
-  .carts()
-  .withId({ ID: cartId })
-  .post({
-    body: {
-      version: getVersion(),
-      actions: [
-        {
-          action: 'setCountry',
-          country: 'PL',
-        },
-        {
-          action: 'addLineItem',
-          productId: product.id,
-          variantId: product.variantId ? product.variantId : undefined,
-          quantity: 1,
-        },
-      ],
-    },
-  })
-  .execute();
+export const addProduct = async (cartId: string, product: IProduct): Promise<Cart> => {
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'setCountry',
+            country: 'PL',
+          },
+          {
+            action: 'addLineItem',
+            productId: product.id,
+            variantId: product.variantId ? product.variantId : undefined,
+            quantity: 1,
+          },
+        ],
+      },
+    })
+    .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
+  return res.body;
+};
 
-export const removeProduct = async (
-  cartId: string,
-  lineItemId: string,
-): Promise<ClientResponse<Cart>> => apiRootUser
-  .me()
-  .carts()
-  .withId({ ID: cartId })
-  .post({
-    body: {
-      version: getVersion(),
-      actions: [
-        {
-          action: 'setCountry',
-          country: 'PL',
-        },
-        {
-          action: 'removeLineItem',
-          lineItemId,
-          quantity: 1,
-        },
-      ],
-    },
-  })
-  .execute();
+export const removeProduct = async (cartId: string, lineItemId: string): Promise<Cart> => {
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'setCountry',
+            country: 'PL',
+          },
+          {
+            action: 'removeLineItem',
+            lineItemId,
+            quantity: 1,
+          },
+        ],
+      },
+    })
+    .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
+  return res.body;
+};
 
 export const getCartById = async (cartId: string): Promise<Cart> => {
   const res = await apiRootUser.me().carts().withId({ ID: cartId }).get()
     .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
   return res.body;
 };
 
@@ -382,5 +385,6 @@ export const changeQuantityProducts = async (
       },
     })
     .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
   return res.body;
 };

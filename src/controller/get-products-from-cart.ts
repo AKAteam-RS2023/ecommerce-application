@@ -66,6 +66,7 @@ export const getProductsFromCart = async (cartId: string): Promise<ICartsProduct
       discountedPrice: getDiscountedPrice(item),
       totalPrice: getTotalPrice(item),
       quantity: getQuantity(item),
+      lineItemId: item.id,
     });
   });
   return result;

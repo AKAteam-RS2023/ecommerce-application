@@ -58,8 +58,7 @@ export default class ProductView implements IPage {
     if (this.cartId === null) {
       this.cartId = await createCart();
     }
-    const res = await addProduct(this.cartId, this.product);
-    localStorage.setItem('cartVersion', `${res.body.version}`);
+    await addProduct(this.cartId, this.product);
 
     this.initCartBtn();
   };
@@ -68,8 +67,7 @@ export default class ProductView implements IPage {
     if (!this.cartId) {
       return;
     }
-    const responce = await removeProduct(this.cartId, lineItemsId);
-    localStorage.setItem('cartVersion', `${responce.body.version}`);
+    await removeProduct(this.cartId, lineItemsId);
     this.initCartBtn();
   };
 
@@ -82,7 +80,6 @@ export default class ProductView implements IPage {
     this.cartId = localStorage.getItem('cartId');
     if (this.cartId) {
       getCartById(this.cartId).then((res) => {
-        localStorage.setItem('cartVersion', `${res.version}`);
         const lineItems = res.lineItems.filter((item) => item.productId === this.product?.id);
         if (lineItems.length === 0) {
           return;
