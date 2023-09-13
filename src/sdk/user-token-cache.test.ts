@@ -12,11 +12,11 @@ describe('Token Cache:', () => {
   });
 
   test('should be userCache defined', () => {
-    expect(tokenTest.userCaсhe).toBeDefined();
+    expect(tokenTest.userCache).toBeDefined();
   });
 
   test('userCache should have token and refresh token', () => {
-    expect(Object.keys(tokenTest.userCaсhe)).toContain('token');
-    expect(Object.keys(tokenTest.userCaсhe)).toContain('refreshToken');
+    expect(Object.keys(tokenTest.userCache)).toContain('token');
+    expect(Object.keys(tokenTest.userCache)).toContain('refreshToken');
   });
 });
