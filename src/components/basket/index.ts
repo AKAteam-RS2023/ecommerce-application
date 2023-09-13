@@ -23,6 +23,8 @@ export default class Basket {
 
   private errorMessage = createElement('div', { class: 'error-message' });
 
+  private totalPrice = createElement('div', { class: 'basket__total-price--value' });
+
   constructor() {
     this.initHeader();
     this.initError();
@@ -49,6 +51,7 @@ export default class Basket {
             lineItemId: data.lineItemId,
             quantity: newItemQuantity,
           });
+          this.totalPrice.textContent = Basket.getTotalPrice(res);
         }
         const newTotalItemPrice = Basket.getItemsTotalPrice(res, data.lineItemId);
         if (newTotalItemPrice) {
@@ -93,6 +96,8 @@ export default class Basket {
     return `${listItem.quantity}`;
   };
 
+  private static getTotalPrice = (cart: Cart): string => `${(cart.totalPrice.centAmount / 100).toFixed(2)} ${cart.totalPrice.currencyCode}`;
+
   private initHeader(): void {
     const product = createElement('div', { class: 'basket__header--name' });
     product.textContent = 'Product';
@@ -105,13 +110,12 @@ export default class Basket {
     this.header.append(product, price, quantity, totalPrice);
   }
 
-  private static renderTotalPrice(price: string): HTMLElement {
+  private renderTotalPrice(price: string): HTMLElement {
     const title = createElement('div', { class: 'basket__total-price--title' });
     title.textContent = 'Cart Totals:';
-    const priceValue = createElement('div', { class: 'basket__total-price--value' });
-    priceValue.textContent = price;
+    this.totalPrice.textContent = price;
     const wrapper = createElement('div', { class: 'basket__total-price' });
-    wrapper.append(title, priceValue);
+    wrapper.append(title, this.totalPrice);
     return wrapper;
   }
 
@@ -123,22 +127,22 @@ export default class Basket {
     if (!this.cartId) {
       this.main.textContent = 'There are no items in your cart.';
       this.container.append(this.main);
-    } else {
-      getProductsFromCart(this.cartId)
-        .then((res) => {
-          this.items = res.products.map((item) => new BasketItem(item));
-          if (this.items.length > 0) {
-            this.items.forEach((item) => this.main.append(item.render()));
-            const wrapper = createElement('div', { class: 'basket__wrapper' });
-            wrapper.append(this.header, this.main);
-            this.container.append(wrapper, Basket.renderTotalPrice(res.totalPrice));
-          }
-        })
-        .catch(() => {
-          this.main.textContent = 'There are no items in your cart.';
-          this.container.append(this.main);
-        });
+      return;
     }
+    getProductsFromCart(this.cartId)
+      .then((res) => {
+        this.items = res.products.map((item) => new BasketItem(item));
+        if (this.items.length > 0) {
+          this.items.forEach((item) => this.main.append(item.render()));
+          const wrapper = createElement('div', { class: 'basket__wrapper' });
+          wrapper.append(this.header, this.main);
+          this.container.append(wrapper, this.renderTotalPrice(res.totalPrice));
+        }
+      })
+      .catch(() => {
+        this.main.textContent = 'There are no items in your cart.';
+        this.container.append(this.main);
+      });
   }
 
   public render(): HTMLElement {
