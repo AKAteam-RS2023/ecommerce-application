@@ -2,9 +2,13 @@ import createElement from '../../dom-helper/create-element';
 import KatyaImg from '../../assets/image/katya.jpg';
 
 export default class TeamMember {
+  private contentElement: HTMLElement = createElement('div', {
+    class: 'teammember__content teammember__content_active',
+  });
+
   public name: string;
 
-  public role: string;
+  public role: HTMLElement;
 
   public bio: string;
 
@@ -12,16 +16,26 @@ export default class TeamMember {
 
   public github: string;
 
-  constructor(name: string, role: string, bio: string, photo: string, github: string) {
+  constructor(name: string, role: HTMLElement, bio: string, photo: string, github: string) {
     this.name = name;
     this.role = role;
     this.bio = bio;
     this.photo = photo;
     this.github = github;
+    const backLink = this.role.querySelector('.teammember__link') as HTMLAnchorElement;
+    backLink?.addEventListener('click', (e: MouseEvent) => this.hideDetails(e));
   }
 
   public render(): HTMLElement {
-    const container = createElement('article', { class: 'teammember' });
+    const container = createElement('div', { class: 'teammember' });
+    const wrapper = createElement('div', { class: 'teammember__wrapper' });
+    wrapper.append(this.createInfo());
+    wrapper.append(this.role);
+    container.append(wrapper);
+    return container;
+  }
+
+  private createInfo(): HTMLElement {
     const photo = createElement<HTMLImageElement>('img', {
       class: 'teammember__photo',
       src: this.photo,
@@ -39,34 +53,72 @@ export default class TeamMember {
     nameContainer.append(name, a);
     const bio = createElement('div', { class: 'teammember__bio' });
     bio.textContent = this.bio;
-    container.append(photo, nameContainer, bio);
-    return container;
+    const detailsLink = createElement<HTMLAnchorElement>('a', { class: 'teammember__link' });
+    detailsLink.textContent = 'ROLE';
+    detailsLink.addEventListener('click', (e: MouseEvent) => this.showDetails(e));
+    this.contentElement.append(photo, nameContainer, bio, detailsLink);
+    return this.contentElement;
   }
+
+  private showDetails = (e: MouseEvent): void => {
+    e.stopPropagation();
+    this.contentElement.classList.remove('teammember__content_active');
+    this.role.classList.add('teammember__list_active');
+  };
+
+  private hideDetails = (e: MouseEvent): void => {
+    e.stopPropagation();
+    this.contentElement.classList.add('teammember__content_active');
+    this.role.classList.remove('teammember__list_active');
+  };
 
   public static getMembers(): TeamMember[] {
     const katya = new TeamMember(
       'Katya',
-      'developer',
+      TeamMember.createKatyaRole(),
       TeamMember.katyaBio,
       KatyaImg,
       'https://github.com/ShEP-JS',
     );
     const alina = new TeamMember(
       'Alina',
-      'developer',
+      TeamMember.createAlinaRole(),
       TeamMember.alinaBio,
       '',
       'https://github.com/AlinaTsydzik',
     );
     const alena = new TeamMember(
       'Alena',
-      'developer',
+      TeamMember.createAlenaRole(),
       TeamMember.alenaBio,
       '',
       'https://github.com/alenzija',
     );
 
     return [alina, katya, alena];
+  }
+
+  private static createKatyaRole(): HTMLElement {
+    const list = createElement<HTMLUListElement>('ul');
+    return TeamMember.createBaseRole(list);
+  }
+
+  private static createAlinaRole(): HTMLElement {
+    const list = createElement<HTMLUListElement>('ul');
+    return TeamMember.createBaseRole(list);
+  }
+
+  private static createAlenaRole(): HTMLElement {
+    const list = createElement<HTMLUListElement>('ul');
+    return TeamMember.createBaseRole(list);
+  }
+
+  private static createBaseRole(list: HTMLUListElement): HTMLElement {
+    const role = createElement('div', { class: 'teammember__list' });
+    const a = createElement<HTMLAnchorElement>('a', { class: 'teammember__link' });
+    a.textContent = 'BACK';
+    role.append(list, a);
+    return role;
   }
 
   private static katyaBio = `Katya is a creative and self-starting Front-End Developer from Bialystok (Poland) building websites and apps, highly skilled in HTML/CSS/JS/TS 
