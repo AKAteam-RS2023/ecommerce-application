@@ -78,4 +78,18 @@
     background-color: $red-accents;
     color: $light-xl;
   }
+
+  &__show-more {
+    padding: 20% 10px;
+    font-size: 3rem;
+    line-height: 4rem;
+    text-align: center;
+    color: $grey-xl;
+  }
+
+  &__show-more img {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+  }
 }

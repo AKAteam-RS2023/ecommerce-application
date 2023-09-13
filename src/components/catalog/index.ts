@@ -15,10 +15,14 @@ import Sort from '../../types/sort';
 import './catalog.scss';
 import Search from '../search/search';
 
+import imgShowMore from '../../assets/image/show-more.png';
+
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
 
   private AllWasShow = createElement('div', { class: 'all-products-show' });
+
+  private spinner?: HTMLDivElement;
 
   private showMoreContainer?: HTMLDivElement;
 
@@ -30,7 +34,7 @@ export default class Catalog {
 
   private search: Search = new Search();
 
-  private limitOnPage = 5;
+  private limitOnPage = 3;
 
   private offset = 0;
 
@@ -41,6 +45,8 @@ export default class Catalog {
   constructor() {
     this.AllWasShow.textContent = 'To są wszystkie towary';
     this.updateProductsContainer();
+    this.spinner = createElement('div', { class: 'spinner' });
+    this.container.append(this.spinner);
     eventEmitter.subscribe('event: change-category', (data) => {
       if (!data || !('id' in data)) {
         return;
@@ -114,6 +120,7 @@ export default class Catalog {
       .then((productsResponse) => {
         this.products = productsResponse.results.map((product) => new ProductCard(product));
         this.total = productsResponse.total;
+        this.spinner?.remove();
         this.catalogRender();
       })
       .catch((err) => {
@@ -132,11 +139,19 @@ export default class Catalog {
     this.products.forEach((product) => this.container.append(product.render()));
     this.offset += this.limitOnPage;
     if (this.total && this.offset < this.total) {
-      this.showMoreContainer = createElement('div', { class: 'show-more__container product' });
+      this.showMoreContainer = createElement('div', { class: 'product product__show-more' });
       this.showMoreContainer.textContent = 'Pokazać więcej towarów';
+      const imageShowMore = createElement('img', {
+        src: imgShowMore,
+        alt: 'Pokazać więcej towarów',
+      });
+      this.showMoreContainer.append(imageShowMore);
       this.container.append(this.showMoreContainer);
+
       this.showMoreContainer.addEventListener('click', () => {
         this.showMoreContainer?.remove();
+        this.spinner = createElement('div', { class: 'spinner' });
+        this.container.append(this.spinner);
         this.isCleaning = false;
         this.init();
       });
