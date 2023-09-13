@@ -15,8 +15,16 @@ import Sort from '../../types/sort';
 import './catalog.scss';
 import Search from '../search/search';
 
+import imgShowMore from '../../assets/image/show-more.png';
+
 export default class Catalog {
   private container = createElement('section', { class: 'catalog' });
+
+  private AllWasShow = createElement('div', { class: 'all-products-show' });
+
+  private spinner?: HTMLDivElement;
+
+  private showMoreContainer?: HTMLDivElement;
 
   private products: ProductCard[] = [];
 
@@ -26,31 +34,40 @@ export default class Catalog {
 
   private search: Search = new Search();
 
+  private limitOnPage = 10;
+
+  private offset = 0;
+
+  private isCleaning = true;
+
+  private total?: number;
+
   constructor() {
-    this.init();
+    this.AllWasShow.textContent = 'To są wszystkie towary';
+    this.updateProductsContainer();
     eventEmitter.subscribe('event: change-category', (data) => {
       if (!data || !('id' in data)) {
         return;
       }
       categories.selectCategory = data.id;
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: show-all-products', () => {
       if (!categories.selectCategory) {
         return;
       }
       categories.selectCategory = null;
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: select-sort', (data) => {
       if (!data || !('sort' in data)) {
         return;
       }
       this.sort = data.sort as Sort;
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: change-products', () => {
-      this.init();
+      this.updateProductsContainer();
     });
     eventEmitter.subscribe('event: search', (data) => {
       if (!data || !('searchQuery' in data)) {
@@ -60,8 +77,14 @@ export default class Catalog {
         return;
       }
       this.searchQuery = data.searchQuery;
-      this.init();
+      this.updateProductsContainer();
     });
+  }
+
+  private updateProductsContainer(): void {
+    this.isCleaning = true;
+    this.offset = 0;
+    this.init();
   }
 
   private sortByPriceAsc(): void {
@@ -81,34 +104,64 @@ export default class Catalog {
   }
 
   private init(): void {
-    this.container.innerHTML = '';
+    if (this.isCleaning) {
+      this.container.innerHTML = '';
+      this.spinner = createElement('div', { class: 'spinner' });
+      this.container.append(this.spinner);
+    }
     getIProducts({
+      limit: this.limitOnPage,
+      offset: this.offset,
       sort: this.sort,
       categoryId: categories.selectCategory ? categories.selectCategory : undefined,
       filters: filters.filters,
       searchQuery: this.searchQuery,
     })
       .then((productsResponse) => {
-        this.products = productsResponse.map((product) => new ProductCard(product));
-        if (this.sort === Sort.priceAsc) {
-          this.sortByPriceAsc();
-        }
-        if (this.sort === Sort.priceDesc) {
-          this.sortByPriceDesc();
-        }
-        if (this.products.length === 0) {
-          this.container.textContent = 'Brak towarów';
-        }
-        this.products.forEach((product) => this.container.append(product.render()));
+        this.products = productsResponse.results.map((product) => new ProductCard(product));
+        this.total = productsResponse.total;
+        this.spinner?.remove();
+        this.catalogRender();
       })
       .catch((err) => {
         this.container.textContent = err.message;
       });
   }
 
+  private catalogRender():void {
+    if (this.sort === Sort.priceAsc) {
+      this.sortByPriceAsc();
+    }
+    if (this.sort === Sort.priceDesc) {
+      this.sortByPriceDesc();
+    }
+    this.products.forEach((product) => this.container.append(product.render()));
+    this.offset += this.limitOnPage;
+    if (this.total && this.offset < this.total) {
+      this.showMoreContainer = createElement('div', { class: 'product product__show-more' });
+      this.showMoreContainer.textContent = 'Pokazać więcej towarów';
+      const imageShowMore = createElement('img', {
+        src: imgShowMore,
+        alt: 'Pokazać więcej towarów',
+      });
+      this.showMoreContainer.append(imageShowMore);
+      this.container.append(this.showMoreContainer);
+
+      this.showMoreContainer.addEventListener('click', () => {
+        this.showMoreContainer?.remove();
+        this.spinner = createElement('div', { class: 'spinner' });
+        this.container.append(this.spinner);
+        this.isCleaning = false;
+        this.init();
+      });
+    } else if (this.total === 0) {
+      this.AllWasShow.remove();
+      this.container.textContent = 'Brak towarów';
+    } else this.container.append(this.AllWasShow);
+  }
+
   public render(): HTMLElement {
     const div = createElement('div', { class: 'catalog__container' });
-
     const categoriesHeader = createElement('div', { class: 'catalog__categories-header' });
     categoriesHeader.append(filters.render(), categories.render());
     const header = createElement('div', { class: 'catalog__header' });

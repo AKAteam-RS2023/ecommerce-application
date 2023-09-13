@@ -102,12 +102,12 @@ export const getProducts = async (data: {
   sort: Sort;
   searchQuery?: string;
   filters?: IFilters;
-}): Promise<ProductProjection[]> => {
+  limit: number;
+  offset: number;
+}): Promise<{ results: ProductProjection[], total?: number }> => {
   try {
     const filter: string[] = [];
-    if (data.categoryId) {
-      filter.push(`categories.id:"${data.categoryId}"`);
-    }
+    if (data.categoryId) filter.push(`categories.id:"${data.categoryId}"`);
     if (data.filters) {
       if (data.filters.madein && data.filters.madein.size > 0) {
         filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
@@ -127,13 +127,13 @@ export const getProducts = async (data: {
       .productProjections()
       .search()
       .get({
-        queryArgs: { filter, sort: data.sort, 'text.pl-PL': data.searchQuery },
+        queryArgs: {
+          filter, sort: data.sort, 'text.pl-PL': data.searchQuery, limit: data.limit, offset: data.offset,
+        },
       })
       .execute();
-    return res.body.results;
-  } catch {
-    throw Error('Brak towarów');
-  }
+    return { results: res.body.results, total: res.body.total };
+  } catch { throw Error('Brak towarów'); }
 };
 
 export const getProductDiscontById = async (id: string): Promise<ProductDiscount> => {
