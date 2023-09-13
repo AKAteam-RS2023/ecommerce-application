@@ -326,7 +326,11 @@ export const addProduct = async (cartId: string, product: IProduct): Promise<Car
   return res.body;
 };
 
-export const removeProduct = async (cartId: string, lineItemId: string): Promise<Cart> => {
+export const removeProduct = async (
+  cartId: string,
+  lineItemId: string,
+  quantity: number,
+): Promise<Cart> => {
   const res = await apiRootUser
     .me()
     .carts()
@@ -342,7 +346,7 @@ export const removeProduct = async (cartId: string, lineItemId: string): Promise
           {
             action: 'removeLineItem',
             lineItemId,
-            quantity: 1,
+            quantity,
           },
         ],
       },

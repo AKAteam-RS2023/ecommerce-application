@@ -63,11 +63,11 @@ export default class ProductView implements IPage {
     this.initCartBtn();
   };
 
-  private onRemoveProduct = async (lineItemsId: string): Promise<void> => {
+  private onRemoveProduct = async (lineItemsId: string, quantity: number): Promise<void> => {
     if (!this.cartId) {
       return;
     }
-    await removeProduct(this.cartId, lineItemsId);
+    await removeProduct(this.cartId, lineItemsId, quantity);
     this.initCartBtn();
   };
 
@@ -80,12 +80,14 @@ export default class ProductView implements IPage {
     this.cartId = localStorage.getItem('cartId');
     if (this.cartId) {
       getCartById(this.cartId).then((res) => {
-        const lineItems = res.lineItems.filter((item) => item.productId === this.product?.id);
-        if (lineItems.length === 0) {
+        const lineItems = res.lineItems.find((item) => item.productId === this.product?.id);
+        if (!lineItems) {
           return;
         }
         this.cartBtn.textContent = 'Remove from cart';
-        this.cartBtn.onclick = async (): Promise<void> => this.onRemoveProduct(lineItems[0].id);
+        this.cartBtn.onclick = async (): Promise<void> => {
+          this.onRemoveProduct(lineItems.id, lineItems.quantity);
+        };
       });
     }
   }
