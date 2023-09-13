@@ -11,7 +11,7 @@ export default class Basket {
 
   private container = createElement('div', { class: 'basket' });
 
-  private wrapper = createElement('div', { class: 'basket__main' });
+  private main = createElement('div', { class: 'basket__main' });
 
   private header = createElement('div', { class: 'basket__header' });
 
@@ -33,19 +33,32 @@ export default class Basket {
     this.header.append(product, price, quantity, totalPrice);
   }
 
+  private static renderTotalPrice(price: string): HTMLElement {
+    const title = createElement('div', { class: 'basket__total-price--title' });
+    title.textContent = 'Cart Totals:';
+    const priceValue = createElement('div', { class: 'basket__total-price--value' });
+    priceValue.textContent = price;
+    const wrapper = createElement('div', { class: 'basket__total-price' });
+    wrapper.append(title, priceValue);
+    return wrapper;
+  }
+
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
-    this.wrapper.innerHTML = '';
+    this.container.innerHTML = '';
+    this.main.innerHTML = '';
     this.items = [];
     if (!this.cartId) {
-      this.wrapper.textContent = 'There are no items in your cart.';
-      this.container.append(this.wrapper);
+      this.main.textContent = 'There are no items in your cart.';
+      this.container.append(this.main);
     } else {
       getProductsFromCart(this.cartId).then((res) => {
-        this.items = res.map((item) => new BasketItem(item));
+        this.items = res.products.map((item) => new BasketItem(item));
         if (this.items.length > 0) {
-          this.items.forEach((item) => this.wrapper.append(item.render()));
-          this.container.append(this.header, this.wrapper);
+          this.items.forEach((item) => this.main.append(item.render()));
+          const wrapper = createElement('div', { class: 'basket__wrapper' });
+          wrapper.append(this.header, this.main);
+          this.container.append(wrapper, Basket.renderTotalPrice(res.totalPrice));
         }
       });
     }

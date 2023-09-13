@@ -55,7 +55,9 @@ const getDiscountedPrice = (data: LineItem): string | undefined => {
     : undefined;
 };
 
-export const getProductsFromCart = async (cartId: string): Promise<ICartsProduct[]> => {
+export const getProductsFromCart = async (
+  cartId: string,
+): Promise<{ products: ICartsProduct[]; totalPrice: string }> => {
   const result: ICartsProduct[] = [];
   const res = await getCartById(cartId);
   res.lineItems.forEach((item) => {
@@ -68,5 +70,8 @@ export const getProductsFromCart = async (cartId: string): Promise<ICartsProduct
       quantity: getQuantity(item),
     });
   });
-  return result;
+  const totalPrice = `${(res.totalPrice.centAmount / 100).toFixed(2)} ${
+    res.totalPrice.currencyCode
+  }`;
+  return { products: result, totalPrice };
 };
