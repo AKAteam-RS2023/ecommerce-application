@@ -34,7 +34,7 @@ export default class Catalog {
 
   private search: Search = new Search();
 
-  private limitOnPage = 3;
+  private limitOnPage = 10;
 
   private offset = 0;
 
