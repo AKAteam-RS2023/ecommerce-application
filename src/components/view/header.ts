@@ -47,6 +47,11 @@ export class Header {
     href: '/profile',
   });
 
+  private aboutUsLink = createElement('a', {
+    class: 'links__item link--login',
+    href: '/about',
+  });
+
   private basket = createElement('a', {
     class: 'links__item link--basket',
     href: '/basket',
@@ -81,33 +86,8 @@ export class Header {
     this.catalogLink.classList.remove('active');
     this.basket.classList.remove('active');
     this.profileLink.classList.remove('active');
-    switch (url) {
-      case '': {
-        this.homeLink.classList.add('active');
-        break;
-      }
-      case 'login': {
-        this.loginLink.classList.add('active');
-        break;
-      }
-      case 'registration': {
-        this.registrationLink.classList.add('active');
-        break;
-      }
-      case 'catalog': {
-        this.catalogLink.classList.add('active');
-        break;
-      }
-      case 'profile': {
-        this.profileLink.classList.add('active');
-        break;
-      }
-      case 'basket': {
-        this.basket.classList.add('active');
-        break;
-      }
-      default:
-    }
+    this.aboutUsLink.classList.remove('active');
+    this.setActiveLink(url ?? '');
     this.renderLinks();
   }
 
@@ -151,12 +131,10 @@ export class Header {
 
   private initLinks(): void {
     this.homeLink.innerText = 'Home';
-
     this.loginLink.innerText = 'Login';
-
     this.catalogLink.innerText = 'Catalog';
-
     this.profileLink.innerText = 'My profile';
+    this.aboutUsLink.innerText = 'About us';
 
     this.initBasket();
 
@@ -184,6 +162,41 @@ export class Header {
     } else {
       this.linksWrapper.append(this.registrationLink, this.loginLink);
     }
+    this.linksWrapper.append(this.aboutUsLink);
     this.linksWrapper.append(this.basket);
+  }
+
+  private setActiveLink(url: string): void {
+    switch (url) {
+      case '': {
+        this.homeLink.classList.add('active');
+        break;
+      }
+      case 'login': {
+        this.loginLink.classList.add('active');
+        break;
+      }
+      case 'registration': {
+        this.registrationLink.classList.add('active');
+        break;
+      }
+      case 'catalog': {
+        this.catalogLink.classList.add('active');
+        break;
+      }
+      case 'profile': {
+        this.profileLink.classList.add('active');
+        break;
+      }
+      case 'about': {
+        this.aboutUsLink.classList.add('active');
+        break;
+      }
+      case 'basket': {
+        this.basket.classList.add('active');
+        break;
+      }
+      default:
+    }
   }
 }

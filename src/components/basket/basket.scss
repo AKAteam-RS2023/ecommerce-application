@@ -1,0 +1,42 @@
+@import '../../styles/constants/';
+
+.basket {
+  font-size: 18px;
+  font-weight: 500;
+
+  &__header {
+    display: grid;
+    grid-template-columns: 3fr 2fr 1fr 2fr;
+    align-items: center;
+    justify-items: center;
+    padding: 15px;
+    background-color: $light-l;
+    color: $dark-xl;
+  }
+
+  @media screen and (max-width: $large) {
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  @media screen and (max-width: $medium) {
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+.error-message {
+  display: none;
+  position: absolute;
+  padding: 5px;
+  top: 10px;
+  right: 10px;
+  width: 150px;
+  background-color: $grey-xl;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px;
+
+  &.show {
+    display: block;
+  }
+}

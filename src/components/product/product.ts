@@ -1,12 +1,12 @@
 import createElement from '../../dom-helper/create-element';
 import { IPage } from '../../types/interfaces/page';
 import getProductDetails from '../../controller/get-product';
+import { getItemFromCart } from '../../controller/get-item-from-cart';
 import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import {
   addProduct,
   createCart,
-  getCartById,
   getProductDiscontById,
   removeProduct,
 } from '../../services/ecommerce-api';
@@ -34,9 +34,14 @@ export default class ProductView implements IPage {
 
   private cartId = localStorage.getItem('cartId');
 
+  private errorMessage = createElement('div', {
+    class: 'error-message',
+  });
+
   constructor() {
     this.productId = this.router.queryParams.productID;
     this.variantId = +this.router.queryParams.variantID;
+    this.initError();
   }
 
   private init(): void {
@@ -58,18 +63,23 @@ export default class ProductView implements IPage {
     if (this.cartId === null) {
       this.cartId = await createCart();
     }
-    const res = await addProduct(this.cartId, this.product);
-    localStorage.setItem('cartVersion', `${res.body.version}`);
-
+    try {
+      await addProduct(this.cartId, this.product);
+    } catch {
+      this.showError();
+    }
     this.initCartBtn();
   };
 
-  private onRemoveProduct = async (lineItemsId: string): Promise<void> => {
+  private onRemoveProduct = async (lineItemsId: string, quantity: number): Promise<void> => {
     if (!this.cartId) {
       return;
     }
-    const responce = await removeProduct(this.cartId, lineItemsId);
-    localStorage.setItem('cartVersion', `${responce.body.version}`);
+    try {
+      await removeProduct(this.cartId, lineItemsId, quantity);
+    } catch {
+      this.showError();
+    }
     this.initCartBtn();
   };
 
@@ -81,15 +91,29 @@ export default class ProductView implements IPage {
     this.cartBtn.onclick = async (): Promise<void> => this.onAddProduct();
     this.cartId = localStorage.getItem('cartId');
     if (this.cartId) {
-      getCartById(this.cartId).then((res) => {
-        const lineItems = res.lineItems.filter((item) => item.productId === this.product?.id);
-        if (lineItems.length === 0) {
-          return;
-        }
-        this.cartBtn.textContent = 'Remove from cart';
-        this.cartBtn.onclick = async (): Promise<void> => this.onRemoveProduct(lineItems[0].id);
-      });
+      getItemFromCart(this.cartId, this.productId, this.variantId)
+        .then((lineItem) => {
+          if (lineItem) {
+            this.cartBtn.textContent = 'Remove from cart';
+            this.cartBtn.onclick = async (): Promise<void> => {
+              this.onRemoveProduct(lineItem.id, lineItem.quantity);
+            };
+          }
+        })
+        .catch(() => this.showError());
     }
+  }
+
+  private initError(): void {
+    this.errorMessage.textContent = 'Something went wrong. Try again';
+    document.body.append(this.errorMessage);
+  }
+
+  private showError(): void {
+    this.errorMessage.classList.add('show');
+    setTimeout(() => {
+      this.errorMessage.classList.remove('show');
+    }, 2000);
   }
 
   public render(): HTMLElement {
@@ -140,7 +164,7 @@ export default class ProductView implements IPage {
       });
       if (wrapperAttribute) {
         wrapper.append(name, wrapperPrices, description, this.cartBtn, wrapperAttribute);
-      } else wrapper.append(name, wrapperPrices, description);
+      } else wrapper.append(name, wrapperPrices, description, this.cartBtn);
       if (wrapperSlider) {
         const discount = this.getProductDiscount();
         if (discount) wrapperSlider.append(discount);
