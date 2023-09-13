@@ -1,12 +1,12 @@
 import createElement from '../../dom-helper/create-element';
 import { IPage } from '../../types/interfaces/page';
 import getProductDetails from '../../controller/get-product';
+import { getItemFromCart } from '../../controller/get-item-from-cart';
 import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import {
   addProduct,
   createCart,
-  getCartById,
   getProductDiscontById,
   removeProduct,
 } from '../../services/ecommerce-api';
@@ -91,16 +91,14 @@ export default class ProductView implements IPage {
     this.cartBtn.onclick = async (): Promise<void> => this.onAddProduct();
     this.cartId = localStorage.getItem('cartId');
     if (this.cartId) {
-      getCartById(this.cartId)
-        .then((res) => {
-          const lineItems = res.lineItems.find((item) => item.productId === this.product?.id);
-          if (!lineItems) {
-            return;
+      getItemFromCart(this.cartId, this.productId, this.variantId)
+        .then((lineItem) => {
+          if (lineItem) {
+            this.cartBtn.textContent = 'Remove from cart';
+            this.cartBtn.onclick = async (): Promise<void> => {
+              this.onRemoveProduct(lineItem.id, lineItem.quantity);
+            };
           }
-          this.cartBtn.textContent = 'Remove from cart';
-          this.cartBtn.onclick = async (): Promise<void> => {
-            this.onRemoveProduct(lineItems.id, lineItems.quantity);
-          };
         })
         .catch(() => this.showError());
     }
