@@ -355,3 +355,32 @@ export const getCartById = async (cartId: string): Promise<Cart> => {
     .execute();
   return res.body;
 };
+
+export const changeQuantityProducts = async (
+  cartId: string,
+  lineItemId: string,
+  quantity: number,
+): Promise<Cart> => {
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'setCountry',
+            country: 'PL',
+          },
+          {
+            action: 'changeLineItemQuantity',
+            lineItemId,
+            quantity,
+          },
+        ],
+      },
+    })
+    .execute();
+  return res.body;
+};

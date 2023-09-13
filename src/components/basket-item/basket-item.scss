@@ -24,6 +24,14 @@
     color: $dark-xl;
   }
 
+  &--quantity {
+    padding: 4px;
+    width: 50px;
+    border-radius: 4px;
+    border: 2px solid $grey-xxl;
+    font-family: inherit;
+  }
+
   @media screen and (max-width: $medium) {
     font-size: .8em;
   }
