@@ -45,8 +45,6 @@ export default class Catalog {
   constructor() {
     this.AllWasShow.textContent = 'To są wszystkie towary';
     this.updateProductsContainer();
-    this.spinner = createElement('div', { class: 'spinner' });
-    this.container.append(this.spinner);
     eventEmitter.subscribe('event: change-category', (data) => {
       if (!data || !('id' in data)) {
         return;
@@ -108,6 +106,8 @@ export default class Catalog {
   private init(): void {
     if (this.isCleaning) {
       this.container.innerHTML = '';
+      this.spinner = createElement('div', { class: 'spinner' });
+      this.container.append(this.spinner);
     }
     getIProducts({
       limit: this.limitOnPage,
