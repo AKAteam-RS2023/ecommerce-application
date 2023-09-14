@@ -4,10 +4,11 @@ import eventEmitter from '../../dom-helper/event-emitter';
 import ICartsProduct from '../../types/carts-product';
 
 import notImage from '../../assets/image/image-not-found.png';
+import deleteItem from '../../assets/image/delete.png';
 
 import './basket-item.scss';
 
-const MIN_VALUE = 1;
+const MIN_VALUE = 0;
 
 const MAX_VALUE = 100;
 
@@ -25,9 +26,16 @@ export default class BasketItem {
 
   private totalPrice = createElement('div', { class: 'basket__item--total-price' });
 
+  private deleteBtn = createElement<HTMLImageElement>('img', {
+    class: 'basket__item--delete',
+    src: deleteItem,
+    alt: 'icon for delete product',
+  });
+
   constructor(public product: ICartsProduct) {
     this.product = product;
     this.initQuantity();
+    this.initDeleteBtn();
     this.init();
     eventEmitter.subscribe('event: change-item-quantity', (data) => {
       if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
@@ -43,6 +51,12 @@ export default class BasketItem {
       this.product.totalPrice = data.price;
       this.totalPrice.textContent = data.price;
     });
+    eventEmitter.subscribe('event: remove-item', (data) => {
+      if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
+        return;
+      }
+      this.container.remove();
+    });
   }
 
   private onChange = (): void => {
@@ -50,16 +64,34 @@ export default class BasketItem {
       return;
     }
     if (+this.quantityInput.value < MIN_VALUE) {
-      this.quantityInput.value = `${MIN_VALUE}`;
+      this.quantityInput.value = '1';
     }
     if (+this.quantityInput.value > MAX_VALUE) {
       this.quantityInput.value = `${MAX_VALUE}`;
+    }
+    if (+this.quantityInput.value === 0) {
+      eventEmitter.emit('event: remove-item-from-cart', {
+        lineItemId: this.product.lineItemId,
+        quantity: `${this.product.quantity}`,
+      });
+      return;
     }
     eventEmitter.emit('event: change-quantity', {
       quantity: this.quantityInput.value,
       lineItemId: this.product.lineItemId,
     });
   };
+
+  private onDelete = (): void => {
+    eventEmitter.emit('event: remove-item-from-cart', {
+      lineItemId: this.product.lineItemId,
+      quantity: `${this.product.quantity}`,
+    });
+  };
+
+  private initDeleteBtn(): void {
+    this.deleteBtn.onclick = this.onDelete;
+  }
 
   private initQuantity(): void {
     this.quantityInput.onchange = this.onChange;
@@ -77,9 +109,8 @@ export default class BasketItem {
     price.textContent = this.product.discountedPrice
       ? this.product.discountedPrice
       : this.product.price;
-    // const totalPrice = createElement('div', { class: 'basket__item--total-price' });
     this.totalPrice.textContent = this.product.totalPrice;
-    this.container.append(img, name, price, this.quantityInput, this.totalPrice);
+    this.container.append(img, name, price, this.quantityInput, this.totalPrice, this.deleteBtn);
   }
 
   public render(): HTMLElement {

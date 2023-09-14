@@ -97,7 +97,7 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
 
 const toStringForFilter = (set: Set<unknown>): string => [...set].map((item) => `"${item}"`).join(',');
 
-const createFilters = (data: {
+const getFilters = (data: {
   categoryId?: string;
   sort: Sort;
   searchQuery?: string;
@@ -106,7 +106,9 @@ const createFilters = (data: {
   offset: number;
 }): string[] => {
   const filter: string[] = [];
-  if (data.categoryId) filter.push(`categories.id:"${data.categoryId}"`);
+  if (data.categoryId) {
+    filter.push(`categories.id:"${data.categoryId}"`);
+  }
   if (data.filters) {
     if (data.filters.madein && data.filters.madein.size > 0) {
       filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
@@ -122,7 +124,6 @@ const createFilters = (data: {
       );
     }
   }
-
   return filter;
 };
 
@@ -135,7 +136,7 @@ export const getProducts = async (data: {
   offset: number;
 }): Promise<{ results: ProductProjection[]; total?: number }> => {
   try {
-    const filter = createFilters(data);
+    const filter = getFilters(data);
     const res = await apiRoot
       .productProjections()
       .search()
