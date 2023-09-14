@@ -2,7 +2,7 @@
 
 .basket__item {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 1fr 2fr;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1.5fr .5fr;
   align-items: center;
   justify-items: center;
   padding: 15px;
@@ -14,8 +14,12 @@
     width: 80px;
     object-fit: contain;
 
+    @media screen and (max-width: $large) {
+      width: 65px;
+    }
+
     @media screen and (max-width: $medium) {
-      width: 60px;
+      width: 50px;
     }
   }
 
@@ -38,11 +42,29 @@
 
     @media screen and (max-width: $medium) {
       font-size: inherit;
-      width: 30px;
+      width: 35px;
     }
   }
 
-  @media screen and (max-width: $medium) {
+  &--delete {
+    width: 20px;
+
+    @media screen and (max-width: $large) {
+      width: 18px;
+    }
+
+    @media screen and (max-width: $medium) {
+      width: 10px;
+    }
+  }
+
+  @media screen and (max-width: $large) {
+    padding: 10px;
     font-size: .8em;
+  }
+
+  @media screen and (max-width: $medium) {
+    padding: 5px;
+    font-size: .7em;
   }
 }

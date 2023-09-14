@@ -4,6 +4,7 @@ import eventEmitter from '../../dom-helper/event-emitter';
 import ICartsProduct from '../../types/carts-product';
 
 import notImage from '../../assets/image/image-not-found.png';
+import deleteItem from '../../assets/image/delete.png';
 
 import './basket-item.scss';
 
@@ -25,9 +26,17 @@ export default class BasketItem {
 
   private totalPrice = createElement('div', { class: 'basket__item--total-price' });
 
+  private deleteBtn = createElement<HTMLInputElement>('input', {
+    class: 'basket__item--delete',
+    type: 'image',
+    src: deleteItem,
+    alt: 'icon for delete product',
+  });
+
   constructor(public product: ICartsProduct) {
     this.product = product;
     this.initQuantity();
+    this.initDeleteBtn();
     this.init();
     eventEmitter.subscribe('event: change-item-quantity', (data) => {
       if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
@@ -61,6 +70,14 @@ export default class BasketItem {
     });
   };
 
+  private onDelete = (): void => {
+    console.log(this.deleteBtn);
+  };
+
+  private initDeleteBtn(): void {
+    this.deleteBtn.onclick = this.onDelete;
+  }
+
   private initQuantity(): void {
     this.quantityInput.onchange = this.onChange;
   }
@@ -79,7 +96,7 @@ export default class BasketItem {
       : this.product.price;
     // const totalPrice = createElement('div', { class: 'basket__item--total-price' });
     this.totalPrice.textContent = this.product.totalPrice;
-    this.container.append(img, name, price, this.quantityInput, this.totalPrice);
+    this.container.append(img, name, price, this.quantityInput, this.totalPrice, this.deleteBtn);
   }
 
   public render(): HTMLElement {
