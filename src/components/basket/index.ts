@@ -3,7 +3,7 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { changeQuantityProducts } from '../../services/ecommerce-api';
+import { changeQuantityProducts, removeProduct } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
@@ -36,6 +36,18 @@ export default class Basket {
         return;
       }
       this.onChangeQuantity(data);
+    });
+    eventEmitter.subscribe('event: remove-item-from-cart', (data) => {
+      if (!this.cartId) {
+        return;
+      }
+      if (!data || (!('lineItemId' in data) && !('quantity' in data))) {
+        return;
+      }
+      removeProduct(this.cartId, data.lineItemId, +data.quantity).then((res) => {
+        eventEmitter.emit('event: remove-item', { lineItemId: data.lineItemId });
+        this.totalPrice.textContent = Basket.getTotalPrice(res);
+      });
     });
   }
 

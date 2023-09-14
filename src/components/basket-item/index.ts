@@ -26,9 +26,8 @@ export default class BasketItem {
 
   private totalPrice = createElement('div', { class: 'basket__item--total-price' });
 
-  private deleteBtn = createElement<HTMLInputElement>('input', {
+  private deleteBtn = createElement<HTMLImageElement>('img', {
     class: 'basket__item--delete',
-    type: 'image',
     src: deleteItem,
     alt: 'icon for delete product',
   });
@@ -52,6 +51,12 @@ export default class BasketItem {
       this.product.totalPrice = data.price;
       this.totalPrice.textContent = data.price;
     });
+    eventEmitter.subscribe('event: remove-item', (data) => {
+      if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
+        return;
+      }
+      this.container.remove();
+    });
   }
 
   private onChange = (): void => {
@@ -71,7 +76,10 @@ export default class BasketItem {
   };
 
   private onDelete = (): void => {
-    console.log(this.deleteBtn);
+    eventEmitter.emit('event: remove-item-from-cart', {
+      lineItemId: this.product.lineItemId,
+      quantity: `${this.product.quantity}`,
+    });
   };
 
   private initDeleteBtn(): void {
