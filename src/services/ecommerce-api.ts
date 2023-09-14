@@ -97,6 +97,35 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
 
 const toStringForFilter = (set: Set<unknown>): string => [...set].map((item) => `"${item}"`).join(',');
 
+const createFilters = (data: {
+  categoryId?: string;
+  sort: Sort;
+  searchQuery?: string;
+  filters?: IFilters;
+  limit: number;
+  offset: number;
+}): string[] => {
+  const filter: string[] = [];
+  if (data.categoryId) filter.push(`categories.id:"${data.categoryId}"`);
+  if (data.filters) {
+    if (data.filters.madein && data.filters.madein.size > 0) {
+      filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
+    }
+    if (data.filters.colors && data.filters.colors.size > 0) {
+      filter.push(`variants.attributes.color.key:${toStringForFilter(data.filters.colors)}`);
+    }
+    if (!Number.isNaN(data.filters.startPrice) && !Number.isNaN(data.filters.finishPrice)) {
+      filter.push(
+        `variants.price.centAmount:range(${data.filters.startPrice * 100} to ${
+          data.filters.finishPrice * 100
+        })`,
+      );
+    }
+  }
+
+  return filter;
+};
+
 export const getProducts = async (data: {
   categoryId?: string;
   sort: Sort;
@@ -104,36 +133,26 @@ export const getProducts = async (data: {
   filters?: IFilters;
   limit: number;
   offset: number;
-}): Promise<{ results: ProductProjection[], total?: number }> => {
+}): Promise<{ results: ProductProjection[]; total?: number }> => {
   try {
-    const filter: string[] = [];
-    if (data.categoryId) filter.push(`categories.id:"${data.categoryId}"`);
-    if (data.filters) {
-      if (data.filters.madein && data.filters.madein.size > 0) {
-        filter.push(`variants.attributes.made-in.key:${toStringForFilter(data.filters.madein)}`);
-      }
-      if (data.filters.colors && data.filters.colors.size > 0) {
-        filter.push(`variants.attributes.color.key:${toStringForFilter(data.filters.colors)}`);
-      }
-      if (!Number.isNaN(data.filters.startPrice) && !Number.isNaN(data.filters.finishPrice)) {
-        filter.push(
-          `variants.price.centAmount:range(${data.filters.startPrice * 100} to ${
-            data.filters.finishPrice * 100
-          })`,
-        );
-      }
-    }
+    const filter = createFilters(data);
     const res = await apiRoot
       .productProjections()
       .search()
       .get({
         queryArgs: {
-          filter, sort: data.sort, 'text.pl-PL': data.searchQuery, limit: data.limit, offset: data.offset,
+          filter,
+          sort: data.sort,
+          'text.pl-PL': data.searchQuery,
+          limit: data.limit,
+          offset: data.offset,
         },
       })
       .execute();
     return { results: res.body.results, total: res.body.total };
-  } catch { throw Error('Brak towarów'); }
+  } catch {
+    throw Error('Brak towarów');
+  }
 };
 
 export const getProductDiscontById = async (id: string): Promise<ProductDiscount> => {
