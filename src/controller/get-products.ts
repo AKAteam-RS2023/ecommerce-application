@@ -151,7 +151,7 @@ export default async function getIProducts(data: {
   searchQuery?: string;
   limit: number;
   offset: number;
-}): Promise< { results: IProduct[], total?: number }> {
+}): Promise<{ results: IProduct[]; total?: number }> {
   const res = await getProducts(data);
   return {
     results: res.results.map((item) => doProduct(item, data.filters)).flat(),

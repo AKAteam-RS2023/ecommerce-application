@@ -128,7 +128,7 @@ export default class Catalog {
       });
   }
 
-  private catalogRender():void {
+  private catalogRender(): void {
     if (this.sort === Sort.priceAsc) {
       this.sortByPriceAsc();
     }
