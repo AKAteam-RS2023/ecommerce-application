@@ -8,7 +8,7 @@ import deleteItem from '../../assets/image/delete.png';
 
 import './basket-item.scss';
 
-const MIN_VALUE = 1;
+const MIN_VALUE = 0;
 
 const MAX_VALUE = 100;
 
@@ -64,10 +64,17 @@ export default class BasketItem {
       return;
     }
     if (+this.quantityInput.value < MIN_VALUE) {
-      this.quantityInput.value = `${MIN_VALUE}`;
+      this.quantityInput.value = '1';
     }
     if (+this.quantityInput.value > MAX_VALUE) {
       this.quantityInput.value = `${MAX_VALUE}`;
+    }
+    if (+this.quantityInput.value === 0) {
+      eventEmitter.emit('event: remove-item-from-cart', {
+        lineItemId: this.product.lineItemId,
+        quantity: `${this.product.quantity}`,
+      });
+      return;
     }
     eventEmitter.emit('event: change-quantity', {
       quantity: this.quantityInput.value,
@@ -102,7 +109,6 @@ export default class BasketItem {
     price.textContent = this.product.discountedPrice
       ? this.product.discountedPrice
       : this.product.price;
-    // const totalPrice = createElement('div', { class: 'basket__item--total-price' });
     this.totalPrice.textContent = this.product.totalPrice;
     this.container.append(img, name, price, this.quantityInput, this.totalPrice, this.deleteBtn);
   }
