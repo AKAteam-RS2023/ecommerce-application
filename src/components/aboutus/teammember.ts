@@ -1,5 +1,6 @@
 import createElement from '../../dom-helper/create-element';
 import KatyaImg from '../../assets/image/katya.jpg';
+import AlinaImg from '../../assets/image/alina.jpg';
 
 export default class TeamMember {
   private contentElement: HTMLElement = createElement('div', {
@@ -84,9 +85,10 @@ export default class TeamMember {
       'Alina',
       TeamMember.createAlinaRole(),
       TeamMember.alinaBio,
-      '',
+      AlinaImg,
       'https://github.com/AlinaTsydzik',
     );
+
     const alena = new TeamMember(
       'Alena',
       TeamMember.createAlenaRole(),
@@ -115,7 +117,21 @@ export default class TeamMember {
   }
 
   private static createAlinaRole(): HTMLElement {
-    const list = createElement<HTMLUListElement>('ul');
+    const list = createElement<HTMLUListElement>('ul', { class: 'role__list' });
+    const li1 = createElement<HTMLLIElement>('li');
+    li1.textContent = 'routing';
+    const li2 = createElement<HTMLLIElement>('li');
+    li2.textContent = 'catalog content management';
+    const li3 = createElement<HTMLLIElement>('li');
+    li3.textContent = 'product page with slider';
+    const li4 = createElement<HTMLLIElement>('li');
+    li4.textContent = 'lazy loading in catalog';
+    const li5 = createElement<HTMLLIElement>('li');
+    li5.textContent = 'configuring and maintaining Jira';
+    const li6 = createElement<HTMLLIElement>('li');
+    li6.textContent = 'cheerful team lead';
+
+    list.append(li1, li2, li3, li4, li5, li6);
     return TeamMember.createBaseRole(list, 'Alina');
   }
 
@@ -137,8 +153,7 @@ export default class TeamMember {
   private static katyaBio = `Katya is a creative and self-starting Front-End Developer from Bialystok (Poland) building websites and apps, highly skilled in HTML/CSS/JS/TS 
 seeking an entry-level position to use her skills in frontend.`;
 
-  private static alinaBio = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
+  private static alinaBio = 'Alina is a novice front-end developer with years of experience in other IT fields, including SEO, web analytics, and website development. Currently, she dedicates all her time to learning HTML/CSS/JS/TS. The next step is to learn Angular.';
 
   private static alenaBio = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
