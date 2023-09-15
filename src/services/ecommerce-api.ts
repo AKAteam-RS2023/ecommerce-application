@@ -25,6 +25,7 @@ const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
 });
 
 let apiRootAnonym: ByProjectKeyRequestBuilder | null = null;
+
 function createApiRootAnonym(): ByProjectKeyRequestBuilder {
   return createApiBuilderFromCtpClient(anonymConf.client).withProjectKey({
     projectKey: 'ecom-app-akateam',
@@ -40,9 +41,9 @@ function createApiRootClient(): ByProjectKeyRequestBuilder {
 }
 
 export const clearApiRootUser = (): void => {
+  localStorage.clear();
   apiRootAnonym = null;
   apiRootClient = null;
-  localStorage.clear();
   conf.client = null;
   conf.tokenCache.set({
     token: '',
@@ -55,19 +56,6 @@ export const clearApiRootUser = (): void => {
     refreshToken: '',
   });
 };
-
-// export const upadteApiRootUser = (): void => {
-//   if (conf.client) {
-//     apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-//       projectKey: 'ecom-app-akateam',
-//     });
-//   } else {
-//     apiRootUser = createApiBuilderFromCtpClient(anonymConf.client).withProjectKey({
-//       projectKey: 'ecom-app-akateam',
-//     });
-//     // localStorage.removeItem('cartId');
-//   }
-// };
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
@@ -254,9 +242,6 @@ export const getCategoryById = async (id: string): Promise<Category> => {
 };
 
 export const getProfile = async (): Promise<ClientResponse<Customer>> => {
-  // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-  //   projectKey: process.env.CTP_PROJECT_KEY as string,
-  // });
   if (!apiRootClient) {
     apiRootClient = createApiRootClient();
   }
