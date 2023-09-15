@@ -3,12 +3,14 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { changeQuantityProducts, removeProduct } from '../../services/ecommerce-api';
+import { changeQuantityProducts, deleteCart, removeProduct } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
 
 import './basket.scss';
+import ModalBox from '../modal-box/modal-box';
+import ConfirmClear from './confirm-clear';
 
 export default class Basket {
   private cartId?: string | null;
@@ -24,6 +26,13 @@ export default class Basket {
   private errorMessage = createElement('div', { class: 'error-message' });
 
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
+
+  private confirmClear: ConfirmClear = new ConfirmClear(
+    () => this.clearCart(),
+    () => this.modalBox.hide(),
+  );
+
+  private modalBox = new ModalBox(this.confirmClear, 'extra-small');
 
   constructor() {
     this.initHeader();
@@ -52,6 +61,21 @@ export default class Basket {
       });
     });
   }
+
+  private clearCart = (): void => {
+    if (this.cartId) {
+      deleteCart(this.cartId)
+        .then(() => {
+          this.modalBox.hide();
+          this.init();
+        })
+        .catch(() => {
+          this.modalBox.hide();
+          this.showError();
+          this.init();
+        });
+    }
+  };
 
   private checkItems(): void {
     if (this.items.length === 0) {
@@ -160,6 +184,7 @@ export default class Basket {
           const clearCartBtn = createElement('div', { class: 'basket__clear--button' });
           clearCartBtn.textContent = 'Clear cart';
           clearCart.append(clearCartBtn);
+          clearCartBtn.addEventListener('click', () => this.modalBox.show());
           this.main.append(clearCart);
           const wrapper = createElement('div', { class: 'basket__wrapper' });
           wrapper.append(this.header, this.main);
