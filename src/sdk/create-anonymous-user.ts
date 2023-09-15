@@ -68,7 +68,7 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-const anonymousClient = tokenCache.userCache.refreshToken
+const anonymousClient = tokenCache.userCache.refreshToken !== ''
   ? new ClientBuilder()
     .withRefreshTokenFlow(
       initRefreshAuthMiddlewareOptions(`Bearer ${tokenCache.userCache.refreshToken}`),
