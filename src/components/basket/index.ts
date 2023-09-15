@@ -156,6 +156,11 @@ export default class Basket {
         this.items = res.products.map((item) => new BasketItem(item));
         if (this.items.length > 0) {
           this.items.forEach((item) => this.main.append(item.render()));
+          const clearCart = createElement('div', { class: 'basket__clear' });
+          const clearCartBtn = createElement('div', { class: 'basket__clear--button' });
+          clearCartBtn.textContent = 'Clear cart';
+          clearCart.append(clearCartBtn);
+          this.main.append(clearCart);
           const wrapper = createElement('div', { class: 'basket__wrapper' });
           wrapper.append(this.header, this.main);
           this.container.append(wrapper, this.renderTotalPrice(res.totalPrice));
