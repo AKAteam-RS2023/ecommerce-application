@@ -1,0 +1,27 @@
+@import '../constants/colors';
+.discount-code {
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    padding: 40px;
+    gap: 10px;
+    width: 19%;
+    height: max-content;
+    background-color: $light-l;
+    color: $dark-xl;
+  }
+  &__title {
+  }
+  &__input {
+    display: block;
+    padding: 5px;
+    border: 2px solid $grey-xl;
+    border-radius: 5px;
+    font-family: inherit;
+
+    &.invalid {
+      border: 2px solid $error;
+    }
+  }
+}

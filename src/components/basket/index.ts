@@ -3,13 +3,12 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import {
-  changeQuantityProducts,
-  matchDiscountCode,
-} from '../../services/ecommerce-api';
+import { changeQuantityProducts } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
+
+import PromoCode from '../promocode/promocode';
 
 import './basket.scss';
 
@@ -27,6 +26,8 @@ export default class Basket {
   private errorMessage = createElement('div', { class: 'error-message' });
 
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
+
+  private promoCode = new PromoCode();
 
   constructor() {
     this.initHeader();
@@ -124,7 +125,7 @@ export default class Basket {
 
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
-    if (this.cartId) console.log('1', matchDiscountCode(this.cartId, 'DISCOUNT-1'));
+
     this.container.innerHTML = '';
     this.main.innerHTML = '';
     this.items = [];
@@ -140,7 +141,11 @@ export default class Basket {
           this.items.forEach((item) => this.main.append(item.render()));
           const wrapper = createElement('div', { class: 'basket__wrapper' });
           wrapper.append(this.header, this.main);
-          this.container.append(wrapper, this.renderTotalPrice(res.totalPrice));
+          this.container.append(
+            wrapper,
+            this.renderTotalPrice(res.totalPrice),
+            this.promoCode.render(),
+          );
         }
       })
       .catch(() => {
