@@ -1,8 +1,8 @@
 import createElement from '../../dom-helper/create-element';
-import conf from '../../sdk/create-client-user';
+
+import { clearApiRootUser } from '../../services/ecommerce-api';
 
 import '../../assets/image/cart.svg';
-import { upadteApiRootUser } from '../../services/ecommerce-api';
 
 export class Header {
   private header?: HTMLElement;
@@ -138,14 +138,7 @@ export class Header {
 
     this.logoutLink.innerText = 'Logout';
     this.logoutLink.onclick = (): void => {
-      localStorage.clear();
-      conf.client = null;
-      conf.tokenCache.set({
-        token: '',
-        expirationTime: 0,
-        refreshToken: '',
-      });
-      upadteApiRootUser();
+      clearApiRootUser();
     };
     this.registrationLink.innerText = 'Registration';
   }

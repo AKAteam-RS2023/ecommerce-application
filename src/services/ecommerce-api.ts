@@ -1,3 +1,4 @@
+import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import {
   Category,
   Customer,
@@ -16,31 +17,57 @@ import { ctpClient } from '../sdk/build-client';
 import conf, { initClient } from '../sdk/create-client-user';
 import Sort from '../types/sort';
 import IFilters from '../types/filters';
-import { anonymousClient } from '../sdk/create-anonymous-client';
+import anonymConf from '../sdk/create-anonymous-user';
 import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
 });
 
-let apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
-  projectKey: 'ecom-app-akateam',
-});
+let apiRootAnonym: ByProjectKeyRequestBuilder | null = null;
+function createApiRootAnonym(): ByProjectKeyRequestBuilder {
+  return createApiBuilderFromCtpClient(anonymConf.client).withProjectKey({
+    projectKey: 'ecom-app-akateam',
+  });
+}
 
-export const upadteApiRootUser = (): void => {
-  if (conf.client) {
-    apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-      projectKey: 'ecom-app-akateam',
-    });
-  } else {
-    apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
-      projectKey: 'ecom-app-akateam',
-    });
-    localStorage.removeItem('cartId');
-  }
+let apiRootClient: ByProjectKeyRequestBuilder | null = null;
+
+function createApiRootClient(): ByProjectKeyRequestBuilder {
+  return createApiBuilderFromCtpClient(conf.client).withProjectKey({
+    projectKey: 'ecom-app-akateam',
+  });
+}
+
+export const clearApiRootUser = (): void => {
+  apiRootAnonym = null;
+  apiRootClient = null;
+  localStorage.clear();
+  conf.client = null;
+  conf.tokenCache.set({
+    token: '',
+    expirationTime: 0,
+    refreshToken: '',
+  });
+  anonymConf.tokenCache.set({
+    token: '',
+    expirationTime: 0,
+    refreshToken: '',
+  });
 };
 
-upadteApiRootUser();
+// export const upadteApiRootUser = (): void => {
+//   if (conf.client) {
+//     apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
+//       projectKey: 'ecom-app-akateam',
+//     });
+//   } else {
+//     apiRootUser = createApiBuilderFromCtpClient(anonymConf.client).withProjectKey({
+//       projectKey: 'ecom-app-akateam',
+//     });
+//     // localStorage.removeItem('cartId');
+//   }
+// };
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
   .customers()
@@ -59,7 +86,8 @@ export const getCustomer = async (email: string): Promise<Customer | string> => 
 
 export const loginCustomer = async (email: string, password: string): Promise<boolean> => {
   try {
-    const res = await apiRoot
+    const apiRootUser = apiRootAnonym || apiRoot;
+    const res = await apiRootUser
       .me()
       .login()
       .post({
@@ -74,8 +102,8 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
       localStorage.setItem('cartId', res.body.cart.id);
     }
     initClient(email, password);
-    upadteApiRootUser();
-    return await apiRootUser
+    apiRootClient = createApiRootClient();
+    return await apiRootClient
       .me()
       .get()
       .execute()
@@ -89,8 +117,8 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
         return true;
       });
   } catch {
+    apiRootClient = null;
     conf.client = null;
-    upadteApiRootUser();
     return false;
   }
 };
@@ -229,8 +257,10 @@ export const getProfile = async (): Promise<ClientResponse<Customer>> => {
   // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
   //   projectKey: process.env.CTP_PROJECT_KEY as string,
   // });
-
-  const res = await apiRootUser.me().get().execute();
+  if (!apiRootClient) {
+    apiRootClient = createApiRootClient();
+  }
+  const res = await apiRootClient.me().get().execute();
 
   return res;
 };
@@ -251,8 +281,10 @@ export const updateCustomer = async (
   // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
   //   projectKey: process.env.CTP_PROJECT_KEY as string,
   // });
-
-  const res = apiRootUser.customers().withId({ ID: id }).post({ body: update }).execute();
+  if (!apiRootClient) {
+    apiRootClient = createApiRootClient();
+  }
+  const res = apiRootClient.customers().withId({ ID: id }).post({ body: update }).execute();
 
   return res;
 };
@@ -291,9 +323,12 @@ export const changePasswordApi = async (
   return res;
 };
 
-export const createCart = async (): Promise<string> => {
+const createCartForClient = async (): Promise<string> => {
   try {
-    const res = await apiRootUser
+    if (!apiRootClient) {
+      throw Error();
+    }
+    const res = await apiRootClient
       .me()
       .carts()
       .post({
@@ -311,6 +346,43 @@ export const createCart = async (): Promise<string> => {
   }
 };
 
+const createCartForAnonym = async (): Promise<string> => {
+  if (!apiRootAnonym) {
+    apiRootAnonym = createApiRootAnonym();
+  }
+  try {
+    const res = await apiRootAnonym
+      .me()
+      .carts()
+      .post({
+        body: {
+          currency: 'PLN',
+          country: 'PL',
+        },
+      })
+      .execute();
+    localStorage.setItem('anonymToken', anonymConf.tokenCache.userCache.token);
+    localStorage.setItem('anonymRefreshToken', anonymConf.tokenCache.userCache.refreshToken || '');
+    localStorage.setItem(
+      'anonymExpirationTime',
+      `${anonymConf.tokenCache.userCache.expirationTime || 0}`,
+    );
+    localStorage.setItem('anonymousId', `${res.body.anonymousId}`);
+    localStorage.setItem('cartId', res.body.id);
+    localStorage.setItem('cartVersion', `${res.body.version}`);
+    return res.body.id;
+  } catch {
+    throw Error("You can't order something");
+  }
+};
+
+export const createCart = async (): Promise<string> => {
+  if (apiRootClient) {
+    return createCartForClient();
+  }
+  return createCartForAnonym();
+};
+
 const getVersion = (): number => {
   const version = localStorage.getItem('cartVersion');
   if (version === null || Number.isNaN(version)) {
@@ -320,6 +392,10 @@ const getVersion = (): number => {
 };
 
 export const addProduct = async (cartId: string, product: IProduct): Promise<Cart> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
   const res = await apiRootUser
     .me()
     .carts()
@@ -351,6 +427,10 @@ export const removeProduct = async (
   lineItemId: string,
   quantity: number,
 ): Promise<Cart> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
   const res = await apiRootUser
     .me()
     .carts()
@@ -377,6 +457,10 @@ export const removeProduct = async (
 };
 
 export const getCartById = async (cartId: string): Promise<Cart> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
   const res = await apiRootUser.me().carts().withId({ ID: cartId }).get()
     .execute();
   localStorage.setItem('cartVersion', `${res.body.version}`);
@@ -388,6 +472,10 @@ export const changeQuantityProducts = async (
   lineItemId: string,
   quantity: number,
 ): Promise<Cart> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
   const res = await apiRootUser
     .me()
     .carts()
