@@ -16,7 +16,7 @@ import { ctpClient } from '../sdk/build-client';
 import conf, { initClient } from '../sdk/create-client-user';
 import Sort from '../types/sort';
 import IFilters from '../types/filters';
-import { anonymousClient } from '../sdk/anonymous-client';
+import { anonymousClient } from '../sdk/create-anonymous-client';
 import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
@@ -80,10 +80,10 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
       .get()
       .execute()
       .then(() => {
-        localStorage.setItem('userToken', conf.tokenCache.userCache.token);
-        localStorage.setItem('userRefreshToken', conf.tokenCache.userCache.refreshToken || '');
+        localStorage.setItem('clientToken', conf.tokenCache.userCache.token);
+        localStorage.setItem('clientRefreshToken', conf.tokenCache.userCache.refreshToken || '');
         localStorage.setItem(
-          'userExpirationTime',
+          'clientExpirationTime',
           `${conf.tokenCache.userCache.expirationTime || 0}`,
         );
         return true;
