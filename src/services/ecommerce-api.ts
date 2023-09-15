@@ -392,3 +392,27 @@ export const changeQuantityProducts = async (
   localStorage.setItem('cartVersion', `${res.body.version}`);
   return res.body;
 };
+
+export const matchDiscountCode = async (
+  cartId: string,
+  myDiscountCode: string,
+): Promise<Cart> => {
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'addDiscountCode',
+            code: myDiscountCode,
+          },
+        ],
+      },
+    })
+    .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
+  return res.body;
+};

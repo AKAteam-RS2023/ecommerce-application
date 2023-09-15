@@ -3,7 +3,10 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { changeQuantityProducts } from '../../services/ecommerce-api';
+import {
+  changeQuantityProducts,
+  matchDiscountCode,
+} from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
@@ -121,6 +124,7 @@ export default class Basket {
 
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
+    if (this.cartId) console.log('1', matchDiscountCode(this.cartId, 'DISCOUNT-1'));
     this.container.innerHTML = '';
     this.main.innerHTML = '';
     this.items = [];
