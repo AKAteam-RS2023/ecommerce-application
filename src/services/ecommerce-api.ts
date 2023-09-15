@@ -17,22 +17,19 @@ import { ctpClient } from '../sdk/build-client';
 import conf, { initClient } from '../sdk/create-client-user';
 import Sort from '../types/sort';
 import IFilters from '../types/filters';
-import anonymConf from '../sdk/create-anonymous-user';
+import anonymConf, { initAnonymClient } from '../sdk/create-anonymous-user';
 import IProduct from '../types/product';
 
 const apiRoot = createApiBuilderFromCtpClient(ctpClient).withProjectKey({
   projectKey: 'ecom-app-akateam',
 });
 
-let apiRootAnonym: ByProjectKeyRequestBuilder | null = null;
-
 function createApiRootAnonym(): ByProjectKeyRequestBuilder {
+  // TODO check that
   return createApiBuilderFromCtpClient(anonymConf.client).withProjectKey({
     projectKey: 'ecom-app-akateam',
   });
 }
-
-let apiRootClient: ByProjectKeyRequestBuilder | null = null;
 
 function createApiRootClient(): ByProjectKeyRequestBuilder {
   return createApiBuilderFromCtpClient(conf.client).withProjectKey({
@@ -40,11 +37,13 @@ function createApiRootClient(): ByProjectKeyRequestBuilder {
   });
 }
 
+let apiRootClient = conf.client ? createApiRootClient() : null;
+
+let apiRootAnonym: ByProjectKeyRequestBuilder | null = null;
+
 export const clearApiRootUser = (): void => {
   localStorage.clear();
   apiRootAnonym = null;
-  apiRootClient = null;
-  conf.client = null;
   conf.tokenCache.set({
     token: '',
     expirationTime: 0,
@@ -55,6 +54,8 @@ export const clearApiRootUser = (): void => {
     expirationTime: 0,
     refreshToken: '',
   });
+  conf.client = null;
+  anonymConf.client = initAnonymClient();
 };
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
@@ -105,8 +106,8 @@ export const loginCustomer = async (email: string, password: string): Promise<bo
         return true;
       });
   } catch {
-    apiRootClient = null;
     conf.client = null;
+    apiRootClient = null;
     return false;
   }
 };
@@ -356,7 +357,7 @@ const createCartForAnonym = async (): Promise<string> => {
     localStorage.setItem('cartId', res.body.id);
     localStorage.setItem('cartVersion', `${res.body.version}`);
     return res.body.id;
-  } catch {
+  } catch (e) {
     throw Error("You can't order something");
   }
 };

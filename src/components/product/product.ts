@@ -6,6 +6,7 @@ import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import {
   addProduct,
+  clearApiRootUser,
   createCart,
   getProductDiscontById,
   removeProduct,
@@ -57,25 +58,25 @@ export default class ProductView implements IPage {
   }
 
   private onAddProduct = async (): Promise<void> => {
-    if (!this.product) {
-      return;
-    }
-    if (this.cartId === null) {
-      this.cartId = await createCart();
-    }
     try {
+      if (!this.product) {
+        return;
+      }
+      if (this.cartId === null) {
+        this.cartId = await createCart();
+      }
       await addProduct(this.cartId, this.product);
-    } catch {
+    } catch (e) {
       this.showError();
     }
     this.initCartBtn();
   };
 
   private onRemoveProduct = async (lineItemsId: string, quantity: number): Promise<void> => {
-    if (!this.cartId) {
-      return;
-    }
     try {
+      if (!this.cartId) {
+        return;
+      }
       await removeProduct(this.cartId, lineItemsId, quantity);
     } catch {
       this.showError();
@@ -100,7 +101,14 @@ export default class ProductView implements IPage {
             };
           }
         })
-        .catch(() => this.showError());
+        .catch((e) => {
+          if (e.message === 'Missing required options') {
+            clearApiRootUser();
+            this.initCartBtn();
+            return;
+          }
+          this.showError();
+        });
     }
   }
 

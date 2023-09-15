@@ -1,6 +1,11 @@
 import fetch from 'cross-fetch';
 
-import { ClientBuilder, HttpMiddlewareOptions, TokenCache } from '@commercetools/sdk-client-v2';
+import {
+  Client,
+  ClientBuilder,
+  HttpMiddlewareOptions,
+  TokenCache,
+} from '@commercetools/sdk-client-v2';
 import UserTokenCache from './user-token-cache';
 
 const scopes = (JSON.parse(process.env.CTP_SCOPES || '[]') as string[]).map(
@@ -68,20 +73,22 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-const anonymousClient = tokenCache.userCache.refreshToken !== ''
+export const initAnonymClient = (): Client => (tokenCache.userCache.refreshToken !== ''
   ? new ClientBuilder()
+    .withHttpMiddleware(httpMiddlewareOptions)
     .withRefreshTokenFlow(
       initRefreshAuthMiddlewareOptions(`Bearer ${tokenCache.userCache.refreshToken}`),
     )
-    .withHttpMiddleware(httpMiddlewareOptions)
+    // .withLoggerMiddleware()
     .build()
   : new ClientBuilder()
     .withHttpMiddleware(httpMiddlewareOptions)
     .withAnonymousSessionFlow(anonymousAuthMiddlewareOptions)
-    .build();
+    // .withLoggerMiddleware()
+    .build());
 
 const anonymConf = {
-  client: anonymousClient,
+  client: initAnonymClient(),
   tokenCache,
 };
 
