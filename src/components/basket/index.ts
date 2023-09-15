@@ -27,7 +27,7 @@ export default class Basket {
 
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
 
-  private promoCode = new PromoCode();
+  private promoCode: PromoCode;
 
   constructor() {
     this.initHeader();
@@ -41,7 +41,15 @@ export default class Basket {
       }
       this.onChangeQuantity(data);
     });
+    this.promoCode = new PromoCode();
+    eventEmitter.subscribe('event: changePromoCode', () => {
+      this.onChangePromoCode();
+    });
   }
+
+  private onChangePromoCode = (): void => {
+    console.log(this.totalPrice);
+  };
 
   private onChangeQuantity = (data: Record<string, string>): void => {
     if (!this.cartId) {

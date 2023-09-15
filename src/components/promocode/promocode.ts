@@ -1,6 +1,7 @@
 import createElement from '../../dom-helper/create-element';
 
 import { matchDiscountCode } from '../../services/ecommerce-api';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class PromoCode {
   private cartId?: string | null;
@@ -27,7 +28,13 @@ export default class PromoCode {
 
   private checkPromoCode(): void {
     if (this.cartId) {
-      matchDiscountCode(this.cartId, this.code);
+      matchDiscountCode(this.cartId, this.code)
+        .then((res) => {
+          console.log('res', res);
+        })
+        .catch((e) => {
+          console.log('error', e);
+        });
     }
   }
 
@@ -37,6 +44,7 @@ export default class PromoCode {
   }
 
   private renderDiscountCode(): HTMLElement {
+    this.discountCodeContainer.textContent = '';
     const title = createElement('div', { class: 'discount-code__title' });
     title.textContent = 'Promocode:';
     const form = createElement<HTMLFormElement>('form', { class: 'discount-code__form', type: 'submit' });
@@ -49,11 +57,10 @@ export default class PromoCode {
     );
     this.discountCodeContainer.append(title, form);
     this.enter.addEventListener('click', () => {
+      console.log('apply click');
       this.code = this.discountCodeInput.value;
-      if (!this.code) {
-        return;
-      }
       this.checkPromoCode();
+      eventEmitter.emit('event: changePromoCode', undefined);
     });
     return this.discountCodeContainer;
   }
