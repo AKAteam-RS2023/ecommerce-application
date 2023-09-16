@@ -17,16 +17,28 @@ export default class ProductCard {
 
   private router = Router.instance;
 
+  private cartBtn = createElement<HTMLButtonElement>('button', { class: 'product__cart-btn' });
+
   constructor(public product: IProduct) {
     this.product = product;
     this.initOldPrice();
     this.initDiscount();
+    this.initCartBtn();
     this.productElement.onclick = (): void => {
       this.router?.navigate(
         `catalog/product?productID=${this.product.id}${
           this.product.variantId ? `&variantID=${this.product.variantId}` : ''
         }`,
       );
+    };
+  }
+
+  private initCartBtn(): void {
+    this.cartBtn.textContent = 'Dodaj do koszyka';
+    this.cartBtn.onclick = (e): void => {
+      e.stopPropagation();
+      console.log('>>>> to cart');
+      this.cartBtn.disabled = true;
     };
   }
 
@@ -93,7 +105,7 @@ export default class ProductCard {
     const wrapper = createElement('div', {
       class: 'product__wrapper',
     });
-    wrapper.append(name, description, wrapperPrices);
+    wrapper.append(name, description, wrapperPrices, this.cartBtn);
     this.productElement.append(img, wrapper);
   }
 
