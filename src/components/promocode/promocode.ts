@@ -1,7 +1,8 @@
-import { DiscountCodeReference } from '@commercetools/platform-sdk';
+import { DiscountCodeInfo, DiscountCodeReference } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 
 import eventEmitter from '../../dom-helper/event-emitter';
+import { getDiscountCodeById } from '../../services/ecommerce-api';
 
 export default class PromoCode {
   public static instance: PromoCode;
@@ -71,23 +72,37 @@ export default class PromoCode {
 
   public renderPromoCodeItem(code: string, discountCodeReference: DiscountCodeReference): void {
     let indexCode = -1;
-    console.log(this.AppliedCode);
     this.AppliedCode?.forEach((item, index) => {
       if (item.code === code) {
         indexCode = index;
       }
     });
-    if (indexCode > -1) {
-      console.log('już jest');
-    } else {
+    if (indexCode === -1) {
       this.AppliedCode?.push({ code, discountCodeReference });
       this.renderAllDiscountCode();
     }
   }
 
+  public discountCodeMatch(itemDiscount: DiscountCodeInfo, code: string): void {
+    getDiscountCodeById(itemDiscount.discountCode.id)
+      .then((result): void => {
+        if (result.code === code) {
+          this.discountCodeReference = itemDiscount.discountCode;
+          this.renderPromoCodeItem(code, this.discountCodeReference);
+        }
+      })
+      .catch();
+    if (itemDiscount.state === 'MatchesCart') {
+      this.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
+    }
+    if (itemDiscount.state === 'ApplicationStoppedByPreviousDiscount') {
+      this.infoPromoCodeField.textContent = `The promocode ${code} was stopped by previous promocode`;
+    }
+  }
+
   private renderAllDiscountCode(): void {
     this.discountCodeItems.innerHTML = '';
-    this.AppliedCode?.forEach((item) => {
+    this.AppliedCode?.forEach((item, index) => {
       if (item && item.code && item.discountCodeReference) {
         const discountCodeItem = createElement('div', { class: 'discount-code__item' });
         discountCodeItem.textContent = `${item.code}`;
@@ -96,7 +111,7 @@ export default class PromoCode {
         });
         deleteCodeBtn.textContent = 'Delete';
         deleteCodeBtn.addEventListener('click', () => {
-          if (item.discountCodeReference) this.deleteCode(item.discountCodeReference);
+          if (item.discountCodeReference) this.deleteCode(item.discountCodeReference, index);
         });
         this.discountCodeItems.append(discountCodeItem, deleteCodeBtn);
       }
@@ -108,10 +123,10 @@ export default class PromoCode {
     eventEmitter.emit('event: changePromoCode', { code: this.code });
   }
 
-  private deleteCode(discountCodeReference: DiscountCodeReference): void {
+  private deleteCode(discountCodeReference: DiscountCodeReference, index: number): void {
     if (discountCodeReference) {
       eventEmitter.emit('event: removePromoCode', { id: discountCodeReference.id, typeId: discountCodeReference.typeId });
-      this.AppliedCode?.pop();
+      this.AppliedCode?.splice(index, 1);
       this.renderAllDiscountCode();
     }
   }

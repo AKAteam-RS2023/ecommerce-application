@@ -1,4 +1,4 @@
-import { Cart, DiscountCodeInfo } from '@commercetools/platform-sdk';
+import { Cart } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
@@ -85,9 +85,8 @@ export default class Basket {
     if (data?.code) {
       matchDiscountCode(this.cartId, data.code)
         .then((res) => {
-          console.log(res);
           res.discountCodes.forEach((itemDiscount) => {
-            this.discountCodeMatch(itemDiscount, data.code);
+            this.promoCode.discountCodeMatch(itemDiscount, data.code);
           });
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
@@ -112,17 +111,6 @@ export default class Basket {
     }
   };
 
-  private discountCodeMatch(itemDiscount: DiscountCodeInfo, code: string): void {
-    if (itemDiscount.state === 'MatchesCart') {
-      this.promoCode.discountCodeReference = itemDiscount.discountCode;
-      this.promoCode.renderPromoCodeItem(code, this.promoCode.discountCodeReference);
-      this.promoCode.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
-    }
-    if (itemDiscount.state === 'ApplicationStoppedByPreviousDiscount') {
-      this.promoCode.infoPromoCodeField.textContent = `The promocode ${code} was stopped by previous promocode`;
-    }
-  }
-
   private onRemovePromoCode = (data: Record<string, string> | undefined): void => {
     if (!this.cartId) {
       return;
@@ -130,7 +118,6 @@ export default class Basket {
     if (data?.typeId && data.id) {
       removeDiscountCode(this.cartId, { typeId: data.typeId as 'discount-code', id: data.id })
         .then((res) => {
-          console.log(res);
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
               const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
@@ -147,8 +134,8 @@ export default class Basket {
           this.promoCode.infoPromoCodeField.classList.add('success');
           this.promoCode.infoPromoCodeField.classList.remove('error');
         })
-        .catch(() => {
-          this.promoCode.infoPromoCodeField.textContent = 'Input Error';
+        .catch((e) => {
+          this.promoCode.infoPromoCodeField.textContent = e.message;
           this.promoCode.infoPromoCodeField.classList.remove('success');
           this.promoCode.infoPromoCodeField.classList.add('error');
         });

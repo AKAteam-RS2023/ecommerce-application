@@ -8,7 +8,7 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
-  Cart, DiscountCodeReference,
+  Cart, DiscountCodeReference, DiscountCode,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -459,4 +459,13 @@ export const removeDiscountCode = async (
     .execute();
   localStorage.setItem('cartVersion', `${res.body.version}`);
   return res.body;
+};
+
+export const getDiscountCodeById = async (discountCodeID: string): Promise<DiscountCode> => {
+  try {
+    const res = await apiRoot.discountCodes().withId({ ID: discountCodeID }).get().execute();
+    return res.body;
+  } catch {
+    throw Error('DiscountCode not found');
+  }
 };
