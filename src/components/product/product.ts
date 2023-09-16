@@ -14,6 +14,8 @@ import {
 import ProductSlider from '../product-slider/product-slider';
 import ModalBox from '../modal-box/modal-box';
 
+import errorMessage from '../basket-error';
+
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
 
@@ -35,14 +37,14 @@ export default class ProductView implements IPage {
 
   private cartId = localStorage.getItem('cartId');
 
-  private errorMessage = createElement('div', {
-    class: 'error-message',
-  });
+  // private errorMessage = createElement('div', {
+  //   class: 'error-message',
+  // });
 
   constructor() {
     this.productId = this.router.queryParams.productID;
     this.variantId = +this.router.queryParams.variantID;
-    this.initError();
+    // this.initError();
   }
 
   private init(): void {
@@ -66,8 +68,8 @@ export default class ProductView implements IPage {
         this.cartId = await createCart();
       }
       await addProduct(this.cartId, this.product);
-    } catch (e) {
-      this.showError();
+    } catch {
+      errorMessage.showError();
     }
     this.initCartBtn();
   };
@@ -79,7 +81,7 @@ export default class ProductView implements IPage {
       }
       await removeProduct(this.cartId, lineItemsId, quantity);
     } catch {
-      this.showError();
+      errorMessage.showError();
     }
     this.initCartBtn();
   };
@@ -107,22 +109,22 @@ export default class ProductView implements IPage {
             this.initCartBtn();
             return;
           }
-          this.showError();
+          errorMessage.showError();
         });
     }
   }
 
-  private initError(): void {
-    this.errorMessage.textContent = 'Something went wrong. Try again';
-    document.body.append(this.errorMessage);
-  }
+  // private initError(): void {
+  //   this.errorMessage.textContent = 'Something went wrong. Try again';
+  //   document.body.append(this.errorMessage);
+  // }
 
-  private showError(): void {
-    this.errorMessage.classList.add('show');
-    setTimeout(() => {
-      this.errorMessage.classList.remove('show');
-    }, 2000);
-  }
+  // private showError(): void {
+  //   this.errorMessage.classList.add('show');
+  //   setTimeout(() => {
+  //     this.errorMessage.classList.remove('show');
+  //   }, 2000);
+  // }
 
   public render(): HTMLElement {
     this.container.innerHTML = '';

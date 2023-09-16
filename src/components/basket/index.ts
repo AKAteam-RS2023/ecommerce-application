@@ -7,6 +7,7 @@ import { changeQuantityProducts, removeProduct } from '../../services/ecommerce-
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
+import errorMessage from '../basket-error';
 
 import './basket.scss';
 
@@ -21,13 +22,13 @@ export default class Basket {
 
   private items: BasketItem[] = [];
 
-  private errorMessage = createElement('div', { class: 'error-message' });
+  // private errorMessage = createElement('div', { class: 'error-message' });
 
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
 
   constructor() {
     this.initHeader();
-    this.initError();
+    // this.initError();
     eventEmitter.subscribe('event: change-quantity', (data) => {
       if (!this.cartId) {
         return;
@@ -85,22 +86,22 @@ export default class Basket {
         }
       })
       .catch(() => {
-        this.showError();
+        errorMessage.showError();
         this.init();
       });
   };
 
-  private initError(): void {
-    this.errorMessage.textContent = 'Something went wrong. Try again';
-    document.body.append(this.errorMessage);
-  }
+  // private initError(): void {
+  //   this.errorMessage.textContent = 'Something went wrong. Try again';
+  //   document.body.append(this.errorMessage);
+  // }
 
-  private showError(): void {
-    this.errorMessage.classList.add('show');
-    setTimeout(() => {
-      this.errorMessage.classList.remove('show');
-    }, 2000);
-  }
+  // private showError(): void {
+  //   this.errorMessage.classList.add('show');
+  //   setTimeout(() => {
+  //     this.errorMessage.classList.remove('show');
+  //   }, 2000);
+  // }
 
   private static getItemsTotalPrice = (cart: Cart, lineItemId: string): string | undefined => {
     const listItem = cart.lineItems.find((item) => item.id === lineItemId);
