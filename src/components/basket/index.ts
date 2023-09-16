@@ -3,7 +3,12 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { changeQuantityProducts, matchDiscountCode, removeProduct } from '../../services/ecommerce-api';
+import {
+  changeQuantityProducts,
+  matchDiscountCode,
+  removeDiscountCode,
+  removeProduct,
+} from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
@@ -43,7 +48,10 @@ export default class Basket {
     });
     this.promoCode = PromoCode.instance || new PromoCode();
     eventEmitter.subscribe('event: changePromoCode', (data) => {
-      this.onChangePromoCode(data);
+      this.onApplyPromoCode(data);
+    });
+    eventEmitter.subscribe('event: removePromoCode', (data) => {
+      this.onRemovePromoCode(data);
     });
     eventEmitter.subscribe('event: remove-item-from-cart', (data) => {
       if (!this.cartId) {
@@ -70,14 +78,56 @@ export default class Basket {
     }
   }
 
-  private onChangePromoCode = (data: Record<string, string> | undefined): void => {
+  private onApplyPromoCode = (data: Record<string, string> | undefined): void => {
     if (!this.cartId) {
       return;
     }
     if (data?.code) {
       matchDiscountCode(this.cartId, data.code)
         .then((res) => {
+          console.log(res);
+          if (res.lineItems.length > 0) {
+            res.lineItems.forEach((item) => {
+              const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
+              if (newTotalItemPrice) {
+                eventEmitter.emit('event: change-item-total-price', {
+                  lineItemId: item.id,
+                  price: newTotalItemPrice,
+                });
+              }
+            });
+          }
           this.totalPrice.textContent = Basket.getTotalPrice(res);
+          this.promoCode.discountCodeReference = res.discountCodes[0].discountCode;
+        })
+        .catch(() => {
+          this.showError();
+          this.init();
+        });
+    }
+  };
+
+  private onRemovePromoCode = (data: Record<string, string> | undefined): void => {
+    if (!this.cartId) {
+      return;
+    }
+    if (data?.typeId && data.id) {
+      removeDiscountCode(this.cartId, { typeId: data.typeId as 'discount-code', id: data.id })
+        .then((res) => {
+          console.log(res);
+          if (res.lineItems.length > 0) {
+            res.lineItems.forEach((item) => {
+              const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
+              if (newTotalItemPrice) {
+                eventEmitter.emit('event: change-item-total-price', {
+                  lineItemId: item.id,
+                  price: newTotalItemPrice,
+                });
+              }
+            });
+          }
+          this.totalPrice.textContent = Basket.getTotalPrice(res);
+          localStorage.setItem('DiscountCodeId', JSON.stringify(res.discountCodes?.[0]?.discountCode));
         })
         .catch(() => {
           this.showError();

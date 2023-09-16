@@ -1,9 +1,12 @@
+import { DiscountCodeReference } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 
 import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class PromoCode {
   public static instance: PromoCode;
+
+  public discountCodeReference?: DiscountCodeReference;
 
   constructor() {
     if (PromoCode.instance) {
@@ -22,14 +25,19 @@ export default class PromoCode {
     id: 'discountCode',
   });
 
-  private enter = createElement<HTMLButtonElement>('button', {
+  private applyCodeBtn = createElement<HTMLButtonElement>('button', {
     class: 'discount-code__submit',
+  });
+
+  private deleteCodeBtn = createElement<HTMLButtonElement>('button', {
+    class: 'discount-code__delete',
   });
 
   private code = '';
 
   private init(): void {
-    this.enter.textContent = 'Apply';
+    this.applyCodeBtn.textContent = 'Apply';
+    this.deleteCodeBtn.textContent = 'Delete';
     this.cartId = localStorage.getItem('cartId');
     this.renderDiscountCode();
   }
@@ -49,15 +57,24 @@ export default class PromoCode {
     });
     form.append(
       this.discountCodeInput,
-      this.enter,
+      this.applyCodeBtn,
+      this.deleteCodeBtn,
     );
     this.discountCodeContainer.append(title, form);
-    this.enter.onclick = this.getCodeInput.bind(this);
+    this.applyCodeBtn.onclick = this.getCodeInput.bind(this);
+    this.deleteCodeBtn.onclick = this.deleteCode.bind(this);
     return this.discountCodeContainer;
   }
 
   private getCodeInput(): void {
     this.code = this.discountCodeInput?.value;
     eventEmitter.emit('event: changePromoCode', { code: this.code });
+  }
+
+  private deleteCode(): void {
+    this.code = '';
+    if (this.discountCodeReference) {
+      eventEmitter.emit('event: removePromoCode', { id: this.discountCodeReference.id, typeId: this.discountCodeReference.typeId });
+    }
   }
 }

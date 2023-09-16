@@ -8,7 +8,7 @@ import {
   ClientResponse,
   CustomerUpdate,
   ProductType,
-  Cart,
+  Cart, DiscountCodeReference,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -428,6 +428,30 @@ export const matchDiscountCode = async (
           {
             action: 'addDiscountCode',
             code: myDiscountCode,
+          },
+        ],
+      },
+    })
+    .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
+  return res.body;
+};
+
+export const removeDiscountCode = async (
+  cartId: string,
+  myDiscountCode: DiscountCodeReference,
+): Promise<Cart> => {
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'removeDiscountCode',
+            discountCode: myDiscountCode,
           },
         ],
       },
