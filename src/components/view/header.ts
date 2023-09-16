@@ -3,6 +3,7 @@ import createElement from '../../dom-helper/create-element';
 import { clearApiRootUser } from '../../services/ecommerce-api';
 
 import '../../assets/image/cart.svg';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 export class Header {
   private header?: HTMLElement;
@@ -139,6 +140,9 @@ export class Header {
     this.logoutLink.innerText = 'Logout';
     this.logoutLink.onclick = (): void => {
       clearApiRootUser();
+    };
+    this.catalogLink.onclick = (): void => {
+      eventEmitter.emit('event: change-products', undefined);
     };
     this.registrationLink.innerText = 'Registration';
   }

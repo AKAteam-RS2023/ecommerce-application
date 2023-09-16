@@ -1,5 +1,5 @@
 import createElement from '../../dom-helper/create-element';
-import { getProductDiscontById } from '../../services/ecommerce-api';
+import { addProduct, createCart, getProductDiscontById } from '../../services/ecommerce-api';
 
 import IProduct from '../../types/product';
 
@@ -7,6 +7,7 @@ import Router from '../router/router';
 
 import imageNotFound from '../../assets/image/image-not-found.png';
 import './product-card.scss';
+import { getItemFromCart } from '../../controller/get-item-from-cart';
 
 export default class ProductCard {
   private productElement = createElement('article', { class: 'product' });
@@ -33,13 +34,31 @@ export default class ProductCard {
     };
   }
 
+  private onClick = async (e: Event): Promise<void> => {
+    e.stopPropagation();
+    let cartId = localStorage.getItem('cartId');
+    if (!cartId) {
+      cartId = await createCart();
+    }
+    await addProduct(cartId, this.product);
+    this.cartBtn.disabled = true;
+  };
+
   private initCartBtn(): void {
     this.cartBtn.textContent = 'Dodaj do koszyka';
-    this.cartBtn.onclick = (e): void => {
-      e.stopPropagation();
-      console.log('>>>> to cart');
-      this.cartBtn.disabled = true;
-    };
+    const cartId = localStorage.getItem('cartId');
+    const variantId = this.product.variantId ? this.product.variantId : NaN;
+    if (cartId) {
+      getItemFromCart(cartId, this.product.id, variantId).then((res) => {
+        if (res) {
+          this.cartBtn.disabled = true;
+        } else {
+          this.cartBtn.onclick = this.onClick;
+        }
+      });
+    } else {
+      this.cartBtn.onclick = this.onClick;
+    }
   }
 
   private initOldPrice(): void {
