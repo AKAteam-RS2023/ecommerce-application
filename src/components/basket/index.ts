@@ -3,7 +3,7 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { changeQuantityProducts } from '../../services/ecommerce-api';
+import { changeQuantityProducts, matchDiscountCode } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
@@ -41,14 +41,26 @@ export default class Basket {
       }
       this.onChangeQuantity(data);
     });
-    this.promoCode = new PromoCode();
-    eventEmitter.subscribe('event: changePromoCode', () => {
-      this.onChangePromoCode();
+    this.promoCode = PromoCode.instance || new PromoCode();
+    eventEmitter.subscribe('event: changePromoCode', (data) => {
+      this.onChangePromoCode(data);
     });
   }
 
-  private onChangePromoCode = (): void => {
-    console.log(this.totalPrice);
+  private onChangePromoCode = (data: Record<string, string> | undefined): void => {
+    if (!this.cartId) {
+      return;
+    }
+    if (data?.code) {
+      matchDiscountCode(this.cartId, data.code)
+        .then((res) => {
+          this.totalPrice.textContent = Basket.getTotalPrice(res);
+        })
+        .catch(() => {
+          this.showError();
+          this.init();
+        });
+    }
   };
 
   private onChangeQuantity = (data: Record<string, string>): void => {

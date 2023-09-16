@@ -1,9 +1,17 @@
 import createElement from '../../dom-helper/create-element';
 
-import { matchDiscountCode } from '../../services/ecommerce-api';
 import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class PromoCode {
+  public static instance: PromoCode;
+
+  constructor() {
+    if (PromoCode.instance) {
+      throw new Error("Singleton classes can't be instantiated more than once.");
+    }
+    PromoCode.instance = this;
+  }
+
   private cartId?: string | null;
 
   private discountCodeContainer = createElement('div', { class: 'discount-code__container' });
@@ -26,25 +34,13 @@ export default class PromoCode {
     this.renderDiscountCode();
   }
 
-  private checkPromoCode(): void {
-    if (this.cartId) {
-      matchDiscountCode(this.cartId, this.code)
-        .then((res) => {
-          console.log('res', res);
-        })
-        .catch((e) => {
-          console.log('error', e);
-        });
-    }
-  }
-
   public render(): HTMLElement {
     this.init();
     return this.discountCodeContainer;
   }
 
   private renderDiscountCode(): HTMLElement {
-    this.discountCodeContainer.textContent = '';
+    this.discountCodeContainer.innerHTML = '';
     const title = createElement('div', { class: 'discount-code__title' });
     title.textContent = 'Promocode:';
     const form = createElement<HTMLFormElement>('form', { class: 'discount-code__form', type: 'submit' });
@@ -56,12 +52,12 @@ export default class PromoCode {
       this.enter,
     );
     this.discountCodeContainer.append(title, form);
-    this.enter.addEventListener('click', () => {
-      console.log('apply click');
-      this.code = this.discountCodeInput.value;
-      this.checkPromoCode();
-      eventEmitter.emit('event: changePromoCode', undefined);
-    });
+    this.enter.onclick = this.getCodeInput.bind(this);
     return this.discountCodeContainer;
+  }
+
+  private getCodeInput(): void {
+    this.code = this.discountCodeInput?.value;
+    eventEmitter.emit('event: changePromoCode', { code: this.code });
   }
 }
