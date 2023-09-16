@@ -19,9 +19,19 @@
     border: 2px solid $grey-xl;
     border-radius: 5px;
     font-family: inherit;
+  }
 
-    &.invalid {
-      border: 2px solid $error;
+  &__info {
+    font-size: 1rem;
+    line-height: normal;
+    color: $grey-l;
+
+    &.success {
+      color: green;
+    }
+
+    &.error {
+      color: $error;
     }
   }
 }

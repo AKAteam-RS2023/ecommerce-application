@@ -6,8 +6,6 @@ import eventEmitter from '../../dom-helper/event-emitter';
 export default class PromoCode {
   public static instance: PromoCode;
 
-  public discountCodeReference?: DiscountCodeReference;
-
   constructor() {
     if (PromoCode.instance) {
       throw new Error("Singleton classes can't be instantiated more than once.");
@@ -16,6 +14,12 @@ export default class PromoCode {
   }
 
   private cartId?: string | null;
+
+  public discountCodeReference?: DiscountCodeReference;
+
+  public infoPromoCodeField = createElement('div', { class: 'discount-code__info' });
+
+  private discountCodeItems = createElement('div', { class: 'discount-code__items' });
 
   private discountCodeContainer = createElement('div', { class: 'discount-code__container' });
 
@@ -29,15 +33,15 @@ export default class PromoCode {
     class: 'discount-code__submit',
   });
 
-  private deleteCodeBtn = createElement<HTMLButtonElement>('button', {
-    class: 'discount-code__delete',
-  });
-
   private code = '';
+
+  private AppliedCode?: {
+    code?: string,
+    discountCodeReference?: DiscountCodeReference,
+  }[] = [];
 
   private init(): void {
     this.applyCodeBtn.textContent = 'Apply';
-    this.deleteCodeBtn.textContent = 'Delete';
     this.cartId = localStorage.getItem('cartId');
     this.renderDiscountCode();
   }
@@ -58,12 +62,45 @@ export default class PromoCode {
     form.append(
       this.discountCodeInput,
       this.applyCodeBtn,
-      this.deleteCodeBtn,
     );
-    this.discountCodeContainer.append(title, form);
+    this.discountCodeContainer.append(title, form, this.infoPromoCodeField);
     this.applyCodeBtn.onclick = this.getCodeInput.bind(this);
-    this.deleteCodeBtn.onclick = this.deleteCode.bind(this);
+    this.discountCodeContainer.append(this.discountCodeItems);
     return this.discountCodeContainer;
+  }
+
+  public renderPromoCodeItem(code: string, discountCodeReference: DiscountCodeReference): void {
+    let indexCode = -1;
+    console.log(this.AppliedCode);
+    this.AppliedCode?.forEach((item, index) => {
+      if (item.code === code) {
+        indexCode = index;
+      }
+    });
+    if (indexCode > -1) {
+      console.log('już jest');
+    } else {
+      this.AppliedCode?.push({ code, discountCodeReference });
+      this.renderAllDiscountCode();
+    }
+  }
+
+  private renderAllDiscountCode(): void {
+    this.discountCodeItems.innerHTML = '';
+    this.AppliedCode?.forEach((item) => {
+      if (item && item.code && item.discountCodeReference) {
+        const discountCodeItem = createElement('div', { class: 'discount-code__item' });
+        discountCodeItem.textContent = `${item.code}`;
+        const deleteCodeBtn = createElement<HTMLButtonElement>('button', {
+          class: 'discount-code__delete',
+        });
+        deleteCodeBtn.textContent = 'Delete';
+        deleteCodeBtn.addEventListener('click', () => {
+          if (item.discountCodeReference) this.deleteCode(item.discountCodeReference);
+        });
+        this.discountCodeItems.append(discountCodeItem, deleteCodeBtn);
+      }
+    });
   }
 
   private getCodeInput(): void {
@@ -71,10 +108,11 @@ export default class PromoCode {
     eventEmitter.emit('event: changePromoCode', { code: this.code });
   }
 
-  private deleteCode(): void {
-    this.code = '';
-    if (this.discountCodeReference) {
-      eventEmitter.emit('event: removePromoCode', { id: this.discountCodeReference.id, typeId: this.discountCodeReference.typeId });
+  private deleteCode(discountCodeReference: DiscountCodeReference): void {
+    if (discountCodeReference) {
+      eventEmitter.emit('event: removePromoCode', { id: discountCodeReference.id, typeId: discountCodeReference.typeId });
+      this.AppliedCode?.pop();
+      this.renderAllDiscountCode();
     }
   }
 }

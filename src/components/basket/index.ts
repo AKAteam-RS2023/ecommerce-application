@@ -1,4 +1,4 @@
-import { Cart } from '@commercetools/platform-sdk';
+import { Cart, DiscountCodeInfo } from '@commercetools/platform-sdk';
 
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
@@ -86,6 +86,9 @@ export default class Basket {
       matchDiscountCode(this.cartId, data.code)
         .then((res) => {
           console.log(res);
+          res.discountCodes.forEach((itemDiscount) => {
+            this.discountCodeMatch(itemDiscount, data.code);
+          });
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
               const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
@@ -98,14 +101,27 @@ export default class Basket {
             });
           }
           this.totalPrice.textContent = Basket.getTotalPrice(res);
-          this.promoCode.discountCodeReference = res.discountCodes[0].discountCode;
+          this.promoCode.infoPromoCodeField.classList.add('success');
+          this.promoCode.infoPromoCodeField.classList.remove('error');
         })
-        .catch(() => {
-          this.showError();
-          this.init();
+        .catch((e) => {
+          this.promoCode.infoPromoCodeField.textContent = `${e.message}`;
+          this.promoCode.infoPromoCodeField.classList.remove('success');
+          this.promoCode.infoPromoCodeField.classList.add('error');
         });
     }
   };
+
+  private discountCodeMatch(itemDiscount: DiscountCodeInfo, code: string): void {
+    if (itemDiscount.state === 'MatchesCart') {
+      this.promoCode.discountCodeReference = itemDiscount.discountCode;
+      this.promoCode.renderPromoCodeItem(code, this.promoCode.discountCodeReference);
+      this.promoCode.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
+    }
+    if (itemDiscount.state === 'ApplicationStoppedByPreviousDiscount') {
+      this.promoCode.infoPromoCodeField.textContent = `The promocode ${code} was stopped by previous promocode`;
+    }
+  }
 
   private onRemovePromoCode = (data: Record<string, string> | undefined): void => {
     if (!this.cartId) {
@@ -127,11 +143,14 @@ export default class Basket {
             });
           }
           this.totalPrice.textContent = Basket.getTotalPrice(res);
-          localStorage.setItem('DiscountCodeId', JSON.stringify(res.discountCodes?.[0]?.discountCode));
+          this.promoCode.infoPromoCodeField.textContent = 'The promocode was successfully removed!';
+          this.promoCode.infoPromoCodeField.classList.add('success');
+          this.promoCode.infoPromoCodeField.classList.remove('error');
         })
         .catch(() => {
-          this.showError();
-          this.init();
+          this.promoCode.infoPromoCodeField.textContent = 'Input Error';
+          this.promoCode.infoPromoCodeField.classList.remove('success');
+          this.promoCode.infoPromoCodeField.classList.add('error');
         });
     }
   };
@@ -218,7 +237,6 @@ export default class Basket {
 
   private init(): void {
     this.cartId = localStorage.getItem('cartId');
-
     this.container.innerHTML = '';
     this.main.innerHTML = '';
     this.items = [];
