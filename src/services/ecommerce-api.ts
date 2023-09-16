@@ -27,6 +27,10 @@ let apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey(
   projectKey: 'ecom-app-akateam',
 });
 
+const removeCartId = (): void => {
+  localStorage.removeItem('cartId');
+};
+
 export const upadteApiRootUser = (): void => {
   if (conf.client) {
     apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
@@ -36,7 +40,7 @@ export const upadteApiRootUser = (): void => {
     apiRootUser = createApiBuilderFromCtpClient(anonymousClient).withProjectKey({
       projectKey: 'ecom-app-akateam',
     });
-    localStorage.removeItem('cartId');
+    removeCartId();
   }
 };
 
@@ -411,4 +415,17 @@ export const changeQuantityProducts = async (
     .execute();
   localStorage.setItem('cartVersion', `${res.body.version}`);
   return res.body;
+};
+
+export const deleteCart = async (cartId: string): Promise<void> => {
+  apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .delete({
+      queryArgs: { version: getVersion() },
+    })
+    .execute();
+  localStorage.removeItem('cartVersion');
+  removeCartId();
 };

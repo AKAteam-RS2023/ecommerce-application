@@ -21,6 +21,13 @@
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
+  &--extra-small {
+    width: 40%;
+    left: 30%;
+    right: 30%;
+    top: 40%;
+    bottom: 40%;
+  }
   &--small {
     width: 40%;
     left: 30%;
@@ -75,6 +82,13 @@
 
 @media screen and (max-width: $medium) {
   .modal-box {
+    &--extra-small {
+      width: 80%;
+      left: 10%;
+      right: 10%;
+      top: 30%;
+      height: auto;
+    }
     &--small {
       width: 80%;
       left: 10%;
