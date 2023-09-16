@@ -3,7 +3,7 @@ import { Cart } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 import eventEmitter from '../../dom-helper/event-emitter';
 
-import { changeQuantityProducts, matchDiscountCode } from '../../services/ecommerce-api';
+import { changeQuantityProducts, matchDiscountCode, removeProduct } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
@@ -45,6 +45,29 @@ export default class Basket {
     eventEmitter.subscribe('event: changePromoCode', (data) => {
       this.onChangePromoCode(data);
     });
+    eventEmitter.subscribe('event: remove-item-from-cart', (data) => {
+      if (!this.cartId) {
+        return;
+      }
+      if (!data || (!('lineItemId' in data) && !('quantity' in data))) {
+        return;
+      }
+      removeProduct(this.cartId, data.lineItemId, +data.quantity).then((res) => {
+        eventEmitter.emit('event: remove-item', { lineItemId: data.lineItemId });
+        this.totalPrice.textContent = Basket.getTotalPrice(res);
+        this.items = this.items.filter((item) => item.product.lineItemId !== data.lineItemId);
+        this.checkItems();
+      });
+    });
+  }
+
+  private checkItems(): void {
+    if (this.items.length === 0) {
+      this.container.innerHTML = '';
+      this.main.innerHTML = '';
+      this.main.textContent = 'There are no items in your cart.';
+      this.container.append(this.main);
+    }
   }
 
   private onChangePromoCode = (data: Record<string, string> | undefined): void => {
@@ -150,8 +173,7 @@ export default class Basket {
     this.main.innerHTML = '';
     this.items = [];
     if (!this.cartId) {
-      this.main.textContent = 'There are no items in your cart.';
-      this.container.append(this.main);
+      this.checkItems();
       return;
     }
     getProductsFromCart(this.cartId)
@@ -166,11 +188,12 @@ export default class Basket {
             this.renderTotalPrice(res.totalPrice),
             this.promoCode.render(),
           );
+          return;
         }
+        this.checkItems();
       })
       .catch(() => {
-        this.main.textContent = 'There are no items in your cart.';
-        this.container.append(this.main);
+        this.checkItems();
       });
   }
 

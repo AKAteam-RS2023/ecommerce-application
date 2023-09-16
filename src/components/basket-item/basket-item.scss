@@ -2,7 +2,7 @@
 
 .basket__item {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 1fr 2fr;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1.5fr .5fr;
   align-items: center;
   justify-items: center;
   padding: 15px;
@@ -14,8 +14,12 @@
     width: 80px;
     object-fit: contain;
 
+    @media screen and (max-width: $large) {
+      width: 65px;
+    }
+
     @media screen and (max-width: $medium) {
-      width: 60px;
+      width: 50px;
     }
   }
 
@@ -38,11 +42,38 @@
 
     @media screen and (max-width: $medium) {
       font-size: inherit;
-      width: 30px;
+      width: 35px;
     }
   }
 
+  &--delete {
+    display: block;
+    width: 25px;
+    padding: 3px;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($red-accents, .5);
+    }
+
+    @media screen and (max-width: $large) {
+      width: 20px;
+    }
+
+    @media screen and (max-width: $medium) {
+      width: 15px;
+    }
+  }
+
+  @media screen and (max-width: $large) {
+    padding: 10px;
+    font-size: .9em;
+  }
+
   @media screen and (max-width: $medium) {
-    font-size: .8em;
+    padding: 5px 0;
+    font-size: .7em;
   }
 }
