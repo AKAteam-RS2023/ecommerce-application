@@ -486,3 +486,20 @@ export const changeQuantityProducts = async (
   localStorage.setItem('cartVersion', `${res.body.version}`);
   return res.body;
 };
+
+export const deleteCart = async (cartId: string): Promise<void> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
+  apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .delete({
+      queryArgs: { version: getVersion() },
+    })
+    .execute();
+  localStorage.removeItem('cartVersion');
+  localStorage.removeItem('cartId');
+};

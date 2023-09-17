@@ -49,6 +49,24 @@
     }
   }
 
+  &__clear {
+    text-align: end;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    &--button {
+      padding: 5px;
+      display: inline-block;
+      transition: .3s;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba($red-accents, .5);
+        border-radius: 5px;
+        color: $dark-l;
+      }
+    }
+  }
+
   @media screen and (max-width: $large) {
     flex-direction: column;
     justify-content: center;

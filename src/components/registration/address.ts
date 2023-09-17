@@ -24,6 +24,7 @@ export class Address {
   private country = createElement<HTMLInputElement>('input', {
     class: 'registration__country--input',
     type: 'text',
+    id: `country-${Address.uniqueID()}`,
   });
 
   private countryError = createElement<HTMLElement>('div', {
@@ -34,6 +35,7 @@ export class Address {
     class: 'registration__postcode--input',
     type: 'text',
     maxlength: '6',
+    id: `postcode-${Address.uniqueID()}`,
   });
 
   private postcodeError = createElement<HTMLElement>('div', {
@@ -43,6 +45,7 @@ export class Address {
   private city = createElement<HTMLInputElement>('input', {
     class: 'registration__city--input',
     type: 'text',
+    id: `city-${Address.uniqueID()}`,
   });
 
   private cityError = createElement<HTMLElement>('div', {
@@ -52,6 +55,7 @@ export class Address {
   private street = createElement<HTMLInputElement>('input', {
     class: 'registration__street--input',
     type: 'text',
+    id: `street-${Address.uniqueID()}`,
   });
 
   private streetError = createElement<HTMLElement>('div', {
