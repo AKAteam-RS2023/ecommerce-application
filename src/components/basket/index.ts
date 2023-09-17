@@ -24,8 +24,6 @@ export default class Basket {
 
   private items: BasketItem[] = [];
 
-  // private errorMessage = createElement('div', { class: 'error-message' });
-
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
 
   private confirmClear: ConfirmClear = new ConfirmClear(
@@ -37,7 +35,6 @@ export default class Basket {
 
   constructor() {
     this.initHeader();
-    // this.initError();
     eventEmitter.subscribe('event: change-quantity', (data) => {
       if (!this.cartId) {
         return;
@@ -72,7 +69,7 @@ export default class Basket {
         })
         .catch(() => {
           this.modalBox.hide();
-          this.showError();
+          errorMessage.showError();
           this.init();
         });
     }
@@ -114,18 +111,6 @@ export default class Basket {
         this.init();
       });
   };
-
-  // private initError(): void {
-  //   this.errorMessage.textContent = 'Something went wrong. Try again';
-  //   document.body.append(this.errorMessage);
-  // }
-
-  // private showError(): void {
-  //   this.errorMessage.classList.add('show');
-  //   setTimeout(() => {
-  //     this.errorMessage.classList.remove('show');
-  //   }, 2000);
-  // }
 
   private static getItemsTotalPrice = (cart: Cart, lineItemId: string): string | undefined => {
     const listItem = cart.lineItems.find((item) => item.id === lineItemId);

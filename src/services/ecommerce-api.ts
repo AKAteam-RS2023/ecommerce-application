@@ -264,9 +264,6 @@ export const updateCustomer = async (
   id: string,
   update: CustomerUpdate,
 ): Promise<ClientResponse<Customer>> => {
-  // const apiRootUser = createApiBuilderFromCtpClient(conf.client).withProjectKey({
-  //   projectKey: process.env.CTP_PROJECT_KEY as string,
-  // });
   if (!apiRootClient) {
     apiRootClient = createApiRootClient();
   }
