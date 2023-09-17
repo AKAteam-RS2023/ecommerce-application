@@ -3,8 +3,6 @@ import UrlHandler from './url-changed-handler';
 export default class Router {
   private urlHandler = new UrlHandler();
 
-  private hasUser?: boolean;
-
   public static instance: Router;
 
   public queryParams: { [key: string]: string } = {};
@@ -49,8 +47,8 @@ export default class Router {
 
     this.queryParams = Object.fromEntries(new URLSearchParams(window.location.search.slice(1)));
 
-    this.hasUser = !!localStorage.getItem('userToken');
-    if ((result.path === 'login' || result.path === 'registration') && this.hasUser) {
+    const hasClient = !!localStorage.getItem('clientToken');
+    if ((result.path === 'login' || result.path === 'registration') && hasClient) {
       result.path = '';
       this.navigate(result.path);
     }

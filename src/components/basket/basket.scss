@@ -81,22 +81,6 @@
   }
 }
 
-.error-message {
-  display: none;
-  position: absolute;
-  padding: 5px;
-  top: 10px;
-  right: 10px;
-  width: 150px;
-  background-color: $grey-xl;
-  border-radius: 5px;
-  box-shadow: 1px 1px 5px;
-
-  &.show {
-    display: block;
-  }
-}
-
 .clearcart {
   &__header {
     text-align: center;
@@ -109,7 +93,8 @@
     margin-top: 10px;
     color: $grey-xl;
     transition: .3s;
-    &--yes, &--no {
+    &--yes,
+    &--no {
       cursor: pointer;
       padding: 0 5px;
       &:hover {

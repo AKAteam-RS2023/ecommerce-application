@@ -1,8 +1,9 @@
 import createElement from '../../dom-helper/create-element';
-import conf from '../../sdk/create-client-user';
+
+import { clearApiRootUser } from '../../services/ecommerce-api';
 
 import '../../assets/image/cart.svg';
-import { upadteApiRootUser } from '../../services/ecommerce-api';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 export class Header {
   private header?: HTMLElement;
@@ -10,8 +11,6 @@ export class Header {
   private headerWrapper?: HTMLDivElement;
 
   private headerLogo?: HTMLDivElement;
-
-  private hasUser = !!localStorage.getItem('userToken');
 
   private linksWrapper = createElement('div', {
     class: 'links__wrapper',
@@ -140,24 +139,19 @@ export class Header {
 
     this.logoutLink.innerText = 'Logout';
     this.logoutLink.onclick = (): void => {
-      localStorage.clear();
-      this.hasUser = false;
-      conf.client = null;
-      conf.tokenCache.set({
-        token: '',
-        expirationTime: 0,
-        refreshToken: '',
-      });
-      upadteApiRootUser();
+      clearApiRootUser();
+    };
+    this.catalogLink.onclick = (): void => {
+      eventEmitter.emit('event: change-products', undefined);
     };
     this.registrationLink.innerText = 'Registration';
   }
 
   private renderLinks(): void {
-    this.hasUser = !!localStorage.getItem('userToken');
+    const hasClient = !!localStorage.getItem('clientToken');
     this.linksWrapper.innerHTML = '';
     this.linksWrapper.append(this.homeLink, this.catalogLink);
-    if (this.hasUser) {
+    if (hasClient) {
       this.linksWrapper.append(this.profileLink, this.logoutLink);
     } else {
       this.linksWrapper.append(this.registrationLink, this.loginLink);

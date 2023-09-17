@@ -36,7 +36,7 @@ type PasswordAuthMiddlewareOptions = {
   fetch?: typeof fetch;
 };
 
-const tokenCache = new UserTokenCache();
+const tokenCache = new UserTokenCache('client');
 
 type ExistingTokenMiddlewareOptions = {
   force?: boolean;
