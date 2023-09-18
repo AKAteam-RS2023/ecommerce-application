@@ -63,11 +63,11 @@ export class Header {
     this.initLinks();
     eventEmitter.subscribe('event: update-items-count', (data) => {
       if (!data || !('count' in data)) {
-        this.itemsInBasket.textContent = '';
+        this.itemsInBasket.textContent = '0';
         return;
       }
       if (data.count === '' || data.count === '0') {
-        this.itemsInBasket.textContent = '';
+        this.itemsInBasket.textContent = '0';
       } else {
         this.itemsInBasket.textContent = data.count;
       }
