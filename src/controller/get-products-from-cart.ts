@@ -1,4 +1,4 @@
-import { LineItem } from '@commercetools/platform-sdk';
+import { DiscountCodeInfo, LineItem } from '@commercetools/platform-sdk';
 import { getCartById } from '../services/ecommerce-api';
 import ICartsProduct from '../types/carts-product';
 
@@ -70,7 +70,11 @@ const getPriceWithPromoCode = (data: LineItem): string | undefined => {
 
 export const getProductsFromCart = async (
   cartId: string,
-): Promise<{ products: ICartsProduct[]; totalPrice: string }> => {
+): Promise<{
+  products: ICartsProduct[];
+  totalPrice: string;
+  discountCodes: DiscountCodeInfo[]
+}> => {
   const result: ICartsProduct[] = [];
   const res = await getCartById(cartId);
   res.lineItems.forEach((item) => {
@@ -85,8 +89,12 @@ export const getProductsFromCart = async (
       lineItemId: item.id,
     });
   });
+  const discountCodes: DiscountCodeInfo[] = [];
+  res.discountCodes.forEach((item) => {
+    discountCodes.push(item);
+  });
   const totalPrice = `${(res.totalPrice.centAmount / 100).toFixed(2)} ${
     res.totalPrice.currencyCode
   }`;
-  return { products: result, totalPrice };
+  return { products: result, totalPrice, discountCodes };
 };

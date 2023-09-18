@@ -103,20 +103,21 @@ export default class Basket {
   }
 
   private onApplyPromoCode = (data: Record<string, string> | undefined): void => {
-    if (!this.cartId) {
-      return;
-    }
+    if (!this.cartId) return;
     if (data?.code) {
       matchDiscountCode(this.cartId, data.code)
         .then((res) => {
           console.log('res', res);
+          this.promoCode.appliedCode = [];
           res.discountCodes.forEach((itemDiscount) => {
             this.promoCode.discountCodeMatch(itemDiscount, data.code);
+            this.promoCode.appliedCode?.push({ code: undefined, discountCodeInfo: itemDiscount });
           });
+          this.promoCode.renderAllDiscountCode();
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
               const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
-              const newItemPriceWithCode = this.promoCode.getItemsDiscountedPrice(res, item.id);
+              const newItemPriceWithCode = PromoCode.getItemsDiscountedPrice(res, item.id);
               if (newItemPriceWithCode) {
                 eventEmitter.emit('event: change-item-discount-price', {
                   lineItemId: item.id,
@@ -134,7 +135,6 @@ export default class Basket {
           this.totalPrice.textContent = Basket.getTotalPrice(res);
         })
         .catch((e) => {
-          console.log('1', e.message);
           this.promoCode.infoPromoCodeField.textContent = `${e.message}`;
           this.promoCode.infoPromoCodeField.classList.remove('success');
           this.promoCode.infoPromoCodeField.classList.add('error');
@@ -150,18 +150,7 @@ export default class Basket {
       removeDiscountCode(this.cartId, { typeId: data.typeId as 'discount-code', id: data.id })
         .then((res) => {
           if (res.lineItems.length > 0) {
-            res.lineItems.forEach((item) => {
-              const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
-              eventEmitter.emit('event: delete-item-discount-price', {
-                lineItemId: item.id,
-              });
-              if (newTotalItemPrice) {
-                eventEmitter.emit('event: change-item-total-price', {
-                  lineItemId: item.id,
-                  price: newTotalItemPrice,
-                });
-              }
-            });
+            this.init();
           }
           this.totalPrice.textContent = Basket.getTotalPrice(res);
           this.promoCode.infoPromoCodeField.textContent = 'The promocode was successfully removed!';
@@ -246,26 +235,25 @@ export default class Basket {
   }
 
   private init(): void {
-    console.log('basket');
     this.cartId = localStorage.getItem('cartId');
     this.container.innerHTML = '';
     this.main.innerHTML = '';
     this.items = [];
+    this.promoCode.infoPromoCodeField.textContent = '';
     if (!this.cartId) {
       this.checkItems();
       return;
     }
     getProductsFromCart(this.cartId)
       .then((res) => {
+        this.promoCode.appliedCode = [];
+        res.discountCodes.forEach((itemPromoCode) => {
+          this.promoCode?.appliedCode?.push({ code: undefined, discountCodeInfo: itemPromoCode });
+        });
         this.items = res.products.map((item) => new BasketItem(item));
         if (this.items.length > 0) {
           this.items.forEach((item) => this.main.append(item.render()));
-          const clearCart = createElement('div', { class: 'basket__clear' });
-          const clearCartBtn = createElement('div', { class: 'basket__clear--button' });
-          clearCartBtn.textContent = 'Clear cart';
-          clearCart.append(clearCartBtn);
-          clearCartBtn.addEventListener('click', () => this.modalBox.show());
-          this.main.append(clearCart);
+          this.main.append(this.renderClearCart());
           const wrapper = createElement('div', { class: 'basket__wrapper' });
           wrapper.append(this.header, this.main);
           this.container.append(
@@ -285,5 +273,14 @@ export default class Basket {
   public render(): HTMLElement {
     this.init();
     return this.container;
+  }
+
+  private renderClearCart(): HTMLElement {
+    const clearCart = createElement('div', { class: 'basket__clear' });
+    const clearCartBtn = createElement('div', { class: 'basket__clear--button' });
+    clearCartBtn.textContent = 'Clear cart';
+    clearCart.append(clearCartBtn);
+    clearCartBtn.addEventListener('click', () => this.modalBox.show());
+    return clearCart;
   }
 }

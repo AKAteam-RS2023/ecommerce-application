@@ -1,9 +1,10 @@
-import { Cart, DiscountCodeInfo, DiscountCodeReference } from '@commercetools/platform-sdk';
+import { Cart, DiscountCodeInfo } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 
 import eventEmitter from '../../dom-helper/event-emitter';
 import { getDiscountCodeById } from '../../services/ecommerce-api';
 import deleteItem from '../../assets/image/delete.png';
+import { IPromoCode } from '../../types/interfaces/promocode';
 
 export default class PromoCode {
   public static instance: PromoCode;
@@ -16,8 +17,6 @@ export default class PromoCode {
   }
 
   private cartId?: string | null;
-
-  public discountCodeReference?: DiscountCodeReference;
 
   public infoPromoCodeField = createElement('div', { class: 'discount-code__info' });
 
@@ -37,10 +36,7 @@ export default class PromoCode {
 
   private code = '';
 
-  private AppliedCode?: {
-    code?: string,
-    discountCodeReference?: DiscountCodeReference,
-  }[] = [];
+  public appliedCode?: IPromoCode[] = [];
 
   private init(): void {
     this.applyCodeBtn.textContent = 'Apply';
@@ -67,29 +63,15 @@ export default class PromoCode {
     );
     this.discountCodeContainer.append(title, form, this.infoPromoCodeField);
     this.applyCodeBtn.onclick = this.getCodeInput.bind(this);
+    this.renderAllDiscountCode();
     this.discountCodeContainer.append(this.discountCodeItems);
     return this.discountCodeContainer;
-  }
-
-  public renderPromoCodeItem(code: string, discountCodeReference: DiscountCodeReference): void {
-    let indexCode = -1;
-    this.AppliedCode?.forEach((item, index) => {
-      if (item.code === code) {
-        indexCode = index;
-      }
-    });
-    if (indexCode === -1) {
-      this.AppliedCode?.push({ code, discountCodeReference });
-      this.renderAllDiscountCode();
-    }
   }
 
   public discountCodeMatch(itemDiscount: DiscountCodeInfo, code: string): void {
     getDiscountCodeById(itemDiscount.discountCode.id)
       .then((result): void => {
         if (result.code === code) {
-          this.discountCodeReference = itemDiscount.discountCode;
-          this.renderPromoCodeItem(code, this.discountCodeReference);
           if (itemDiscount.state === 'MatchesCart') {
             this.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
             this.infoPromoCodeField.classList.add('success');
@@ -103,37 +85,51 @@ export default class PromoCode {
         }
       })
       .catch((e) => {
-        console.log(e.message);
         this.infoPromoCodeField.textContent = e.message;
         this.infoPromoCodeField.classList.remove('success');
         this.infoPromoCodeField.classList.add('error');
       });
   }
 
-  private renderAllDiscountCode(): void {
+  public renderAllDiscountCode(): void {
     this.discountCodeItems.innerHTML = '';
-    this.AppliedCode?.forEach((item, index) => {
-      if (item && item.code && item.discountCodeReference) {
-        const discountCodeItem = createElement('div', { class: 'discount-code__item' });
-        discountCodeItem.textContent = `${item.code}`;
-        const deleteCodeBtn = createElement<HTMLImageElement>('img', {
-          class: 'discount-code__delete',
-          src: deleteItem,
-          alt: 'icon for delete promocode',
-        });
-        deleteCodeBtn.addEventListener('click', () => {
-          if (item.discountCodeReference) this.deleteCode(item.discountCodeReference, index);
-        });
-        discountCodeItem.append(deleteCodeBtn);
-        this.discountCodeItems.append(discountCodeItem);
+    if (this.appliedCode && this.appliedCode.length > 0) {
+      const headerPromoCodeList = createElement('div', { class: 'discount-code__header-list' });
+      headerPromoCodeList.textContent = 'Applied codes:';
+      this.discountCodeItems.append(headerPromoCodeList);
+    }
+    this.appliedCode?.forEach((item, index) => {
+      if (item && item.discountCodeInfo) {
+        if (!item.code) {
+          getDiscountCodeById(item.discountCodeInfo.discountCode.id)
+            .then((res) => {
+              const codeName = res.code;
+              this.renderDiscountItem(codeName, item, index);
+            })
+            .catch();
+        } else this.renderDiscountItem(item.code, item, index);
       }
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public getItemsDiscountedPrice = (cart: Cart, lineItemId: string): string | undefined => {
-    const listItem = cart.lineItems.find((item) => item.id === lineItemId);
+  private renderDiscountItem(code: string, item: IPromoCode, index: number): void {
+    const discountCodeItem = createElement('div', { class: 'discount-code__item' });
+    discountCodeItem.textContent = code;
 
+    const deleteCodeBtn = createElement<HTMLImageElement>('img', {
+      class: 'discount-code__delete',
+      src: deleteItem,
+      alt: 'icon for delete promocode',
+    });
+    deleteCodeBtn.addEventListener('click', () => {
+      if (item.discountCodeInfo) this.deleteCode(item.discountCodeInfo, index);
+    });
+    discountCodeItem.append(deleteCodeBtn);
+    this.discountCodeItems.append(discountCodeItem);
+  }
+
+  public static getItemsDiscountedPrice = (cart: Cart, lineItemId: string): string | undefined => {
+    const listItem = cart.lineItems.find((item) => item.id === lineItemId);
     if (!listItem) {
       return undefined;
     }
@@ -155,10 +151,10 @@ export default class PromoCode {
     eventEmitter.emit('event: changePromoCode', { code: this.code });
   }
 
-  private deleteCode(discountCodeReference: DiscountCodeReference, index: number): void {
-    if (discountCodeReference) {
-      eventEmitter.emit('event: removePromoCode', { id: discountCodeReference.id, typeId: discountCodeReference.typeId });
-      this.AppliedCode?.splice(index, 1);
+  private deleteCode(discountCodeInfo: DiscountCodeInfo, index: number): void {
+    if (discountCodeInfo) {
+      eventEmitter.emit('event: removePromoCode', { id: discountCodeInfo.discountCode.id, typeId: discountCodeInfo.discountCode.typeId });
+      this.appliedCode?.splice(index, 1);
       this.renderAllDiscountCode();
     }
   }

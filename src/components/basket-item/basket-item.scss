@@ -41,6 +41,21 @@
     }
   }
 
+  &--price:has(.basket__item--discount-code-price:not(:empty))::before {
+    content: '';
+    border-bottom: 2px solid #e97171;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 45%;
+    top: 15px;
+    transform: rotate(-10deg);
+  }
+
+  &--discount-code-price {
+    color: $dark-xl;
+  }
+
   &--delete {
     display: block;
     width: 25px;
@@ -72,3 +87,5 @@
     font-size: .7em;
   }
 }
+
+

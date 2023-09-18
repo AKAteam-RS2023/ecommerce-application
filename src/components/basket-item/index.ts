@@ -59,13 +59,6 @@ export default class BasketItem {
       this.product.priceWithPromoCode = data.price;
       this.priceWithPromoCode.textContent = data.price;
     });
-    eventEmitter.subscribe('event: delete-item-discount-price', (data) => {
-      if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
-        return;
-      }
-      this.product.priceWithPromoCode = '';
-      this.priceWithPromoCode.textContent = '';
-    });
     eventEmitter.subscribe('event: remove-item', (data) => {
       if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
         return;
