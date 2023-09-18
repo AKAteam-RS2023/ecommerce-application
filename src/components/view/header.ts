@@ -4,6 +4,7 @@ import { clearApiRootUser } from '../../services/ecommerce-api';
 
 import '../../assets/image/cart.svg';
 import eventEmitter from '../../dom-helper/event-emitter';
+import { getCartItemsCount } from '../../controller/get-cart-items-count';
 
 export class Header {
   private header?: HTMLElement;
@@ -56,8 +57,21 @@ export class Header {
     href: '/basket',
   });
 
+  private itemsInBasket = createElement('span', { class: 'basket__count' });
+
   constructor() {
     this.initLinks();
+    eventEmitter.subscribe('event: update-items-count', (data) => {
+      if (!data || !('count' in data)) {
+        this.itemsInBasket.textContent = '0';
+        return;
+      }
+      if (data.count === '' || data.count === '0') {
+        this.itemsInBasket.textContent = '0';
+      } else {
+        this.itemsInBasket.textContent = data.count;
+      }
+    });
   }
 
   private initBasket(): void {
@@ -75,6 +89,8 @@ export class Header {
       }
     };
     this.basket.append(img);
+    this.basket.append(this.itemsInBasket);
+    getCartItemsCount();
   }
 
   public toggleActive(): void {
@@ -140,6 +156,7 @@ export class Header {
     this.logoutLink.innerText = 'Logout';
     this.logoutLink.onclick = (): void => {
       clearApiRootUser();
+      getCartItemsCount();
     };
     this.catalogLink.onclick = (): void => {
       eventEmitter.emit('event: change-products', undefined);
