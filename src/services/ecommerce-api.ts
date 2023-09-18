@@ -10,6 +10,8 @@ import {
   CustomerUpdate,
   ProductType,
   Cart,
+  DiscountCodeReference,
+  DiscountCode,
 } from '@commercetools/platform-sdk';
 
 import { ctpClient } from '../sdk/build-client';
@@ -500,4 +502,69 @@ export const deleteCart = async (cartId: string): Promise<void> => {
     .execute();
   localStorage.removeItem('cartVersion');
   localStorage.removeItem('cartId');
+};
+
+export const matchDiscountCode = async (
+  cartId: string,
+  myDiscountCode: string,
+): Promise<Cart> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'addDiscountCode',
+            code: myDiscountCode,
+          },
+        ],
+      },
+    })
+    .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
+  return res.body;
+};
+
+export const removeDiscountCode = async (
+  cartId: string,
+  myDiscountCode: DiscountCodeReference,
+): Promise<Cart> => {
+  let apiRootUser = apiRootClient || apiRootAnonym;
+  if (!apiRootUser) {
+    apiRootUser = createApiRootAnonym();
+  }
+  const res = await apiRootUser
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({
+      body: {
+        version: getVersion(),
+        actions: [
+          {
+            action: 'removeDiscountCode',
+            discountCode: myDiscountCode,
+          },
+        ],
+      },
+    })
+    .execute();
+  localStorage.setItem('cartVersion', `${res.body.version}`);
+  return res.body;
+};
+
+export const getDiscountCodeById = async (discountCodeID: string): Promise<DiscountCode> => {
+  try {
+    const res = await apiRoot.discountCodes().withId({ ID: discountCodeID }).get().execute();
+    return res.body;
+  } catch {
+    throw Error('DiscountCode not found');
+  }
 };
