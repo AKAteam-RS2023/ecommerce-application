@@ -73,7 +73,7 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-export const initAnonymClient = (): Client => (tokenCache.userCache.refreshToken !== ''
+export const initAnonymClient = (): Client => (tokenCache.userCache.refreshToken
   ? new ClientBuilder()
     .withHttpMiddleware(httpMiddlewareOptions)
     .withRefreshTokenFlow(

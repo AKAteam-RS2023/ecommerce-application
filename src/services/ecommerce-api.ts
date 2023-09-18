@@ -44,6 +44,7 @@ let apiRootAnonym: ByProjectKeyRequestBuilder | null = null;
 export const clearApiRootUser = (): void => {
   localStorage.clear();
   apiRootAnonym = null;
+  apiRootClient = null;
   conf.tokenCache.set({
     token: '',
     expirationTime: 0,
@@ -55,7 +56,6 @@ export const clearApiRootUser = (): void => {
     refreshToken: '',
   });
   conf.client = null;
-  anonymConf.client = initAnonymClient();
 };
 
 export const getCustomer = async (email: string): Promise<Customer | string> => apiRoot
@@ -331,6 +331,7 @@ const createCartForClient = async (): Promise<string> => {
 
 const createCartForAnonym = async (): Promise<string> => {
   if (!apiRootAnonym) {
+    initAnonymClient();
     apiRootAnonym = createApiRootAnonym();
   }
   try {
@@ -360,7 +361,7 @@ const createCartForAnonym = async (): Promise<string> => {
 };
 
 export const createCart = async (): Promise<string> => {
-  if (apiRootClient) {
+  if (conf.client) {
     return createCartForClient();
   }
   return createCartForAnonym();
