@@ -13,6 +13,8 @@ import './basket.scss';
 import ModalBox from '../modal-box/modal-box';
 import ConfirmClear from './confirm-clear';
 
+import emptyCartImg from '../../assets/image/emptycart.png';
+
 export default class Basket {
   private cartId?: string | null;
 
@@ -79,7 +81,19 @@ export default class Basket {
     if (this.items.length === 0) {
       this.container.innerHTML = '';
       this.main.innerHTML = '';
-      this.main.textContent = 'There are no items in your cart.';
+      const emptyText = createElement('div', { class: 'basket__emtpy-text' });
+      const emptyLink = createElement('a', {
+        class: 'basket__emtpy-link',
+        href: '/catalog',
+      });
+      emptyLink.textContent = 'KATALOG';
+      emptyText.textContent = 'Nie ma żadnych przedmiotów w twoim koszyku.';
+      const emptyImg = createElement('img', {
+        class: 'basket__img-empty',
+        src: emptyCartImg,
+        alt: 'your cart is empty',
+      });
+      this.main.append(emptyText, emptyLink, emptyImg);
       this.container.append(this.main);
     }
   }
