@@ -6,6 +6,30 @@
   font-size: 18px;
   font-weight: 500;
 
+  &__img-empty {
+    width: 35%;
+    margin: 0 auto;
+  }
+
+  &__emtpy-text {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  &__emtpy-link{
+    display: block;
+    background: $primary;
+    height: 50px;
+    width: 120px;
+    padding-top: 12px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: $light-xl;
+    margin: 30px auto;
+  }
+
   &__wrapper {
     width: 80%;
 
