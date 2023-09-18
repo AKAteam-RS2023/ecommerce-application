@@ -10,10 +10,11 @@ import visiblePassword from '../../assets/image/visible-password.png';
 
 import './login.scss';
 import { IPage } from '../../types/interfaces/page';
-import Router from '../router/router';
+import { getCartItemsCount } from '../../controller/get-cart-items-count';
+// import Router from '../router/router';
 
 export default class Login implements IPage {
-  private router = Router.instance;
+  // private router = Router.instance;
 
   private email = createElement<HTMLInputElement>('input', {
     class: 'login__email--input',
@@ -26,6 +27,7 @@ export default class Login implements IPage {
     class: 'login__password--input',
     type: 'text',
     id: 'password',
+    autocomplete: 'on',
   });
 
   private passwordBtn = createElement('div', { class: 'login__password--button' });
@@ -70,7 +72,9 @@ export default class Login implements IPage {
     this.enter.addEventListener('click', async () => {
       try {
         await loginIfExist(this.email.value, this.password.value);
-        this.router?.navigate('');
+        getCartItemsCount();
+        // this.router?.navigate('');
+        document.querySelector<HTMLAnchorElement>('a[href="/"]')?.click();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
@@ -82,7 +86,7 @@ export default class Login implements IPage {
 
   private initInputElement(
     input: HTMLInputElement,
-    erorrMessage: ShowError,
+    errorMessage: ShowError,
     cb: (value: string) => void,
   ): void {
     input.addEventListener('input', () => {
@@ -90,13 +94,13 @@ export default class Login implements IPage {
       this.loginErrorMessage.hide();
       try {
         cb(input.value);
-        erorrMessage.hide();
+        errorMessage.hide();
       } catch (e) {
         if (!(e instanceof Error)) {
           return;
         }
         input.classList.add('invalid');
-        erorrMessage.show(e.message);
+        errorMessage.show(e.message);
       } finally {
         this.toggleDisabledEnter();
       }

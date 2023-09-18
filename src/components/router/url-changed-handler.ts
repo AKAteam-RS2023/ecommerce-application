@@ -10,11 +10,19 @@ export default class UrlHandler {
 
   private main = new MainSection();
 
-  private footer?: Footer;
+  private footer = new Footer();
 
-  private header?: Header;
+  private header = new Header();
 
   private instances: Record<string, IPage> = {};
+
+  private initMain(): void {
+    document.body.append(this.header.render(), this.main.render(), this.footer.render());
+  }
+
+  constructor() {
+    this.initMain();
+  }
 
   public urlChangedHandler(requestParams: { resource?: string; path?: string }): void {
     // TODO (Alina): refactor for more flexible urls
@@ -31,22 +39,14 @@ export default class UrlHandler {
     if (!(route.path in this.instances) || !route.isSingle) {
       this.instances[route.path] = new route.component();
     }
-
-    document.body.innerHTML = '';
-    this.header = new Header();
-    this.footer = new Footer();
     this.header.toggleActive();
-    // const component = new route.component();
-    const mainSection = this.main.render();
-    this.main.mainWrapper?.append(this.instances[route.path].render());
-    document.body.append(this.header?.render(), mainSection, this.footer?.render());
+    this.main.mainWrapper.innerHTML = '';
+    this.main.mainWrapper.append(this.instances[route.path].render());
   }
 
   private renderToNotFoundPage(): void {
-    document.body.innerHTML = '';
-    this.header = new Header();
-    this.footer = new Footer();
     this.notFoundPage = new NotFound();
-    document.body.append(this.header?.render(), this.notFoundPage.render(), this.footer?.render());
+    this.main.mainWrapper.innerHTML = '';
+    this.main.mainWrapper.append(this.notFoundPage.render());
   }
 }

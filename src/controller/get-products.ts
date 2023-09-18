@@ -100,11 +100,19 @@ const checkSetAttributes = (
 const checkAttributes = (
   product: ProductData | ProductProjection | ProductVariant,
   filters?: IFilters,
-): boolean => !filters
-  || (checkSetAttributes(filters.colors, getProductAttributes(product), 'color')
-    && checkSetAttributes(filters.madein, getProductAttributes(product), 'made-in')
-    && +getPrice(product).replace(/\D/g, '') / 100 >= filters.startPrice
-    && +getPrice(product).replace(/\D/g, '') / 100 <= filters.finishPrice);
+): boolean => {
+  const discountedPrice = getDiscount(product);
+  const price = discountedPrice && discountedPrice.value
+    ? +discountedPrice.value.replace(/\D/g, '')
+    : +getPrice(product).replace(/\D/g, '');
+  return (
+    !filters
+    || (checkSetAttributes(filters.colors, getProductAttributes(product), 'color')
+      && checkSetAttributes(filters.madein, getProductAttributes(product), 'made-in')
+      && price / 100 >= filters.startPrice
+      && price / 100 <= filters.finishPrice)
+  );
+};
 
 function doProduct(product: Product | ProductProjection, filters?: IFilters): IProduct[] {
   const item = 'masterData' in product ? product.masterData.current : product;
@@ -141,7 +149,12 @@ export default async function getIProducts(data: {
   sort: Sort;
   filters?: IFilters;
   searchQuery?: string;
-}): Promise<IProduct[]> {
+  limit: number;
+  offset: number;
+}): Promise<{ results: IProduct[]; total?: number }> {
   const res = await getProducts(data);
-  return res.map((item) => doProduct(item, data.filters)).flat();
+  return {
+    results: res.results.map((item) => doProduct(item, data.filters)).flat(),
+    total: res.total,
+  };
 }

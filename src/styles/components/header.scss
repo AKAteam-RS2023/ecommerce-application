@@ -41,6 +41,33 @@
   }
 }
 
+.link--basket {
+  display: flex;
+
+  &-img {
+    width: 20px;
+    height: 20px;
+  }
+
+  &.active {
+    svg {
+      fill: $primary;
+     }
+  }
+}
+
+.basket__count {
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  color: white;
+  font-size: 11px;
+  border-radius: 100%;
+  width: 15px;
+  height: 15px;
+  background-color: $primary;
+}
+
 @media screen and (max-width: $large) {
   .header {
     &__wrapper {

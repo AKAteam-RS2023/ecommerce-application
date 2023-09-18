@@ -91,6 +91,16 @@
   color: $light-xl;
 }
 
+.product-view__button {
+  margin-bottom: 5px;
+  padding: 10px;
+  width: 215px;
+  border-radius: 10px;
+  background-color: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 @media screen and (max-width: $medium) {
   .product-view {
     flex-direction: column;
@@ -117,3 +127,4 @@
     text-align: justify;
   }
 }
+

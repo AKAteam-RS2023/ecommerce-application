@@ -36,13 +36,13 @@ type PasswordAuthMiddlewareOptions = {
   fetch?: typeof fetch;
 };
 
-const tokenCache = new UserTokenCache();
+const tokenCache = new UserTokenCache('client');
 
 type ExistingTokenMiddlewareOptions = {
   force?: boolean;
 };
 
-const authorization = `Bearer ${tokenCache.userCaсhe.token}`;
+const authorization = `Bearer ${tokenCache.userCache.token}`;
 
 const options: ExistingTokenMiddlewareOptions = {
   force: true,
@@ -53,7 +53,7 @@ const conf: {
   tokenCache: UserTokenCache;
 } = {
   client:
-    tokenCache.userCaсhe.token === ''
+    tokenCache.userCache.token === ''
       ? null
       : new ClientBuilder()
         .withExistingTokenFlow(authorization, options)
