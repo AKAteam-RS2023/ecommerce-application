@@ -34,4 +34,33 @@
       color: $error;
     }
   }
+
+  &__item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+
+  &__delete {
+    display: block;
+    width: 25px;
+    padding: 3px;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($red-accents, .5);
+    }
+
+    @media screen and (max-width: $large) {
+      width: 20px;
+    }
+
+    @media screen and (max-width: $medium) {
+      width: 15px;
+    }
+  }
 }

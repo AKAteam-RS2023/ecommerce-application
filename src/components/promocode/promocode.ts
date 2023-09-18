@@ -1,8 +1,9 @@
-import { DiscountCodeInfo, DiscountCodeReference } from '@commercetools/platform-sdk';
+import { Cart, DiscountCodeInfo, DiscountCodeReference } from '@commercetools/platform-sdk';
 import createElement from '../../dom-helper/create-element';
 
 import eventEmitter from '../../dom-helper/event-emitter';
 import { getDiscountCodeById } from '../../services/ecommerce-api';
+import deleteItem from '../../assets/image/delete.png';
 
 export default class PromoCode {
   public static instance: PromoCode;
@@ -89,15 +90,15 @@ export default class PromoCode {
         if (result.code === code) {
           this.discountCodeReference = itemDiscount.discountCode;
           this.renderPromoCodeItem(code, this.discountCodeReference);
+          if (itemDiscount.state === 'MatchesCart') {
+            this.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
+          }
+          if (itemDiscount.state === 'ApplicationStoppedByPreviousDiscount') {
+            this.infoPromoCodeField.textContent = `The promocode ${code} was stopped by previous promocode`;
+          }
         }
       })
       .catch();
-    if (itemDiscount.state === 'MatchesCart') {
-      this.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
-    }
-    if (itemDiscount.state === 'ApplicationStoppedByPreviousDiscount') {
-      this.infoPromoCodeField.textContent = `The promocode ${code} was stopped by previous promocode`;
-    }
   }
 
   private renderAllDiscountCode(): void {
@@ -106,17 +107,39 @@ export default class PromoCode {
       if (item && item.code && item.discountCodeReference) {
         const discountCodeItem = createElement('div', { class: 'discount-code__item' });
         discountCodeItem.textContent = `${item.code}`;
-        const deleteCodeBtn = createElement<HTMLButtonElement>('button', {
+        const deleteCodeBtn = createElement<HTMLImageElement>('img', {
           class: 'discount-code__delete',
+          src: deleteItem,
+          alt: 'icon for delete promocode',
         });
-        deleteCodeBtn.textContent = 'Delete';
         deleteCodeBtn.addEventListener('click', () => {
           if (item.discountCodeReference) this.deleteCode(item.discountCodeReference, index);
         });
-        this.discountCodeItems.append(discountCodeItem, deleteCodeBtn);
+        discountCodeItem.append(deleteCodeBtn);
+        this.discountCodeItems.append(discountCodeItem);
       }
     });
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  public getItemsDiscountedPrice = (cart: Cart, lineItemId: string): string | undefined => {
+    const listItem = cart.lineItems.find((item) => item.id === lineItemId);
+
+    if (!listItem) {
+      return undefined;
+    }
+    const discCodePrice = (listItem
+      .discountedPricePerQuantity[0]
+      .discountedPrice
+      .value.centAmount as unknown as number
+    );
+    const currency = listItem.discountedPricePerQuantity?.[0].discountedPrice?.value.currencyCode;
+    console.log(listItem, 'discCodePrice', discCodePrice);
+    if (discCodePrice && currency) {
+      return `${(discCodePrice / 100).toFixed(2)} ${currency}`;
+    }
+    return undefined;
+  };
 
   private getCodeInput(): void {
     this.code = this.discountCodeInput?.value;

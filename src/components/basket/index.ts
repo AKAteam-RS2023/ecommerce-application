@@ -53,6 +53,7 @@ export default class Basket {
     eventEmitter.subscribe('event: removePromoCode', (data) => {
       this.onRemovePromoCode(data);
     });
+
     eventEmitter.subscribe('event: remove-item-from-cart', (data) => {
       if (!this.cartId) {
         return;
@@ -85,12 +86,20 @@ export default class Basket {
     if (data?.code) {
       matchDiscountCode(this.cartId, data.code)
         .then((res) => {
+          console.log('res', res);
           res.discountCodes.forEach((itemDiscount) => {
             this.promoCode.discountCodeMatch(itemDiscount, data.code);
           });
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
               const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
+              const newItemPriceWithCode = this.promoCode.getItemsDiscountedPrice(res, item.id);
+              if (newItemPriceWithCode) {
+                eventEmitter.emit('event: change-item-discount-price', {
+                  lineItemId: item.id,
+                  price: newItemPriceWithCode,
+                });
+              }
               if (newTotalItemPrice) {
                 eventEmitter.emit('event: change-item-total-price', {
                   lineItemId: item.id,
@@ -121,6 +130,13 @@ export default class Basket {
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
               const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
+              const newItemPriceWithCode = this.promoCode.getItemsDiscountedPrice(res, item.id);
+              if (newItemPriceWithCode) {
+                eventEmitter.emit('event: change-item-discount-price', {
+                  lineItemId: item.id,
+                  price: newItemPriceWithCode,
+                });
+              }
               if (newTotalItemPrice) {
                 eventEmitter.emit('event: change-item-total-price', {
                   lineItemId: item.id,

@@ -26,6 +26,8 @@ export default class BasketItem {
 
   private totalPrice = createElement('div', { class: 'basket__item--total-price' });
 
+  private priceWithCode = createElement('div', { class: 'basket__item--discount-code-price' });
+
   private deleteBtn = createElement<HTMLImageElement>('img', {
     class: 'basket__item--delete',
     src: deleteItem,
@@ -51,6 +53,12 @@ export default class BasketItem {
       this.product.totalPrice = data.price;
       this.totalPrice.textContent = data.price;
     });
+    eventEmitter.subscribe('event: change-item-discount-price', (data) => {
+      if (data && data.price) {
+        this.priceWithCode.textContent = data.price;
+      }
+    });
+
     eventEmitter.subscribe('event: remove-item', (data) => {
       if (!data || !('lineItemId' in data) || data.lineItemId !== this.product.lineItemId) {
         return;
@@ -110,7 +118,15 @@ export default class BasketItem {
       ? this.product.discountedPrice
       : this.product.price;
     this.totalPrice.textContent = this.product.totalPrice;
-    this.container.append(img, name, price, this.quantityInput, this.totalPrice, this.deleteBtn);
+    this.container.append(
+      img,
+      name,
+      price,
+      this.priceWithCode,
+      this.quantityInput,
+      this.totalPrice,
+      this.deleteBtn,
+    );
   }
 
   public render(): HTMLElement {
