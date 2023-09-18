@@ -3,6 +3,7 @@ export default interface ICartsProduct {
   url?: string;
   price: string;
   discountedPrice?: string;
+  priceWithPromoCode?: string;
   totalPrice: string;
   quantity: number;
   lineItemId: string;

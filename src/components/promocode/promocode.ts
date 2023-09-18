@@ -92,13 +92,22 @@ export default class PromoCode {
           this.renderPromoCodeItem(code, this.discountCodeReference);
           if (itemDiscount.state === 'MatchesCart') {
             this.infoPromoCodeField.textContent = `The promocode ${code} was successfully applied!`;
+            this.infoPromoCodeField.classList.add('success');
+            this.infoPromoCodeField.classList.remove('error');
           }
           if (itemDiscount.state === 'ApplicationStoppedByPreviousDiscount') {
             this.infoPromoCodeField.textContent = `The promocode ${code} was stopped by previous promocode`;
+            this.infoPromoCodeField.classList.remove('success');
+            this.infoPromoCodeField.classList.remove('error');
           }
         }
       })
-      .catch();
+      .catch((e) => {
+        console.log(e.message);
+        this.infoPromoCodeField.textContent = e.message;
+        this.infoPromoCodeField.classList.remove('success');
+        this.infoPromoCodeField.classList.add('error');
+      });
   }
 
   private renderAllDiscountCode(): void {
@@ -128,15 +137,15 @@ export default class PromoCode {
     if (!listItem) {
       return undefined;
     }
-    const discCodePrice = (listItem
-      .discountedPricePerQuantity[0]
-      .discountedPrice
-      .value.centAmount as unknown as number
-    );
-    const currency = listItem.discountedPricePerQuantity?.[0].discountedPrice?.value.currencyCode;
-    console.log(listItem, 'discCodePrice', discCodePrice);
-    if (discCodePrice && currency) {
-      return `${(discCodePrice / 100).toFixed(2)} ${currency}`;
+    if (listItem.discountedPricePerQuantity.length > 0) {
+      const discCodePrice = (
+        listItem
+          .discountedPricePerQuantity[0].discountedPrice?.value.centAmount as unknown as number
+      );
+      const currency = listItem.discountedPricePerQuantity?.[0].discountedPrice?.value.currencyCode;
+      if (discCodePrice && currency) {
+        return `${(discCodePrice / 100).toFixed(2)} ${currency}`;
+      }
     }
     return undefined;
   };

@@ -132,10 +132,9 @@ export default class Basket {
             });
           }
           this.totalPrice.textContent = Basket.getTotalPrice(res);
-          this.promoCode.infoPromoCodeField.classList.add('success');
-          this.promoCode.infoPromoCodeField.classList.remove('error');
         })
         .catch((e) => {
+          console.log('1', e.message);
           this.promoCode.infoPromoCodeField.textContent = `${e.message}`;
           this.promoCode.infoPromoCodeField.classList.remove('success');
           this.promoCode.infoPromoCodeField.classList.add('error');
@@ -174,6 +173,7 @@ export default class Basket {
           this.promoCode.infoPromoCodeField.classList.remove('error');
         })
         .catch((e) => {
+          console.log('2', e.message);
           this.promoCode.infoPromoCodeField.textContent = e.message;
           this.promoCode.infoPromoCodeField.classList.remove('success');
           this.promoCode.infoPromoCodeField.classList.add('error');
