@@ -35,14 +35,9 @@
     border: 2px solid $grey-xxl;
     font-family: inherit;
 
-    @media screen and (max-width: $large) {
-      font-size: inherit;
-      width: 40px;
-    }
-
     @media screen and (max-width: $medium) {
       font-size: inherit;
-      width: 35px;
+      width: 45px;
     }
   }
 

@@ -6,12 +6,15 @@ import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import {
   addProduct,
+  clearApiRootUser,
   createCart,
   getProductDiscontById,
   removeProduct,
 } from '../../services/ecommerce-api';
 import ProductSlider from '../product-slider/product-slider';
 import ModalBox from '../modal-box/modal-box';
+
+import errorMessage from '../basket-error';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -34,14 +37,14 @@ export default class ProductView implements IPage {
 
   private cartId = localStorage.getItem('cartId');
 
-  private errorMessage = createElement('div', {
-    class: 'error-message',
-  });
+  // private errorMessage = createElement('div', {
+  //   class: 'error-message',
+  // });
 
   constructor() {
     this.productId = this.router.queryParams.productID;
     this.variantId = +this.router.queryParams.variantID;
-    this.initError();
+    // this.initError();
   }
 
   private init(): void {
@@ -57,28 +60,28 @@ export default class ProductView implements IPage {
   }
 
   private onAddProduct = async (): Promise<void> => {
-    if (!this.product) {
-      return;
-    }
-    if (this.cartId === null) {
-      this.cartId = await createCart();
-    }
     try {
+      if (!this.product) {
+        return;
+      }
+      if (this.cartId === null) {
+        this.cartId = await createCart();
+      }
       await addProduct(this.cartId, this.product);
     } catch {
-      this.showError();
+      errorMessage.showError();
     }
     this.initCartBtn();
   };
 
   private onRemoveProduct = async (lineItemsId: string, quantity: number): Promise<void> => {
-    if (!this.cartId) {
-      return;
-    }
     try {
+      if (!this.cartId) {
+        return;
+      }
       await removeProduct(this.cartId, lineItemsId, quantity);
     } catch {
-      this.showError();
+      errorMessage.showError();
     }
     this.initCartBtn();
   };
@@ -100,21 +103,28 @@ export default class ProductView implements IPage {
             };
           }
         })
-        .catch(() => this.showError());
+        .catch((e) => {
+          if (e.message === 'Missing required options') {
+            clearApiRootUser();
+            this.initCartBtn();
+            return;
+          }
+          errorMessage.showError();
+        });
     }
   }
 
-  private initError(): void {
-    this.errorMessage.textContent = 'Something went wrong. Try again';
-    document.body.append(this.errorMessage);
-  }
+  // private initError(): void {
+  //   this.errorMessage.textContent = 'Something went wrong. Try again';
+  //   document.body.append(this.errorMessage);
+  // }
 
-  private showError(): void {
-    this.errorMessage.classList.add('show');
-    setTimeout(() => {
-      this.errorMessage.classList.remove('show');
-    }, 2000);
-  }
+  // private showError(): void {
+  //   this.errorMessage.classList.add('show');
+  //   setTimeout(() => {
+  //     this.errorMessage.classList.remove('show');
+  //   }, 2000);
+  // }
 
   public render(): HTMLElement {
     this.container.innerHTML = '';

@@ -16,7 +16,6 @@ export default class BasketItem {
   private container = createElement('div', { class: 'basket__item' });
 
   private quantityInput = createElement<HTMLInputElement>('input', {
-    id: 'quatity',
     type: 'number',
     value: `${this.product.quantity}`,
     min: `${MIN_VALUE}`,
@@ -102,6 +101,7 @@ export default class BasketItem {
   }
 
   private initQuantity(): void {
+    this.quantityInput.id = this.product.lineItemId;
     this.quantityInput.onchange = this.onChange;
   }
 

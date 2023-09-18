@@ -7,15 +7,19 @@ import {
   changeQuantityProducts,
   matchDiscountCode,
   removeDiscountCode,
+  deleteCart,
   removeProduct,
 } from '../../services/ecommerce-api';
 import { getProductsFromCart } from '../../controller/get-products-from-cart';
 
 import BasketItem from '../basket-item';
+import errorMessage from '../basket-error';
 
 import PromoCode from '../promocode/promocode';
 
 import './basket.scss';
+import ModalBox from '../modal-box/modal-box';
+import ConfirmClear from './confirm-clear';
 
 export default class Basket {
   private cartId?: string | null;
@@ -28,15 +32,19 @@ export default class Basket {
 
   private items: BasketItem[] = [];
 
-  private errorMessage = createElement('div', { class: 'error-message' });
-
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
 
   private promoCode: PromoCode;
 
+  private confirmClear: ConfirmClear = new ConfirmClear(
+    () => this.clearCart(),
+    () => this.modalBox.hide(),
+  );
+
+  private modalBox = new ModalBox(this.confirmClear, 'extra-small');
+
   constructor() {
     this.initHeader();
-    this.initError();
     eventEmitter.subscribe('event: change-quantity', (data) => {
       if (!this.cartId) {
         return;
@@ -69,6 +77,21 @@ export default class Basket {
       });
     });
   }
+
+  private clearCart = (): void => {
+    if (this.cartId) {
+      deleteCart(this.cartId)
+        .then(() => {
+          this.modalBox.hide();
+          this.init();
+        })
+        .catch(() => {
+          this.modalBox.hide();
+          errorMessage.showError();
+          this.init();
+        });
+    }
+  };
 
   private checkItems(): void {
     if (this.items.length === 0) {
@@ -181,22 +204,10 @@ export default class Basket {
         }
       })
       .catch(() => {
-        this.showError();
+        errorMessage.showError();
         this.init();
       });
   };
-
-  private initError(): void {
-    this.errorMessage.textContent = 'Something went wrong. Try again';
-    document.body.append(this.errorMessage);
-  }
-
-  private showError(): void {
-    this.errorMessage.classList.add('show');
-    setTimeout(() => {
-      this.errorMessage.classList.remove('show');
-    }, 2000);
-  }
 
   private static getItemsTotalPrice = (cart: Cart, lineItemId: string): string | undefined => {
     const listItem = cart.lineItems.find((item) => item.id === lineItemId);
@@ -252,6 +263,12 @@ export default class Basket {
         this.items = res.products.map((item) => new BasketItem(item));
         if (this.items.length > 0) {
           this.items.forEach((item) => this.main.append(item.render()));
+          const clearCart = createElement('div', { class: 'basket__clear' });
+          const clearCartBtn = createElement('div', { class: 'basket__clear--button' });
+          clearCartBtn.textContent = 'Clear cart';
+          clearCart.append(clearCartBtn);
+          clearCartBtn.addEventListener('click', () => this.modalBox.show());
+          this.main.append(clearCart);
           const wrapper = createElement('div', { class: 'basket__wrapper' });
           wrapper.append(this.header, this.main);
           this.container.append(
