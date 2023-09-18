@@ -152,13 +152,9 @@ export default class Basket {
           if (res.lineItems.length > 0) {
             res.lineItems.forEach((item) => {
               const newTotalItemPrice = Basket.getItemsTotalPrice(res, item.id);
-              const newItemPriceWithCode = this.promoCode.getItemsDiscountedPrice(res, item.id);
-              if (newItemPriceWithCode) {
-                eventEmitter.emit('event: change-item-discount-price', {
-                  lineItemId: item.id,
-                  price: newItemPriceWithCode,
-                });
-              }
+              eventEmitter.emit('event: delete-item-discount-price', {
+                lineItemId: item.id,
+              });
               if (newTotalItemPrice) {
                 eventEmitter.emit('event: change-item-total-price', {
                   lineItemId: item.id,
@@ -250,6 +246,7 @@ export default class Basket {
   }
 
   private init(): void {
+    console.log('basket');
     this.cartId = localStorage.getItem('cartId');
     this.container.innerHTML = '';
     this.main.innerHTML = '';
