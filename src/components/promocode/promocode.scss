@@ -1,18 +1,37 @@
-@import '../constants/colors';
+@import '../../styles/constants/';
+
 .discount-code {
   &__container {
     display: flex;
     flex-direction: column;
-    align-items: baseline;
-    padding: 40px;
+    align-items: center;
+    padding: 20px;
     gap: 10px;
-    width: 19%;
     height: max-content;
     background-color: $light-l;
     color: $dark-xl;
+    padding-bottom: 30px;
+    border-bottom: 1px solid $grey-m;
+
+    @media screen and (max-width: $large) {
+      border-top: 2px solid $dark-l;
+    }
   }
+
   &__title {
   }
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__submit {
+    width: 100px;
+    height: 25px;
+  }
+
   &__input {
     display: block;
     padding: 5px;
@@ -20,7 +39,6 @@
     border-radius: 5px;
     font-family: inherit;
   }
-
   &__info {
     font-size: 1rem;
     line-height: normal;
@@ -40,7 +58,13 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
+    font-size: 1.5rem;
     gap: 10px;
+  }
+
+  &__header-list {
+    color: $grey-xl;
+    padding-bottom: 10px;
   }
 
   &__delete {

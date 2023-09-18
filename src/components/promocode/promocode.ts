@@ -5,6 +5,7 @@ import eventEmitter from '../../dom-helper/event-emitter';
 import { getDiscountCodeById } from '../../services/ecommerce-api';
 import deleteItem from '../../assets/image/delete.png';
 import { IPromoCode } from '../../types/interfaces/promocode';
+import './promocode.scss';
 
 export default class PromoCode {
   public static instance: PromoCode;

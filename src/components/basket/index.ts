@@ -32,6 +32,8 @@ export default class Basket {
 
   private items: BasketItem[] = [];
 
+  private totalWrapper = createElement('div', { class: 'basket__total-wrapper' });
+
   private totalPrice = createElement('div', { class: 'basket__total-price--value' });
 
   private promoCode: PromoCode;
@@ -107,7 +109,6 @@ export default class Basket {
     if (data?.code) {
       matchDiscountCode(this.cartId, data.code)
         .then((res) => {
-          console.log('res', res);
           this.promoCode.appliedCode = [];
           res.discountCodes.forEach((itemDiscount) => {
             this.promoCode.discountCodeMatch(itemDiscount, data.code);
@@ -158,7 +159,6 @@ export default class Basket {
           this.promoCode.infoPromoCodeField.classList.remove('error');
         })
         .catch((e) => {
-          console.log('2', e.message);
           this.promoCode.infoPromoCodeField.textContent = e.message;
           this.promoCode.infoPromoCodeField.classList.remove('success');
           this.promoCode.infoPromoCodeField.classList.add('error');
@@ -240,6 +240,7 @@ export default class Basket {
     this.main.innerHTML = '';
     this.items = [];
     this.promoCode.infoPromoCodeField.textContent = '';
+    this.totalWrapper.innerHTML = '';
     if (!this.cartId) {
       this.checkItems();
       return;
@@ -256,11 +257,8 @@ export default class Basket {
           this.main.append(this.renderClearCart());
           const wrapper = createElement('div', { class: 'basket__wrapper' });
           wrapper.append(this.header, this.main);
-          this.container.append(
-            wrapper,
-            this.renderTotalPrice(res.totalPrice),
-            this.promoCode.render(),
-          );
+          this.totalWrapper.append(this.promoCode.render(), this.renderTotalPrice(res.totalPrice));
+          this.container.append(wrapper, this.totalWrapper);
           return;
         }
         this.checkItems();
