@@ -11,6 +11,8 @@ import errorMessage from '../basket-error';
 
 import imageNotFound from '../../assets/image/image-not-found.png';
 import './product-card.scss';
+import { calculateTotalItems } from '../../dom-helper/cart-calculation';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class ProductCard {
   private productElement = createElement('article', { class: 'product' });
@@ -44,7 +46,7 @@ export default class ProductCard {
       if (!cartId) {
         cartId = await createCart();
       }
-      await addProduct(cartId, this.product);
+      await addProduct(cartId, this.product).then((res) => eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) }));
       this.cartBtn.disabled = true;
     } catch {
       this.cartBtn.disabled = true;

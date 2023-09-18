@@ -15,6 +15,8 @@ import ProductSlider from '../product-slider/product-slider';
 import ModalBox from '../modal-box/modal-box';
 
 import errorMessage from '../basket-error';
+import { calculateTotalItems } from '../../dom-helper/cart-calculation';
+import eventEmitter from '../../dom-helper/event-emitter';
 
 export default class ProductView implements IPage {
   private container: HTMLElement = createElement('section', { class: 'product-view' });
@@ -67,7 +69,7 @@ export default class ProductView implements IPage {
       if (this.cartId === null) {
         this.cartId = await createCart();
       }
-      await addProduct(this.cartId, this.product);
+      await addProduct(this.cartId, this.product).then((res) => eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) }));
     } catch {
       errorMessage.showError();
     }
@@ -79,7 +81,7 @@ export default class ProductView implements IPage {
       if (!this.cartId) {
         return;
       }
-      await removeProduct(this.cartId, lineItemsId, quantity);
+      await removeProduct(this.cartId, lineItemsId, quantity).then((res) => eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) }));
     } catch {
       errorMessage.showError();
     }

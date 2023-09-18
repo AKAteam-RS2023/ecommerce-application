@@ -56,6 +56,10 @@
   }
 }
 
+.basket__count {
+  color: $dark-l;
+}
+
 @media screen and (max-width: $large) {
   .header {
     &__wrapper {

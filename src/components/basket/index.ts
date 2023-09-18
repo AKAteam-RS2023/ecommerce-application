@@ -12,6 +12,7 @@ import errorMessage from '../basket-error';
 import './basket.scss';
 import ModalBox from '../modal-box/modal-box';
 import ConfirmClear from './confirm-clear';
+import { calculateTotalItems } from '../../dom-helper/cart-calculation';
 
 export default class Basket {
   private cartId?: string | null;
@@ -56,6 +57,7 @@ export default class Basket {
         this.totalPrice.textContent = Basket.getTotalPrice(res);
         this.items = this.items.filter((item) => item.product.lineItemId !== data.lineItemId);
         this.checkItems();
+        eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) });
       });
     });
   }
@@ -90,6 +92,7 @@ export default class Basket {
     }
     changeQuantityProducts(this.cartId, data.lineItemId, +data.quantity)
       .then((res) => {
+        eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) });
         const newItemQuantity = Basket.getItemsQuantity(res, data.lineItemId);
         if (newItemQuantity) {
           eventEmitter.emit('event: change-item-quantity', {

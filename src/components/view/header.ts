@@ -1,9 +1,10 @@
 import createElement from '../../dom-helper/create-element';
 
-import { clearApiRootUser } from '../../services/ecommerce-api';
+import { clearApiRootUser, getCartById } from '../../services/ecommerce-api';
 
 import '../../assets/image/cart.svg';
 import eventEmitter from '../../dom-helper/event-emitter';
+import { calculateTotalItems } from '../../dom-helper/cart-calculation';
 
 export class Header {
   private header?: HTMLElement;
@@ -56,8 +57,18 @@ export class Header {
     href: '/basket',
   });
 
+  private itemsInBasket = createElement('span', { class: 'basket__count' });
+
   constructor() {
     this.initLinks();
+    eventEmitter.subscribe('event: update-items-count', (data) => {
+      if (!data || !('count' in data)) {
+        return;
+      }
+      if (data.count !== '') {
+        this.itemsInBasket.textContent = data.count;
+      }
+    });
   }
 
   private initBasket(): void {
@@ -75,6 +86,11 @@ export class Header {
       }
     };
     this.basket.append(img);
+    this.basket.append(this.itemsInBasket);
+    const cartId = localStorage.getItem('cartId') ?? '';
+    if (cartId) {
+      getCartById(cartId).then((res) => eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) }));
+    }
   }
 
   public toggleActive(): void {
