@@ -10,6 +10,7 @@ import visiblePassword from '../../assets/image/visible-password.png';
 
 import './login.scss';
 import { IPage } from '../../types/interfaces/page';
+import { getCartItemsCount } from '../../controller/get-cart-items-count';
 // import Router from '../router/router';
 
 export default class Login implements IPage {
@@ -71,6 +72,7 @@ export default class Login implements IPage {
     this.enter.addEventListener('click', async () => {
       try {
         await loginIfExist(this.email.value, this.password.value);
+        getCartItemsCount();
         // this.router?.navigate('');
         document.querySelector<HTMLAnchorElement>('a[href="/"]')?.click();
       } catch (e) {

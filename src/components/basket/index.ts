@@ -68,6 +68,7 @@ export default class Basket {
         .then(() => {
           this.modalBox.hide();
           this.init();
+          eventEmitter.emit('event: update-items-count', { count: '0' });
         })
         .catch(() => {
           this.modalBox.hide();

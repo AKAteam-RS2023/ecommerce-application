@@ -1,10 +1,10 @@
 import createElement from '../../dom-helper/create-element';
 
-import { clearApiRootUser, getCartById } from '../../services/ecommerce-api';
+import { clearApiRootUser } from '../../services/ecommerce-api';
 
 import '../../assets/image/cart.svg';
 import eventEmitter from '../../dom-helper/event-emitter';
-import { calculateTotalItems } from '../../dom-helper/cart-calculation';
+import { getCartItemsCount } from '../../controller/get-cart-items-count';
 
 export class Header {
   private header?: HTMLElement;
@@ -63,9 +63,12 @@ export class Header {
     this.initLinks();
     eventEmitter.subscribe('event: update-items-count', (data) => {
       if (!data || !('count' in data)) {
+        this.itemsInBasket.textContent = '';
         return;
       }
-      if (data.count !== '') {
+      if (data.count === '' || data.count === '0') {
+        this.itemsInBasket.textContent = '';
+      } else {
         this.itemsInBasket.textContent = data.count;
       }
     });
@@ -87,10 +90,7 @@ export class Header {
     };
     this.basket.append(img);
     this.basket.append(this.itemsInBasket);
-    const cartId = localStorage.getItem('cartId') ?? '';
-    if (cartId) {
-      getCartById(cartId).then((res) => eventEmitter.emit('event: update-items-count', { count: calculateTotalItems(res) }));
-    }
+    getCartItemsCount();
   }
 
   public toggleActive(): void {
@@ -156,6 +156,7 @@ export class Header {
     this.logoutLink.innerText = 'Logout';
     this.logoutLink.onclick = (): void => {
       clearApiRootUser();
+      getCartItemsCount();
     };
     this.catalogLink.onclick = (): void => {
       eventEmitter.emit('event: change-products', undefined);
