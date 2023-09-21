@@ -12,7 +12,9 @@ export class Home implements IPage {
 
   public render(): HTMLDivElement {
     this.mainPageWrapper.textContent = '';
-    const mainHeaderWrapper: HTMLDivElement = createElement('div', { class: 'main-header__wrapper' });
+    const mainHeaderWrapper: HTMLDivElement = createElement('div', {
+      class: 'main-header__wrapper',
+    });
     const mainHeaderTextBlock = createElement('div', { class: 'main-header__text-block' });
     const mainHeaderTitle = createElement('h1', { class: 'main-header__title' });
     mainHeaderTitle.innerHTML = 'Odkryj nasze nowe kolekcje';

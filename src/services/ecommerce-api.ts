@@ -504,10 +504,7 @@ export const deleteCart = async (cartId: string): Promise<void> => {
   localStorage.removeItem('cartId');
 };
 
-export const matchDiscountCode = async (
-  cartId: string,
-  myDiscountCode: string,
-): Promise<Cart> => {
+export const matchDiscountCode = async (cartId: string, myDiscountCode: string): Promise<Cart> => {
   let apiRootUser = apiRootClient || apiRootAnonym;
   if (!apiRootUser) {
     apiRootUser = createApiRootAnonym();
