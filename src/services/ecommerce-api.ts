@@ -332,11 +332,11 @@ const createCartForClient = async (): Promise<string> => {
 };
 
 const createCartForAnonym = async (): Promise<string> => {
-  if (!apiRootAnonym) {
-    initAnonymClient();
-    apiRootAnonym = createApiRootAnonym();
-  }
   try {
+    initAnonymClient();
+    if (!apiRootAnonym) {
+      apiRootAnonym = createApiRootAnonym();
+    }
     const res = await apiRootAnonym
       .me()
       .carts()

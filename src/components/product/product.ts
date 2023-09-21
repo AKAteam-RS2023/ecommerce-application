@@ -6,7 +6,6 @@ import IProductDetails from '../../types/interfaces/productDetails';
 import Router from '../router/router';
 import {
   addProduct,
-  clearApiRootUser,
   createCart,
   getProductDiscontById,
   removeProduct,
@@ -39,14 +38,9 @@ export default class ProductView implements IPage {
 
   private cartId = localStorage.getItem('cartId');
 
-  // private errorMessage = createElement('div', {
-  //   class: 'error-message',
-  // });
-
   constructor() {
     this.productId = this.router.queryParams.productID;
     this.variantId = +this.router.queryParams.variantID;
-    // this.initError();
   }
 
   private init(): void {
@@ -105,28 +99,11 @@ export default class ProductView implements IPage {
             };
           }
         })
-        .catch((e) => {
-          if (e.message === 'Missing required options') {
-            clearApiRootUser();
-            this.initCartBtn();
-            return;
-          }
+        .catch(() => {
           errorMessage.showError();
         });
     }
   }
-
-  // private initError(): void {
-  //   this.errorMessage.textContent = 'Something went wrong. Try again';
-  //   document.body.append(this.errorMessage);
-  // }
-
-  // private showError(): void {
-  //   this.errorMessage.classList.add('show');
-  //   setTimeout(() => {
-  //     this.errorMessage.classList.remove('show');
-  //   }, 2000);
-  // }
 
   public render(): HTMLElement {
     this.container.innerHTML = '';
