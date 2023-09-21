@@ -101,7 +101,7 @@ export default class ProductView implements IPage {
           if (lineItem) {
             this.cartBtn.textContent = 'Remove from cart';
             this.cartBtn.onclick = async (): Promise<void> => {
-              this.onRemoveProduct(lineItem.id, lineItem.quantity);
+              await this.onRemoveProduct(lineItem.id, lineItem.quantity);
             };
           }
         })
