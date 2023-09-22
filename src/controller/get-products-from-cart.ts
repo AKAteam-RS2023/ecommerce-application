@@ -63,9 +63,11 @@ const getPriceWithPromoCode = (data: LineItem): string | undefined => {
   ) return undefined;
   return data.discountedPricePerQuantity[0].discountedPrice?.value.centAmount
     && data.discountedPricePerQuantity[0].discountedPrice?.value.currencyCode
-    ? `${((data.discountedPricePerQuantity[0].discountedPrice?.value.centAmount as unknown as number) / 100).toFixed(2)} ${
-      data.discountedPricePerQuantity[0].discountedPrice?.value.currencyCode
-    }` : undefined;
+    ? `${(
+      (data.discountedPricePerQuantity[0].discountedPrice?.value
+        .centAmount as unknown as number) / 100
+    ).toFixed(2)} ${data.discountedPricePerQuantity[0].discountedPrice?.value.currencyCode}`
+    : undefined;
 };
 
 export const getProductsFromCart = async (
@@ -73,7 +75,7 @@ export const getProductsFromCart = async (
 ): Promise<{
   products: ICartsProduct[];
   totalPrice: string;
-  discountCodes: DiscountCodeInfo[]
+  discountCodes: DiscountCodeInfo[];
 }> => {
   const result: ICartsProduct[] = [];
   const res = await getCartById(cartId);

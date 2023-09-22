@@ -73,19 +73,30 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-export const initAnonymClient = (): Client => (tokenCache.userCache.refreshToken
-  ? new ClientBuilder()
-    .withHttpMiddleware(httpMiddlewareOptions)
-    .withRefreshTokenFlow(
-      initRefreshAuthMiddlewareOptions(`Bearer ${tokenCache.userCache.refreshToken}`),
-    )
+export const initAnonymClient = (): Client => {
+  const date = new Date();
+  if (tokenCache.userCache.token && tokenCache.userCache.expirationTime < +date) {
+    localStorage.clear();
+    tokenCache.set({
+      refreshToken: '',
+      token: '',
+      expirationTime: 0,
+    });
+  }
+  return tokenCache.userCache.refreshToken
+    ? new ClientBuilder()
+      .withHttpMiddleware(httpMiddlewareOptions)
+      .withRefreshTokenFlow(
+        initRefreshAuthMiddlewareOptions(`Bearer ${tokenCache.userCache.refreshToken}`),
+      )
     // .withLoggerMiddleware()
-    .build()
-  : new ClientBuilder()
-    .withHttpMiddleware(httpMiddlewareOptions)
-    .withAnonymousSessionFlow(anonymousAuthMiddlewareOptions)
+      .build()
+    : new ClientBuilder()
+      .withHttpMiddleware(httpMiddlewareOptions)
+      .withAnonymousSessionFlow(anonymousAuthMiddlewareOptions)
     // .withLoggerMiddleware()
-    .build());
+      .build();
+};
 
 const anonymConf = {
   client: initAnonymClient(),

@@ -332,11 +332,11 @@ const createCartForClient = async (): Promise<string> => {
 };
 
 const createCartForAnonym = async (): Promise<string> => {
-  if (!apiRootAnonym) {
-    initAnonymClient();
-    apiRootAnonym = createApiRootAnonym();
-  }
   try {
+    initAnonymClient();
+    if (!apiRootAnonym) {
+      apiRootAnonym = createApiRootAnonym();
+    }
     const res = await apiRootAnonym
       .me()
       .carts()
@@ -504,10 +504,7 @@ export const deleteCart = async (cartId: string): Promise<void> => {
   localStorage.removeItem('cartId');
 };
 
-export const matchDiscountCode = async (
-  cartId: string,
-  myDiscountCode: string,
-): Promise<Cart> => {
+export const matchDiscountCode = async (cartId: string, myDiscountCode: string): Promise<Cart> => {
   let apiRootUser = apiRootClient || apiRootAnonym;
   if (!apiRootUser) {
     apiRootUser = createApiRootAnonym();

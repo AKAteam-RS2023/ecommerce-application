@@ -158,9 +158,6 @@ export class Header {
       clearApiRootUser();
       getCartItemsCount();
     };
-    this.catalogLink.onclick = (): void => {
-      eventEmitter.emit('event: change-products', undefined);
-    };
     this.registrationLink.innerText = 'Registration';
   }
 
