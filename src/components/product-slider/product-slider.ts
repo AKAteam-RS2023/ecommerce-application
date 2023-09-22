@@ -24,7 +24,7 @@ export default class ProductSlider implements IPage {
     class: 'product-slider__button--prev',
   });
 
-  private index = 0;
+  public index = 0;
 
   private sliderLength = 0;
 
@@ -109,11 +109,11 @@ export default class ProductSlider implements IPage {
     return children;
   }
 
-  private next(): void {
+  public next(): void {
     this.goto(this.index + 1);
   }
 
-  private prev(): void {
+  public prev(): void {
     this.goto(this.index - 1);
   }
 

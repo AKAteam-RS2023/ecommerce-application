@@ -492,7 +492,7 @@ export const deleteCart = async (cartId: string): Promise<void> => {
   if (!apiRootUser) {
     apiRootUser = createApiRootAnonym();
   }
-  apiRootUser
+  await apiRootUser
     .me()
     .carts()
     .withId({ ID: cartId })

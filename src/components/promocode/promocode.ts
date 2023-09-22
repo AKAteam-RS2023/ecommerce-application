@@ -17,13 +17,13 @@ export default class PromoCode {
     PromoCode.instance = this;
   }
 
-  private cartId?: string | null;
+  public cartId?: string | null;
 
   public infoPromoCodeField = createElement('div', { class: 'discount-code__info' });
 
-  private discountCodeItems = createElement('div', { class: 'discount-code__items' });
+  public discountCodeItems = createElement('div', { class: 'discount-code__items' });
 
-  private discountCodeContainer = createElement('div', { class: 'discount-code__container' });
+  public discountCodeContainer = createElement('div', { class: 'discount-code__container' });
 
   private discountCodeInput = createElement<HTMLInputElement>('input', {
     class: 'discount-code__input',
@@ -39,7 +39,7 @@ export default class PromoCode {
 
   public appliedCode?: IPromoCode[] = [];
 
-  private init(): void {
+  public init(): void {
     this.applyCodeBtn.textContent = 'Apply';
     this.cartId = localStorage.getItem('cartId');
     this.renderDiscountCode();
@@ -113,7 +113,7 @@ export default class PromoCode {
     });
   }
 
-  private renderDiscountItem(code: string, item: IPromoCode, index: number): void {
+  public renderDiscountItem(code: string, item: IPromoCode, index: number): void {
     const discountCodeItem = createElement('div', { class: 'discount-code__item' });
     discountCodeItem.textContent = code;
 
@@ -152,7 +152,7 @@ export default class PromoCode {
     eventEmitter.emit('event: changePromoCode', { code: this.code });
   }
 
-  private deleteCode(discountCodeInfo: DiscountCodeInfo, index: number): void {
+  public deleteCode(discountCodeInfo: DiscountCodeInfo, index: number): void {
     if (discountCodeInfo) {
       eventEmitter.emit('event: removePromoCode', { id: discountCodeInfo.discountCode.id, typeId: discountCodeInfo.discountCode.typeId });
       this.appliedCode?.splice(index, 1);
