@@ -121,14 +121,7 @@ export default class BasketItem {
     this.totalPrice.textContent = this.product.totalPrice;
     this.priceWithPromoCode.textContent = this.product.priceWithPromoCode ?? '';
     price.append(this.priceWithPromoCode);
-    this.container.append(
-      img,
-      name,
-      price,
-      this.quantityInput,
-      this.totalPrice,
-      this.deleteBtn,
-    );
+    this.container.append(img, name, price, this.quantityInput, this.totalPrice, this.deleteBtn);
   }
 
   public render(): HTMLElement {

@@ -17,13 +17,13 @@ export default class PromoCode {
     PromoCode.instance = this;
   }
 
-  private cartId?: string | null;
+  public cartId?: string | null;
 
   public infoPromoCodeField = createElement('div', { class: 'discount-code__info' });
 
-  private discountCodeItems = createElement('div', { class: 'discount-code__items' });
+  public discountCodeItems = createElement('div', { class: 'discount-code__items' });
 
-  private discountCodeContainer = createElement('div', { class: 'discount-code__container' });
+  public discountCodeContainer = createElement('div', { class: 'discount-code__container' });
 
   private discountCodeInput = createElement<HTMLInputElement>('input', {
     class: 'discount-code__input',
@@ -39,7 +39,7 @@ export default class PromoCode {
 
   public appliedCode?: IPromoCode[] = [];
 
-  private init(): void {
+  public init(): void {
     this.applyCodeBtn.textContent = 'Apply';
     this.cartId = localStorage.getItem('cartId');
     this.renderDiscountCode();
@@ -54,14 +54,14 @@ export default class PromoCode {
     this.discountCodeContainer.innerHTML = '';
     const title = createElement('div', { class: 'discount-code__title' });
     title.textContent = 'Promocode:';
-    const form = createElement<HTMLFormElement>('form', { class: 'discount-code__form', type: 'submit' });
+    const form = createElement<HTMLFormElement>('form', {
+      class: 'discount-code__form',
+      type: 'submit',
+    });
     form.addEventListener('submit', (e): void => {
       e.preventDefault();
     });
-    form.append(
-      this.discountCodeInput,
-      this.applyCodeBtn,
-    );
+    form.append(this.discountCodeInput, this.applyCodeBtn);
     this.discountCodeContainer.append(title, form, this.infoPromoCodeField);
     this.applyCodeBtn.onclick = this.getCodeInput.bind(this);
     this.renderAllDiscountCode();
@@ -113,7 +113,7 @@ export default class PromoCode {
     });
   }
 
-  private renderDiscountItem(code: string, item: IPromoCode, index: number): void {
+  public renderDiscountItem(code: string, item: IPromoCode, index: number): void {
     const discountCodeItem = createElement('div', { class: 'discount-code__item' });
     discountCodeItem.textContent = code;
 
@@ -135,10 +135,8 @@ export default class PromoCode {
       return undefined;
     }
     if (listItem.discountedPricePerQuantity.length > 0) {
-      const discCodePrice = (
-        listItem
-          .discountedPricePerQuantity[0].discountedPrice?.value.centAmount as unknown as number
-      );
+      const discCodePrice = listItem.discountedPricePerQuantity[0].discountedPrice?.value
+        .centAmount as unknown as number;
       const currency = listItem.discountedPricePerQuantity?.[0].discountedPrice?.value.currencyCode;
       if (discCodePrice && currency) {
         return `${(discCodePrice / 100).toFixed(2)} ${currency}`;
@@ -152,9 +150,12 @@ export default class PromoCode {
     eventEmitter.emit('event: changePromoCode', { code: this.code });
   }
 
-  private deleteCode(discountCodeInfo: DiscountCodeInfo, index: number): void {
+  public deleteCode(discountCodeInfo: DiscountCodeInfo, index: number): void {
     if (discountCodeInfo) {
-      eventEmitter.emit('event: removePromoCode', { id: discountCodeInfo.discountCode.id, typeId: discountCodeInfo.discountCode.typeId });
+      eventEmitter.emit('event: removePromoCode', {
+        id: discountCodeInfo.discountCode.id,
+        typeId: discountCodeInfo.discountCode.typeId,
+      });
       this.appliedCode?.splice(index, 1);
       this.renderAllDiscountCode();
     }
