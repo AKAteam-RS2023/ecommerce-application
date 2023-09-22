@@ -1,0 +1,119 @@
+@import '../../styles/constants';
+.home-links__wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-links__item {
+  display: block;
+  width: 160px;
+  color: $dark-l;
+  padding: 10px 0;
+}
+
+.main-header {
+  &__wrapper{
+    display: flex;
+    justify-content: center;
+    background-size: cover;
+    margin: 0 auto;
+  }
+  &__text-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 500px;
+    background: $light-l;
+    padding: 20px;
+    margin: 50px 0 50px 400px;
+    @media screen and (max-width: $large) {
+      margin: 50px 0 50px 200px;
+    }
+    @media screen and (max-width: $medium) {
+      margin: 50px auto;
+      width: 100%;
+    }
+  }
+  &__title {
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    color: $primary;
+  }
+  &__text {
+    padding: 20px 0;
+    text-align: justify;
+  }
+  &__link {
+    display: block;
+    background: $primary;
+    height: 50px;
+    width: 120px;
+    padding-top: 12px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: $light-xl;
+    margin-top: 30px;
+  }
+}
+
+.promo {
+  &__wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    @media screen and (max-width: $large) {
+      justify-content: space-around;
+      gap: 20px;
+    }
+
+    @media screen and (max-width: $medium) {
+      flex-direction: column;
+    }
+  }
+
+  &__item {
+    width: 30%;
+    min-width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+
+    @media screen and (max-width: $medium) {
+      width: 90%;
+      margin: 30px auto;
+    }
+  }
+
+  &__title {
+    margin: 40px auto 0;
+    text-align: center;
+    color: $dark-xl;
+  }
+
+  &__text-block {
+    background: rgba(0, 0, 0, 0.5);
+    width: 80%;
+    margin: 30px auto;
+    padding: 10px;
+    color: $light-xl;
+    font-size: 1.5rem;
+    font-weight: normal;
+    text-align: left;
+  }
+
+  &__code {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 3rem;
+    text-align: center;
+    padding: 30px 0 20px 0;
+  }
+
+}

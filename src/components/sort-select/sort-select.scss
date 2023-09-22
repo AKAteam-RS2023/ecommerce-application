@@ -1,0 +1,30 @@
+@import '../../styles/constants/';
+
+.sort {
+  position: relative;
+
+  &__label{
+    position: absolute;
+    top: -7px;
+    left: 4px;
+    background-color: $light-xl;
+    font-size: inherit;
+    line-height: 100%;
+    color: $dark;
+
+    @media screen and (max-width: $large) {
+      top: -6px;
+    }
+
+    @media screen and (max-width: $medium) {
+      top: -5px;
+    }
+  }
+
+  &__select {
+    padding: 6px;
+    font-family: inherit;
+    font-size: inherit;
+
+  }
+}

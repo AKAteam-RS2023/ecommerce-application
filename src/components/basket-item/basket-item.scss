@@ -1,0 +1,91 @@
+@import '../../styles/constants/';
+
+.basket__item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1.5fr .5fr;
+  align-items: center;
+  justify-items: center;
+  padding: 15px;
+  font-size: .9em;
+  font-weight: normal;
+
+  &--img {
+    display: block;
+    width: 80px;
+    object-fit: contain;
+
+    @media screen and (max-width: $large) {
+      width: 65px;
+    }
+
+    @media screen and (max-width: $medium) {
+      width: 50px;
+    }
+  }
+
+  &--quantity,
+  &--total-price {
+    color: $dark-xl;
+  }
+
+  &--quantity {
+    padding: 4px;
+    width: 50px;
+    border-radius: 4px;
+    border: 2px solid $grey-xxl;
+    font-family: inherit;
+
+    @media screen and (max-width: $medium) {
+      font-size: inherit;
+      width: 45px;
+    }
+  }
+
+  &--price:has(.basket__item--discount-code-price:not(:empty))::before {
+    content: '';
+    border-bottom: 2px solid #e97171;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 45%;
+    top: 15px;
+    transform: rotate(-10deg);
+  }
+
+  &--discount-code-price {
+    color: $dark-xl;
+  }
+
+  &--delete {
+    display: block;
+    width: 25px;
+    padding: 3px;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($red-accents, .5);
+    }
+
+    @media screen and (max-width: $large) {
+      width: 20px;
+    }
+
+    @media screen and (max-width: $medium) {
+      width: 15px;
+    }
+  }
+
+  @media screen and (max-width: $large) {
+    padding: 10px;
+    font-size: .9em;
+  }
+
+  @media screen and (max-width: $medium) {
+    padding: 5px 0;
+    font-size: .7em;
+  }
+}
+
+

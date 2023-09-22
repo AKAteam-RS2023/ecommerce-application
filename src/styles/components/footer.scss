@@ -1,0 +1,35 @@
+.footer {
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 100px;
+  }
+
+  &__logo a{
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: $dark-xl;
+  }
+
+  &__copyright {
+    border-top: 1px solid $grey-l;
+    padding-top: 35px;
+  }
+}
+
+@media screen and (max-width: $large) {
+  .footer {
+    &__wrapper {
+      padding: 20px 40px;
+    }
+  }
+}
+
+@media screen and (max-width: $medium) {
+  .footer {
+    &__wrapper {
+      padding: 20px;
+    }
+  }
+}

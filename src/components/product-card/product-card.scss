@@ -1,0 +1,112 @@
+@import '../../styles/constants/';
+
+.product {
+  position: relative;
+  width: 285px;
+  height: 446px;
+  background-color: $light;
+  cursor: pointer;
+  transition: .5s;
+
+  &:hover {
+    transform: scale(1.05);
+    background-color: $grey-l;
+    box-shadow: 5px 5px 5px $grey-xl;
+  }
+
+  &:active {
+    transform: scale(1);
+    box-shadow: 5px 5px 5px $grey-xxl;
+  }
+
+  &__img {
+    display: block;
+    width: 100%;
+  }
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 10px;
+  }
+  
+  &__title {
+    font-size: 24px;
+    line-height: 120%;
+    font-weight: bold;
+    color: $dark;
+  }
+
+  &__description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 16px;
+    line-height: 150%;
+    color: $grey-xxl;
+    overflow: hidden;
+  }
+
+  &__price {
+    font-size: 20px;
+    line-height: 150%;
+    font-weight: bold;
+    color: $dark;
+  }
+
+  &__wrapper-prices {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__old-price {
+    text-decoration: line-through;
+    color: $grey-m;
+    font-size: 16px;
+  }
+
+  &__discount {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: max-content;
+    padding: 5px;
+    border-radius: 20px;
+    background-color: $red-accents;
+    color: $light-xl;
+  }
+
+  &__show-more {
+    padding: 20% 10px;
+    font-size: 3rem;
+    line-height: 4rem;
+    text-align: center;
+    color: $grey-xl;
+  }
+
+  &__show-more img {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+  }
+
+  &__cart-btn{
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 50%;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: $light;
+    font-family: inherit;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background-color: $light-xl;
+    }
+
+  }
+}

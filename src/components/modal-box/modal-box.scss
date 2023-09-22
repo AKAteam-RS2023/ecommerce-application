@@ -1,0 +1,108 @@
+@import '../../styles/constants/';
+
+.backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.modal-box {
+  position: fixed;
+  top: 10%;
+  bottom: 10%;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
+  &--extra-small {
+    width: 40%;
+    left: 30%;
+    right: 30%;
+    top: 40%;
+    bottom: 40%;
+  }
+  &--small {
+    width: 40%;
+    left: 30%;
+    right: 30%;
+  }
+  &--medium {
+    width: 50%;
+    left: 25%;
+    right: 25%;
+  }
+  &--large {
+    width: 60%;
+    left: 20%;
+    right: 20%;
+  }
+}
+
+.modal-box__close-btn {
+  position: absolute;
+  display: block;
+  right: 0;
+  top: 0;
+  color: $grey-xl;
+  font-weight: bold;
+  font-size: 2.4rem;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  line-height: 150%;
+  cursor: pointer;
+}
+
+.modal-box__content {
+  padding-top: 10px;
+}
+
+.modal-box__content .product-slider {
+  max-width: 100%;
+  width: 100%;
+}
+
+.modal-box--show .backdrop,
+.modal-box--show .modal-box {
+  z-index: 50;
+  overflow-y: auto;
+  display: block;
+  pointer-events: auto;
+}
+
+@media screen and (min-width: $large){
+}
+
+@media screen and (max-width: $medium) {
+  .modal-box {
+    &--extra-small {
+      width: 80%;
+      left: 10%;
+      right: 10%;
+      top: 30%;
+      height: auto;
+    }
+    &--small {
+      width: 80%;
+      left: 10%;
+      right: 10%;
+    }
+    &--medium {
+      width: 80%;
+      left: 10%;
+      right: 10%;
+    }
+    &--large {
+      width: 80%;
+      left: 10%;
+      right: 10%;
+    }
+  }
+}

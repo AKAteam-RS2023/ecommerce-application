@@ -1,0 +1,102 @@
+@import '../../styles/constants/';
+
+.registration {
+  width: 300px;
+  margin: 0 auto;
+  &__login {
+    margin: 0 auto;
+  }
+  &__sameaddress {
+    margin-bottom: 15px;
+  }
+  &__enter--error {
+    text-align: center;
+    color: red;
+    margin-top: 6px;
+  }
+  &__address {
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: $primary;
+  }
+  &__password,
+  &__email,
+  &__firstname,
+  &__lastname,
+  &__birthdate,
+  &__country,
+  &__city,
+  &__street,
+  &__postcode {
+    display: flex;
+    position: relative;
+    margin-bottom: 35px;
+    justify-content: space-between;
+    align-items: center;
+
+    &--input {
+      display: block;
+      padding: 5px;
+      border: 2px solid $grey-xl;
+      border-radius: 5px;
+    }
+
+    &--label {
+      display: block;
+      cursor: pointer;
+    }
+
+    &--button {
+      position: absolute;
+      right: 5px;
+      cursor: pointer;
+
+      img {
+        display: flex;
+        width: 20px;
+        align-items: center;
+      }
+
+    }
+
+  }
+
+  &__submit {
+    width: 100px;
+    transform: translateX(80px);
+    padding: 7px;
+    border: 2px solid $primary ;
+    background-color: transparent;
+    color: $primary;
+    cursor: pointer;
+  }
+
+  &__error {
+    width: 98%;
+    position: absolute;
+    z-index: 3;
+    top: 36px;
+    padding: 1px;
+    background-color: $primary;
+    color: $light-xl;
+    text-align: center;
+    font-size: 12px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      right: 15px;
+      top: -12px;
+      z-index: 2;
+      border: 5px solid transparent;
+      border-bottom: 8px solid $primary;
+    }
+  }
+
+}
+.registration__error {
+  display: none;
+  &--active {
+    display: block;
+  }
+}
